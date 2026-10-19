@@ -1,0 +1,42 @@
+name: Windows x64 VST3
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, work]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure MSVC x64 Release
+        run: cmake -S . -B build -A x64
+      - name: Build VST3, standalone and tests
+        run: cmake --build build --config Release --parallel 2
+      - name: Run real DSP and plugin tests
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Ensure NSIS is installed
+        shell: pwsh
+        run: |
+          choco upgrade nsis --version=3.11 -y --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'NSIS installation failed' }
+      - name: Prepare delivery
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item 'build/MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3' dist -Recurse
+          Copy-Item 'build/MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro.exe' dist
+          Copy-Item README.md,LICENSE,docs/SONAR-TEST.md dist
+          Copy-Item licenses dist -Recurse
+          & 'C:/Program Files (x86)/NSIS/makensis.exe' '/DPRODUCT_BUILD=../dist' packaging/windows.nsi
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          Compress-Archive -Path dist/* -DestinationPath MicrotonalPitchMapPro-Windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MicrotonalPitchMapPro-Windows-x64
+          path: |
+            MicrotonalPitchMapPro-Windows-x64.zip
+            build/Testing/Temporary/LastTest.log
+          if-no-files-found: error

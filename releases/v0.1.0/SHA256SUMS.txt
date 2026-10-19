@@ -1,0 +1,2 @@
+d5f4d4943ecf3e91cfc71b20bd4f6a9d58e6d13dd0f33f647bda1a788df39fd5  Plugin-Windows-x64.zip
+bedd9428de1728ba654ce2e97a9ada175dfeb81a613dc03b7786d7f6c3051a1e  Source.zip

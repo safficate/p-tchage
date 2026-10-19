@@ -1,0 +1,30 @@
+MICROTONAL PITCH MAP PRO 0.1.0 — WINDOWS x64
+
+KURULUM
+1. Sonar'ı kapatın.
+2. MicrotonalPitchMapPro-Setup-x64.exe dosyasını çalıştırın.
+3. Sonar'ı açıp VST3 taramasını yenileyin.
+4. Ses kanalının FX bölümüne Microtonal Pitch Map Pro ekleyin.
+
+Standart eklenti klasörü:
+C:\Program Files\Common Files\VST3\Microtonal Pitch Map Pro.vst3
+
+ZIP ile elle kurulumda bu .vst3 klasörünün tamamını yukarıdaki konuma kopyalayın.
+Contents klasörünün içindeki dosyayı tek başına kopyalamayın.
+
+İLK DENEME
+Load WAV -> Analyze -> C grubunu -20 c yapın -> QUANTIZE 0.5 veya 1 -> Render.
+Render ready yazısını bekleyin. DAW oynatımında kullanmak için DAW Render'ı açın.
+İçe aktarılan WAV başlangıcı varsayılan 0 saniyedir; Timeline offset ile yerini ayarlayın.
+Alternatif: DAW oynatımı sırasında Capture, sonra Stop capture ve Analyze kullanın.
+Export WAV ile düzeltilmiş dosyayı yeni bir adla kaydedin.
+
+QUANTIZE: 0 = değiştirme, 0.5 = %50, 1 = %100.
+İlk açılışta QUANTIZE 0'dır. Hedef cent ve düzeltme miktarı ayrı kontrollerdir.
+En iyi playback kalitesi için WAV ve Sonar projesinin örnekleme hızını eşleştirin.
+Tek sesli enstrüman/vokal veya ayrı bir stem kullanın. Dosya sınırı 120 saniyedir.
+
+Ses sürücüsünü Sonar yönetir; eklenti harici ses kartı veya MIDI donanımı istemez.
+Proje geri açıldığında arka plandaki render'ın tamamlanmasını bekleyin.
+
+Bu sürüm Sonar'da henüz denenmedi. Kendi bilgisayarınızdaki kabul testi için SONAR-TEST.md dosyasını kullanın.
