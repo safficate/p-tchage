@@ -25,7 +25,7 @@ std::pair<double, double> detectPitch(const float* data, int size, double sr) {
     fft.perform(x.data(), f.data(), false);
     for (auto& v : f) v = {std::norm(v), 0};
     fft.perform(f.data(), r.data(), true);
-    const int lo = std::max(2, int(sr / 1600)), hi = std::min(size / 2, int(sr / 50));
+    const int lo = std::max(2, int(sr / 1600)), hi = std::min(size / 2, int(sr / 30));
     std::vector<double> cmnd(size_t(hi + 2), 1);
     double sum = 0;
     for (int t = 1; t <= hi + 1; ++t) {
@@ -105,6 +105,24 @@ double correctionAt(const Clip& c, const Settings& s, double time) {
     if (it == c.notes.begin()) return 0;
     const auto& n = *--it;
     if (time > n.end) return 0;
+    if (s.matchReference) {
+        const int targetKey = n.key + s.semitones[size_t(n.key % 12)];
+        double target = targetKey + s.cents[size_t((targetKey % 12 + 12) % 12)] / 100 + 12 * std::log2(s.reference / 440.0);
+        if (n.detached) target = n.key + n.target / 100;
+        double shift = target - n.centre;
+        if (s.smoothingMs > 0) shift *= juce::jlimit(0.0, 1.0, std::min(time - n.start, n.end - time) / (s.smoothingMs / 1000));
+        return juce::jlimit(-24.0, 24.0, shift);
+    }
+    if (s.directShift) {
+        // A direct amount means exactly that amount added to the performed note,
+        // preserving its original tuning/vibrato. No percentage or centre snap.
+        const auto group = size_t((n.key % 12 + 12) % 12);
+        double shift = s.semitones[group] + s.cents[group] / 100;
+        if (s.octaveMode) if (auto o = s.octaveCents.find(n.key); o != s.octaveCents.end()) shift = s.semitones[group] + o->second / 100;
+        if (n.detached) shift = n.target / 100;
+        if (s.smoothingMs > 0) shift *= juce::jlimit(0.0, 1.0, std::min(time - n.start, n.end - time) / (s.smoothingMs / 1000));
+        return juce::jlimit(-24.0, 24.0, shift);
+    }
     double cents = s.cents[size_t((n.key % 12 + 12) % 12)];
     if (s.octaveMode) { const auto o = s.octaveCents.find(n.key); if (o != s.octaveCents.end()) cents = o->second; }
     const double strength = n.detached ? n.strength : s.strength * s.groupStrength[size_t((n.key % 12 + 12) % 12)];
@@ -131,7 +149,7 @@ static juce::AudioBuffer<float> renderPass(const Clip& c, const Settings& s, con
     juce::AudioBuffer<float> output(channels, length); output.clear();
     if (channels < 1 || length < 1) return output;
     bool unchanged = true;
-    for (const auto& n : c.notes) if (std::abs(correctionAt(c, s, (n.start + n.end) * 0.5)) > 1e-9 || s.tightness > 0) { unchanged = false; break; }
+    for (const auto& n : c.notes) if (std::abs(correctionAt(c, s, (n.start + n.end) * 0.5)) > 1e-9 || (!s.directShift && !s.matchReference && s.tightness > 0)) { unchanged = false; break; }
     if (unchanged) { output.makeCopyOf(c.audio); if (progress) progress(1); return output; }
     // A mono-equivalent stereo recording must remain exactly phase linked, including
     // the spectral engine's startup/tail. Process it once rather than creating two
@@ -189,7 +207,7 @@ static juce::AudioBuffer<float> renderPass(const Clip& c, const Settings& s, con
     return output;
 }
 juce::AudioBuffer<float> render(const Clip& c, const Settings& s, const Progress& progress) {
-    bool changes = s.tightness > 0;
+    bool changes = !s.directShift && !s.matchReference && s.tightness > 0;
     for (const auto& n : c.notes) changes = changes || std::abs(correctionAt(c, s, (n.start + n.end) * 0.5)) > 1e-9;
     if (!changes) { if (progress) progress(1); return c.audio; }
     std::vector<double> trims(c.notes.size(), 0);
@@ -233,8 +251,8 @@ std::shared_ptr<Clip> loadAudio(const juce::File& file, juce::String& error) {
     juce::AudioFormatManager fm; fm.registerBasicFormats();
     std::unique_ptr<juce::AudioFormatReader> reader(fm.createReaderFor(file));
     if (!reader) { error = "Cannot read audio file"; return {}; }
-    if (reader->numChannels < 1 || reader->numChannels > 2 || reader->sampleRate < 8000 || reader->sampleRate > 192000 || reader->lengthInSamples > maxSeconds * reader->sampleRate) {
-        error = "Use mono/stereo audio, up to 120 seconds, 8-192 kHz"; return {};
+    if (reader->numChannels < 1 || reader->numChannels > 2 || reader->sampleRate < 8000 || reader->sampleRate > 192000 || reader->lengthInSamples > maxSeconds * reader->sampleRate || reader->lengthInSamples * reader->numChannels * 4 > maxAudioBytes) {
+        error = "Use mono/stereo audio, up to 600 seconds / 240 MiB PCM, 8-192 kHz"; return {};
     }
     auto c = std::make_shared<Clip>(); c->sampleRate = reader->sampleRate; c->name = file.getFileName();
     c->audio.setSize(int(reader->numChannels), int(reader->lengthInSamples));
@@ -300,6 +318,9 @@ bool importScala(const juce::File& file, Settings& s, juce::String& error) {
 juce::ValueTree settingsToTree(const Settings& s) {
     juce::ValueTree t("Settings");
     for (int i = 0; i < 12; ++i) t.setProperty("c" + juce::String(i), s.cents[size_t(i)], nullptr);
+    for (int i = 0; i < 12; ++i) t.setProperty("step" + juce::String(i), s.semitones[size_t(i)], nullptr);
+    t.setProperty("direct", s.directShift, nullptr);
+    t.setProperty("matchReference", s.matchReference, nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("g" + juce::String(i), s.groupStrength[size_t(i)], nullptr);
     t.setProperty("octave", s.octaveMode, nullptr); t.setProperty("formants", s.formants, nullptr);
     t.setProperty("strength", s.strength, nullptr); t.setProperty("tightness", s.tightness, nullptr);
@@ -312,6 +333,9 @@ Settings settingsFromTree(const juce::ValueTree& t) {
     Settings s;
     auto value = [&](const juce::String& name, double fallback, double lo, double hi) { const double v = t.getProperty(name, fallback); return std::isfinite(v) ? juce::jlimit(lo, hi, v) : fallback; };
     for (int i = 0; i < 12; ++i) s.cents[size_t(i)] = value("c" + juce::String(i), 0, -200, 200);
+    for (int i = 0; i < 12; ++i) s.semitones[size_t(i)] = int(value("step" + juce::String(i), 0, -12, 12));
+    s.directShift = t.getProperty("direct", false);
+    s.matchReference = t.getProperty("matchReference", false);
     for (int i = 0; i < 12; ++i) s.groupStrength[size_t(i)] = value("g" + juce::String(i), 1, 0, 1);
     s.octaveMode = t.getProperty("octave", false); s.formants = t.getProperty("formants", true);
     s.strength = value("strength", 0, 0, 1); s.tightness = value("tightness", 0, 0, 1); s.vibrato = value("vibrato", 1, 0, 1);
@@ -335,7 +359,7 @@ std::shared_ptr<Clip> clipFromTree(const juce::ValueTree& t) {
     auto c = std::make_shared<Clip>(); c->sampleRate = t["rate"]; const int channels = t["channels"], samples = t["samples"];
     if (!std::isfinite(c->sampleRate) || c->sampleRate < 8000 || c->sampleRate > 192000 || channels < 1 || channels > 2 || samples < 1 || samples > maxSeconds * c->sampleRate) return {};
     const auto* raw = t["audio"].getBinaryData();
-    if (!raw || raw->getSize() != size_t(channels) * size_t(samples) * 4) return {};
+    if (!raw || raw->getSize() > size_t(maxAudioBytes) || raw->getSize() != size_t(channels) * size_t(samples) * 4) return {};
     juce::MemoryInputStream stream(*raw, false); c->audio.setSize(channels, samples);
     for (int ch = 0; ch < channels; ++ch) for (int i = 0; i < samples; ++i) { const auto v = stream.readFloat(); c->audio.setSample(ch, i, std::isfinite(v) ? v : 0); }
     c->anchorSeconds = t["anchor"]; if (!std::isfinite(c->anchorSeconds)) c->anchorSeconds = 0; c->name = t["name"].toString();

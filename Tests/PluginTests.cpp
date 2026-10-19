@@ -6,13 +6,13 @@ struct TestPlayHead : juce::AudioPlayHead {
     int64_t sample = 48000;
     juce::Optional<PositionInfo> getPosition() const override { PositionInfo info; info.setTimeInSamples(sample); info.setIsPlaying(true); return info; }
 };
-int main() {
+int main(int argc, char** argv) {
     std::cout << std::unitbuf;
     std::cout << "Stage: GUI runtime initialization\n";
     juce::ScopedJuceInitialiser_GUI gui;
     try {
         std::cout << "Stage: processor and safe defaults\n";
-        PitchProcessor p; p.prepareToPlay(48000, 256);
+        PitchProcessor p; p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.setParameter("enabled", 1); p.prepareToPlay(48000, 256);
         check(p.parameters.getRawParameterValue("quantize")->load() == 0, "Safe default strength");
         p.setParameter("cent0", -20); p.setParameter("quantize", 0.5f); p.setParameter("reference", 442);
         juce::MemoryBlock state; p.getStateInformation(state);
@@ -24,7 +24,7 @@ int main() {
         juce::AudioBuffer<float> buffer(2, 256); juce::MidiBuffer midi;
         for (int ch = 0; ch < 2; ++ch) for (int i = 0; i < 256; ++i) buffer.setSample(ch, i, float(i) / 512);
         restored.processBlock(buffer, midi);
-        check(buffer.getSample(0, 200) == float(200) / 512, "No source/render leaves host audio unchanged");
+        check(buffer.getMagnitude(0, 256) == 0, "Streaming startup contains the reported delay, not unprocessed input");
         std::cout << "Stage: source fixture and analysis\n";
         mp::Clip clip; clip.sampleRate = 48000; clip.audio.setSize(2, 96000);
         for (int i = 0; i < 96000; ++i) for (int ch = 0; ch < 2; ++ch) clip.audio.setSample(ch, i, float(0.2 * std::sin(2 * juce::MathConstants<double>::pi * 440 * i / 48000)));
@@ -49,15 +49,27 @@ int main() {
         for (int i = 0; i < 2000; ++i) restored.processBlock(benchmark, midi);
         std::cout << "2000 stereo callback blocks, 256 frames: " << juce::Time::getMillisecondCounterHiRes() - startTime << " ms on cloud host\n";
         playHead.sample = 1000000000000LL; playback.clear(); playback.setSample(0, 0, 0.125f); restored.processBlock(playback, midi);
-        check(playback.getSample(0, 0) == 0.125f, "Outside source timeline passes through safely"); playHead.sample = 44100;
-        restored.setParameter("bypass", 1); playback.clear(); restored.processBlock(playback, midi);
-        check(playback.getMagnitude(0, 4096) == 0, "Bypass returns host input");
+        check(playback.getSample(0, 0) != 0.125f, "Outside cached timeline uses latency-aligned dry input"); playHead.sample = 44100;
+        restored.setParameter("bypass", 1);
+        for (int i = 0; i < 4; ++i) { playback.clear(); restored.processBlock(playback, midi); }
+        check(playback.getMagnitude(0, 4096) == 0, "Bypass returns silent host input after draining reported latency");
         restored.getStateInformation(state); PitchProcessor roundTrip; roundTrip.setStateInformation(state.getData(), int(state.getSize()));
         check(roundTrip.clip() && roundTrip.clip()->notes.size() == 1 && roundTrip.clip()->audio.getNumSamples() == 96000, "Full plugin state restores PCM and note map");
         restored.setPlayHead(nullptr);
+        if (argc == 2 && juce::String(argv[1]) == "--audio-only") {
+            std::cout << "Plugin parameter/source/map state and offline host playback checks passed\n"; return 0;
+        }
         std::cout << "Stage: editor construction\n";
+        restored.setParameter("referenceMatch", 1); restored.setParameter("direct", 0);
         auto editor = std::unique_ptr<juce::AudioProcessorEditor>(restored.createEditor());
         check(editor && editor->getWidth() >= 1060, "Real editor constructs");
+        int percentages = 0;
+        for (auto* child : editor->getChildren()) if (auto* slider = dynamic_cast<juce::Slider*>(child); slider && slider->getMaximum() == 1) {
+            check(slider->getTextFromValue(0.5).contains("50.0%"), "Actual attached slider must display 50 percent correctly");
+            check(slider->getValueFromText("50%") == 0.5, "Actual attached slider must accept percentage entry"); ++percentages;
+            check(!slider->isVisible(), "Percentages must be hidden on the basic cent/note interface");
+        }
+        check(percentages >= 12, "Editor percentage controls were exercised");
         std::cout << "Stage: editor paint\n";
         juce::Image image(juce::Image::ARGB, editor->getWidth(), editor->getHeight(), true, juce::SoftwareImageType());
         { juce::Graphics graphics(image); editor->paintEntireComponent(graphics, true); }

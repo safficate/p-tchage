@@ -1,59 +1,37 @@
-# Microtonal Pitch Map Pro — 0.1.0
+# Microtonal Pitch Map Pro 0.2.0
 
-JUCE/C++20 ile yazılmış, tek sesli kaynaklar için offline mikrotonal düzeltme eklentisi. Gerçek analiz, ses transpozisyonu ve WAV render motoru içerir. Ağır işlemler arka planda yapılır; DAW callback'i hazır PCM sesi zaman çizelgesinden okur.
+Windows x64 VST3 pitch correction for isolated vocals and instruments, with optional ARA 2 clip access and a reference sidechain. Uses JUCE 8.0.12 and Signalsmith Stretch. Sonar compatibility is **not yet verified in Sonar**; this is a functional test build, not a certification.
 
-**Test durumu ve teslim edilen platformlar `docs/TEST-REPORT.md` dosyasındadır. Gerçek Sonar testi yapılmadığı sürece Sonar uyumluluğu doğrulanmış değildir.**
+## Quick workflow
 
-Windows x64 test paketi gerçek VST3 bundle, Standalone uygulama ve `MicrotonalPitchMapPro-Setup-x64.exe` kurulum dosyasını içerir. Windows ses motoru, DLL yükleme ve kurulum/kaldırma kontrolleri Wine altında çalıştırıldı. Windows arayüz çizim testi Wine altında tamamlanamadı; gerçek Windows ve Sonar üzerinde kabul testi gerekiyor. Kurulum adımları `WINDOWS-KURULUM.txt`, kapsam ve sonuçlar test raporundadır.
+1. In an ARA-capable host, apply the plugin to selected clips as a Region FX/ARA effect. The host shares those clips without requiring playback or recording. An ordinary track FX insert cannot automatically fetch all project clips. For an ordinary insert, process incoming audio live, or Load WAV / Capture + Analyze for note selection.
+2. The **12 upper keys** play reference tones. Adjust the cent field under each key to tune that reference; click the key again to hear it. A4 is 440 Hz at 0 cents.
+3. The **12 lower keys** play actual note segments from the original clip. Repeated clicks cycle through occurrences. A missing source note is disabled; the plugin never invents a source sample.
+4. Select a lower source key and an upper target key. Click **ESLESTIR**, then **HEDEFE UYGULA**. The destination selectors below the source keys also let you set each mapping explicitly. Do to Do sharp means +1 semitone; Do to Re means +2 semitones. No percentage is required.
+5. For fine tuning, keep source and target as the same note and set the upper reference to the desired cents. Source Do +10 c matched to reference Do +5 c is corrected by -5 c. To add a relative +5 c to every detected Do instead, open Advanced and enable direct cent/note shifts; this mode adds to the source rather than matching its centre to an absolute reference.
+6. Compare A/B and bounce/render the corrected channel in the host. Initial correction is disabled until Apply. Parameters, note edits, source PCM and mappings are included in component state and ARA document archives.
 
-## Kullanım
+## Optional reference channel
 
-1. Eklentiyi mono veya stereo ses kanalının FX bölümüne ekleyin. Ses aygıtını ve sürücüsünü Sonar yönetir. Harici ses kartı veya MIDI donanımı gerekmez.
-2. `Load WAV` ile en fazla 120 saniyelik tek sesli WAV/AIFF/FLAC yükleyin. Alternatif: Sonar oynatımını başlatıp `Capture`, ardından `Stop capture` kullanın. Yakalama, eklentiye gelen sesi kaydeder; host transport konumu başlangıç olarak saklanır.
-3. `Analyze` kullanın. Sarı çizgi ölçülen pitch eğrisidir; renkli bloklar notaları gösterir. Düşük güvenli ölçümler kesin nota kabul edilmez. Spektrogram ve dalga formu kaynak sesten hesaplanır.
-4. Örneğin C hedefini `-20 c` yapın. **QUANTIZE** `0` ise merkez perdesi değişmez; `0.5` yarı düzeltme, `1` tam düzeltmedir. Grup `Strength x Quantize` değeri bu ana miktarı çarpar. Hedef ve düzeltme miktarı ayrı kontrollerdir.
-5. Değişiklikten sonra offline render otomatik yenilenir; `Render` ile elle de başlatılabilir. `Preview` kaynak dosyasını dinletir. DAW oynatımında düzeltmeyi kullanmak için **DAW Render** düğmesini açın. İçe aktarılan dosyanın başlangıcı varsayılan 0 saniyedir; `Timeline offset` ile konumlandırın. Bu modda yüklenen sesin zaman çizelgesindeki karşılığı kullanılır; farklı bir girişi kendiliğinden analiz etmez.
-6. `Export WAV` düzeltilmiş 24-bit WAV oluşturur. Kaynak dosya değiştirilmez. Var olan dosyaların üzerine yazılmaz; yeni ad seçin. `MIDI` monofonik notaları pitch-bend mesajları ve açık +/-2 semiton bend aralığıyla dışa aktarır. MIDI alıcısının aynı bend aralığını desteklemesi gerekir; bu aralığı aşan uzun glide hareketleri bend sınırında kesilir. MIDI velocity değeri bu sürümde sabit 96'dır.
+Route a chosen reference track to the plugin's **Reference (sidechain)** input. Select `Sidechain: cent uyumu` to match that reference's tuning while keeping the source note, or `Sidechain: nota + cent` to follow its actual note. Click **REF. KANALA UYDUR**. The reference channel is never modified. Preserve source octave is enabled by default, allowing e.g. bass and violin to share tuning without forcing the violin into the bass register. With no confident reference the plugin applies no reference shift.
 
-Hedef merkez: `orijinal + strength × (hedef − orijinal)`. Merkez düzeltmesinde orijinal vibrato korunur. Render çıktısı güvenli iç bölgelerde yeniden ölçülür; küçük spectral pitch hataları en fazla dört offline turla azaltılır. Kısa veya güvensiz notalarda bu ek ölçüm uygulanamayabilir. Tightness, Vibrato preservation, seed'li Humanize, geçiş yumuşatma, formant kompanzasyonu ve Wet/Dry bağımsız kontrollerdir. Quantize 0 iken ayrıca Humanize/Tightness açılmışsa bu ayrı işlemler sesi değiştirebilir.
+Source pitch is yellow and the target/reference is blue. Actual measured sidechain curves are shown only when supplied. Ctrl+mouse wheel zooms pitch height; wheel zooms time and Shift+wheel pans. No project-wide or polyphonic listening is claimed.
 
-## Nota düzenleme
+## Signal processing and limits
 
-- Bir notayı seçip dikey sürükleyin; gruptan ayrılır ve bağımsız hedef edinir. `Set note` yanındaki alanlar hedef cent ve strength yüzdesidir. `Rejoin group` tekrar gruba bağlar.
-- Shift+tıklama ile birden fazla nota seçin; `Merge` seçilen aralığı birleştirir. `Split` seçili notayı ortadan böler.
-- Fare tekerleği zoom; Shift+tekerlek yatay kaydırma. Ctrl+Z / Ctrl+Y nota düzenleme undo/redo işlemleridir. Grup parametreleri DAW'ın otomasyon/undo sistemine bildirilir.
-- `Octave mode` ve oktav seçicisiyle C3/C4 gibi hedefleri ayırın. Kapalıyken aynı nota sınıfının bütün oktavları ortak hedef kullanır.
-- Referans akort alanına 432, 440, 442 veya 400–480 Hz aralığında başka bir değer girilebilir. Scala içe aktarma yalnızca 12 adımlı, oktavla biten `.scl` dosyalarını destekler; kök C'dir.
-- `A: Original` orijinal sesi seçer. `Bypass` DAW girişini değiştirmeden geçirir.
+- Mono/stereo input, 44.1 and 48 kHz projects; ordinary playback and offline host bounce both process actual input audio. No MIDI, external interface or special hardware is needed: the host supplies audio through its selected driver.
+- ARA clip correction is analyzed/rendered on a worker, then played from memory with zero reported latency. Clip import uses ARA host sample readers before playback, on a non-audio control thread.
+- Ordinary live FX uses a preallocated streaming processor with host-reported latency of 150 ms (6,615/7,200 samples). Host delay compensation is needed. This is intended for editing/mixing, rather than low latency monitoring.
+- Monophonic fundamental detection over approximately 30–1,600 Hz at the target 44.1/48 kHz rates, natural vibrato preservation, formant compensation and transition smoothing. Stable voiced passages use bounded centre refinement. No automatic separation of polyphonic chords or overlapping instruments.
+- At most 10 minutes / 240 MiB PCM per instance. Higher rates reduce the available duration. Capture memory is allocated only when requested. Full embedded PCM makes project/archive files larger.
+- ARA source files can differ from project sample rate; they are interpolated. ARA time-stretched regions must be bounced first. Multi-region spans are mixed into one per-instance map; this is not a shared multi-track editor.
+- Scala import supports ascending 12-step octave scales with offsets within +/-200 cents; MIDI export is a pitch-bend guide. Corrected audio is the deliverable for precise tuning.
+- Advanced legacy Quantize/strength controls remain for old presets. Basic reference matching and relative direct shifts ignore those percentages. Old v0.1 states retain their original semantics.
 
-## Proje ve preset
+## Build and validation
 
-Parametreler, bağımsız nota ayarları, harita, yakalama başlangıcı ve **kaynak PCM ses** plugin state'ine yazılır. Dış dosya silinse bile state kaynağı korur; proje dosyası büyüyebilir. Yeniden açılışta render arka planda yenilenir. **DAW oynatımı/render öncesi `Render ready` durumunu bekleyin.** `Save preset`/`Load preset` aynı veriyi `.mpmap` olarak taşır.
+Windows: install Visual Studio 2022 Desktop C++, Windows SDK, CMake 3.24+, Git, then run `scripts/build-windows.ps1`. Dependencies are pinned and fetched automatically; a bundled source ZIP can use `vendor/JUCE`, `vendor/signalsmith-stretch`, `vendor/signalsmith-linear`, and `vendor/ARA_SDK` offline. `-DMP_ENABLE_ARA=OFF` builds a regular FX variant if required. The delivered VST3 has ARA enabled.
 
-## Derleme
+Tests cover actual DSP output, live callbacks, note/cents fidelity, sidechain isolation, real reference/source auditions, state reload, a synthetic ARA host with reader-lifecycle checks, and actual Windows VST3 DLL loading/audio processing. See [test report](docs/TEST-REPORT.md) for completed results and limits; [Sonar test protocol](docs/SONAR-TEST.md) lists the native host checks still required. Wine results do not establish native Windows or Sonar compatibility.
 
-Windows: Visual Studio 2022 C++ Desktop (Windows SDK dahil), CMake 3.24+, Git. Derleyici mimarisi x64 olmalıdır.
-
-```powershell
-cmake -S . -B build -A x64
-cmake --build build --config Release --parallel 2
-ctest --test-dir build -C Release --output-on-failure
-```
-
-VST3: `build/MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3`.
-
-Windows kurulum klasörü: `C:\Program Files\Common Files\VST3\Microtonal Pitch Map Pro.vst3\Contents\x86_64-win\Microtonal Pitch Map Pro.vst3`. **Bütün `.vst3` bundle klasörünü** kopyalayın. `.github/workflows/windows.yml` MSVC Windows derlemesini, testleri ve NSIS kurulum paketini otomatik üretir. Bu workflow eklenmesi, workflow'un çalıştığı veya Sonar testlerinin geçtiği anlamına gelmez.
-
-Linux: GCC 12+/Clang, CMake 3.24+, Ninja, ALSA/X11/Xext/Xinerama/Xrandr/Xcursor/Freetype/Fontconfig/OpenGL geliştirme paketleri. `cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release`, `cmake --build build --parallel 2`, `ctest --test-dir build --output-on-failure`. Grafik testleri için çalışan X display veya Xvfb gerekir.
-
-JUCE ve Signalsmith bağımlılıkları sabit commit'lerle indirilir. `JUCE_DIR`, `FETCHCONTENT_SOURCE_DIR_STRETCH`, `FETCHCONTENT_SOURCE_DIR_LINEAR` ile mevcut checkout'lar kullanılabilir. JUCE 8 **MinGW desteklemez**; Windows'ta MSVC veya uyumlu Clang/MSVC SDK kullanın.
-
-## Sınırlar
-
-Bu sürüm tek sesli bir stem içindir. Polifonik kaynak ayırma, ONNX modelleri, tek pencerede birden çok stem, otomatik makam tanıma, özel transient koruma kontrolü ve ARA uygulanmadı. Birden çok enstrümanda her stem için ayrı eklenti instance'ı kullanın. YIN/autokorelasyon tabanlı analiz; karmaşık seslerde oktav/nota hataları olabilir. Süsleme ve geçiş sınıflandırması ayrı etiketler olarak sunulmaz. Hassasiyet ve doğal tını her kayıt türünde ayrıca dinlenerek değerlendirilmelidir.
-
-Sınır: mono/stereo, en fazla 120 saniye, dosyada 8–192 kHz; esas test hedefleri 44.1/48 kHz. En yüksek playback kalitesi için WAV ve proje örnekleme hızını eşleştirin; farklı hızlarda playback lineer enterpolasyon kullanır, WAV export kaynak hızında kalır. Parametre değişikliği offline render gerektirir; sample-accurate canlı cent otomasyonu hedeflenmez. Yeni render hazırlanırken önceki geçerli render kullanılabilir. Performans hedef laptop üzerinde henüz ölçülmedi.
-
-## Lisans
-
-Bu kaynak sürümü **AGPL-3.0-or-later** olarak sunulur; JUCE 8'in açık kaynak lisans yolunu kullanır. Signalsmith Stretch ve Linear MIT lisanslıdır. Bağımlılık bildirimleri `licenses/` içindedir. Kapalı kaynak dağıtım için JUCE'nin uygun ticari lisansı ve gerekli diğer haklar ayrıca sağlanmalıdır.
+AGPL-3.0-or-later. The complete corresponding source and dependency licenses accompany the binary release.

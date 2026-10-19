@@ -7,8 +7,9 @@
 #include <map>
 
 namespace mp {
-constexpr double maxSeconds = 120.0;
-constexpr int stateVersion = 1;
+constexpr double maxSeconds = 600.0;
+constexpr int64_t maxAudioBytes = 240LL * 1024 * 1024;
+constexpr int stateVersion = 2;
 struct Frame { double time = 0, midi = 0, confidence = 0, rms = 0; };
 struct Note {
     double start = 0, end = 0, centre = 69, confidence = 0;
@@ -18,6 +19,9 @@ struct Note {
 };
 struct Settings {
     std::array<double, 12> cents {};
+    std::array<int, 12> semitones {};
+    bool directShift = false;
+    bool matchReference = false;
     std::array<double, 12> groupStrength {1,1,1,1,1,1,1,1,1,1,1,1};
     std::map<int, double> octaveCents;
     bool octaveMode = false, formants = true;

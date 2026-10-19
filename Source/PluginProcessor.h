@@ -1,21 +1,29 @@
 #pragma once
 #include "PitchEngine.h"
+#include "RealtimePitch.h"
+#include "Audition.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 
-class PitchProcessor final : public juce::AudioProcessor, private juce::Timer {
+class PitchProcessor final : public juce::AudioProcessor,
+#if JucePlugin_Enable_ARA
+                             public juce::AudioProcessorARAExtension,
+#endif
+                             private juce::Timer {
 public:
     PitchProcessor();
     ~PitchProcessor() override;
     void prepareToPlay(double, int) override;
-    void releaseResources() override {}
+    void releaseResources() override;
     bool isBusesLayoutSupported(const BusesLayout&) const override;
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlockBypassed(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void reset() override { realtime.reset(); }
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
     const juce::String getName() const override { return "Microtonal Pitch Map Pro"; }
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
-    double getTailLengthSeconds() const override { return 0; }
+    double getTailLengthSeconds() const override { return getLatencySamples() / runtimeRate; }
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
     void setCurrentProgram(int) override {}
@@ -40,12 +48,50 @@ public:
     void exportMidi(const juce::File&);
     void preset(const juce::File&, bool save);
     void setParameter(const juce::String&, float);
+    void applyCorrection();
+    void refreshHostClips();
+    void auditionTone(int group, int octave) { previewing = false; audition.tone(group, octave); }
+    int auditionSource(int group) { previewing = false; const auto n = audition.source(clip(), group); if (n < 0) { audition.stop(); setStatus("Bu nota kaynak klipte bulunmadi; sahte kaynak tonu calinmadi."); } return n; }
+    bool hasRender() const { return current.load() != nullptr; }
+    void stopAudition() { audition.stop(); previewing = false; }
+    bool araConnected() const {
+#if JucePlugin_Enable_ARA
+        return isBoundToARA();
+#else
+        return false;
+#endif
+    }
+    float referencePitch() const { return sidechainPitch.load(); }
+    struct TracePoint { double time = 0; float source = 0, reference = 0; };
+    std::vector<TracePoint> takeTrace();
     juce::String status() const;
+    float liveMidi() const { return realtime.detectedMidi(); }
+    float liveCents() const { return realtime.appliedCents(); }
+    float liveInputLevel() const { return realtime.inputLevel(); }
     std::atomic<bool> busy{false}, capturing{false}, previewing{false};
     std::atomic<double> progress{0};
     std::atomic<int> revision{0};
 
 private:
+    mp::RealtimePitch realtime;
+    mp::RealtimePitch referenceAnalyzer;
+    mp::Audition audition;
+    std::atomic<float> sidechainPitch{0};
+    juce::AbstractFifo traceFifo{1024};
+    std::array<TracePoint, 1024> trace{};
+    uint64_t processedSamples = 0;
+    std::atomic<bool> renderedNotify{false};
+    struct LiveParameters {
+        std::array<std::atomic<float>*, 12> cents{}, groups{}, steps{};
+        std::array<std::atomic<float>*, 128> octaves{};
+        std::atomic<float>* strength = nullptr, *tightness = nullptr, *vibrato = nullptr, *smoothing = nullptr;
+        std::atomic<float>* humanize = nullptr, *seed = nullptr, *reference = nullptr, *wet = nullptr;
+        std::atomic<float>* octave = nullptr, *formants = nullptr, *bypass = nullptr, *original = nullptr;
+        std::atomic<float>* useRender = nullptr, *offset = nullptr;
+        std::atomic<float>* direct = nullptr;
+        std::atomic<float>* enabled = nullptr, *matchReference = nullptr, *follow = nullptr, *preserveOctave = nullptr;
+    } liveParameters;
+    void processAudio(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool forceBypass);
     struct Rendered { juce::AudioBuffer<float> audio; std::shared_ptr<const mp::Clip> source; double rate = 48000, anchor = 0; };
     std::atomic<Rendered*> current{nullptr}, hazard{nullptr};
     std::vector<std::unique_ptr<Rendered>> retained;
@@ -58,12 +104,13 @@ private:
     std::atomic<int64_t> previewPosition{0};
     mutable juce::CriticalSection modelLock, statusLock;
     std::shared_ptr<mp::Clip> model;
-    juce::String message = "Load WAV or capture a Sonar track. Quantize defaults to 0%.";
+    juce::String message = "Ust tuslar: referans tonu. Alt tuslar: gercek kaynak nota. Eslestir, sonra Uygula.";
     std::vector<std::vector<mp::Note>> history, future;
     juce::ThreadPool worker{1};
     mp::Settings lastRenderedSettings;
     juce::String settingsFingerprint;
     std::atomic<bool> needsRender{false};
+    bool restoredClipPending = false;
     void setStatus(juce::String);
     void install(std::shared_ptr<mp::Clip>);
     void publish(std::unique_ptr<Rendered>);

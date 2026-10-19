@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
             require(c.notes.size() == 1, "440Hz must produce exactly one note");
             require(std::abs(c.notes[0].centre - 69) < 0.01, "440Hz centre detection within one cent");
             auto detuned = tone(rate); mp::analyse(detuned);
+            auto bass = tone(rate, 23 - 0.05); mp::analyse(bass);
+            require(bass.notes.size() == 1 && bass.notes[0].key == 23 && std::abs(bass.notes[0].centre - 22.95) < 0.01, "Low five-string bass B0 must be detected within one cent");
             const auto artifactDir = argc > 1 ? juce::File(argv[1]) : juce::File{};
             if (artifactDir != juce::File{}) { artifactDir.createDirectory(); const auto sourceFile = artifactDir.getChildFile(juce::String(int(rate)) + "Hz-source-A-plus10c.wav"); if (sourceFile.existsAsFile()) sourceFile.deleteFile(); require(mp::writeWav(sourceFile, detuned.audio, rate), "Test input WAV artifact"); }
             mp::Settings s; s.smoothingMs = 0; s.formants = false; s.cents[9] = -20;
@@ -39,6 +41,13 @@ int main(int argc, char** argv) {
             }
             s.strength = 1; s.cents[9] = 20;
             auto up = mp::render(c, s); std::cout << "Positive target measured=" << measure(up, rate) << '\n'; require(std::abs(measure(up, rate) - 69.2) < 0.035, "Positive 20 cent correction");
+            for (bool relative : {false, true}) for (double fine : {-5.0, 3.0, 5.0, 10.0}) {
+                mp::Settings fineSettings; fineSettings.directShift = relative; fineSettings.matchReference = !relative; fineSettings.cents[9] = fine;
+                const auto fineAudio = mp::render(detuned, fineSettings);
+                const double measured = (measure(fineAudio, rate) - 69) * 100, expected = fine + (relative ? 10 : 0);
+                std::cout << "OFFLINE rate=" << rate << " relative=" << relative << " entered=" << fine << " measured=" << measured << " expected=" << expected << " cents\n";
+                require(std::abs(measured - expected) < 1, "Offline fine-cent reference/relative correction must be within one cent without Quantize");
+            }
             // Every instance of the same pitch class shares its group, including another octave.
             c.notes.push_back({3, 4, 81.1, 1, 81, false, 0, 1});
             require(std::abs(mp::correctionAt(c, s, 0.5) - 0.2) < 0.01, "First A group target");
