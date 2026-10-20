@@ -1,0 +1,30 @@
+{
+  "version": "3.0.0-engineering-preview",
+  "source_commit": "13cde1dca660ae068943e3861ec4e2bb83f4c087",
+  "windows_execution": "Wine 10 on Linux; not native Windows",
+  "native_linux_ctest_groups": 6,
+  "regional_assertions": 13040,
+  "exported_corpus_assertions": 13148,
+  "actual_vst3_cases": 29,
+  "sonar_tested": false,
+  "target_laptop_tested": false,
+  "native_windows_gui_tested": false,
+  "real_recordings_tested": false,
+  "human_listening_panel": false,
+  "windows_exit_codes": {
+    "engine": 0,
+    "regional": 0,
+    "state": 0,
+    "live": 0,
+    "ara": 0,
+    "actual-vst3": 0,
+    "install": 0,
+    "installed-vst3": 0,
+    "uninstall": 0
+  },
+  "binary_sha256": {
+    "Microtonal Pitch Map Pro.exe": "e3c050393d7c92dd12cd547e554603123fc9dc4041a778ba6ad287b56aa085b8",
+    "Microtonal Pitch Map Pro.vst3/Contents/x86_64-win/Microtonal Pitch Map Pro.vst3": "778fb7bd51406d2a25bac4580da5088336f29914f65d4e3a5df9989a2cac4b69",
+    "MicrotonalPitchMapPro-Setup-x64.exe": "6f54dbf6764c18fa338083e098ee91a08e9ca3bd1e28e97bf0a83be3ed3e0c0e"
+  }
+}

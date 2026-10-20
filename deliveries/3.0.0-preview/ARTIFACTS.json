@@ -1,0 +1,21 @@
+{
+  "source_commit": "13cde1dca660ae068943e3861ec4e2bb83f4c087",
+  "artifacts": {
+    "AudioExamples-44100.zip": {
+      "bytes": 30369035,
+      "sha256": "6c8dfe865cacc910fec72af3167248afa0a1f24001bcb7e0253a46d603324a93"
+    },
+    "AudioExamples-48000.zip": {
+      "bytes": 32886981,
+      "sha256": "7e91892e00df59f41bb2d595f071aa151dc18f13acc0f5beef5ebf55a155b3d1"
+    },
+    "Plugin-Windows-x64.zip": {
+      "bytes": 18081491,
+      "sha256": "7307f264b3cbafff3633943e1d4472e4d4dab7f3f96239fcfca43e918de08982"
+    },
+    "Source.zip": {
+      "bytes": 32605751,
+      "sha256": "95cef0e518f892b500093df3f8d966fbad1396dcf18599cf6836218b7cb68336"
+    }
+  }
+}
