@@ -1,0 +1,187 @@
+{
+  "consulted_on": "2026-10-20",
+  "entries": [
+    {
+      "id": "stk-bowed",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/Bowed.cpp",
+      "bytes": 5373,
+      "sha256_text": "aafe68ec8d24478d209c63da82ece0bd496e2a71a5e9f6bf55c0d81b7b14e143"
+    },
+    {
+      "id": "stk-plucked",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/Plucked.cpp",
+      "bytes": 2638,
+      "sha256_text": "2cf607e6c2213e8d9b31f39786a6b49408b5574ac65a01add41ca7aee0f34847"
+    },
+    {
+      "id": "stk-stiff-string",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/StifKarp.cpp",
+      "bytes": 5117,
+      "sha256_text": "8bbd23f954592e79cfeaadd54151e303a00c27a9c67dc8520172b38325ccd2e0"
+    },
+    {
+      "id": "stk-flute",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/Flute.cpp",
+      "bytes": 4515,
+      "sha256_text": "d3aaec3833cdb70cd37855eed0d0de41f8c3340a7ce6ae8dd6ad3746a663e91c"
+    },
+    {
+      "id": "stk-license",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/LICENSE",
+      "bytes": 1364,
+      "sha256_text": "342901da98ec7c044426f3d1c2e1b8dd2ac79001e0916b49c2cf71b158b13aa5"
+    },
+    {
+      "id": "makam-tomato",
+      "url": "https://github.com/sertansenturk/tomato/raw/refs/heads/master/README.md",
+      "bytes": 16911,
+      "sha256_text": "aaf633fbb01b29cc6cf608b2c74f1a97c51555d7ce0ffe479d40337784a67a5e"
+    },
+    {
+      "id": "pyin-code",
+      "url": "https://github.com/c4dm/pyin/raw/refs/heads/master/PYin.cpp",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "world-readme",
+      "url": "https://github.com/mmorise/World/raw/refs/heads/master/README.md",
+      "bytes": 5494,
+      "sha256_text": "7d2423b1f5874845a8a1464dc7110fdece66df070977dedac37c2d907a720c96"
+    },
+    {
+      "id": "signalsmith-readme",
+      "url": "https://github.com/Signalsmith-Audio/signalsmith-stretch/raw/refs/heads/main/README.md",
+      "bytes": 8205,
+      "sha256_text": "d2c43d92312154a09660bffbb06b408f3b470662f89cb4123fa5268a4ced444c"
+    },
+    {
+      "id": "viterbi",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/sequence.py",
+      "bytes": 75761,
+      "sha256_text": "902866c3c80e08a30489ebc06b006a90988c802d486974e8b9b318b35251809a"
+    },
+    {
+      "id": "librosa-pitch",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/core/pitch.py",
+      "bytes": 33979,
+      "sha256_text": "63fbe3b6a45198731a4be7ef4fa5876770fbf7a3c5815853462d340e69caf593"
+    },
+    {
+      "id": "librosa-license",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/LICENSE.md",
+      "bytes": 766,
+      "sha256_text": "79aa4a8086d51ac89f9a7322f546670cdef73e758c67f04587b7af8afafd6df8"
+    },
+    {
+      "id": "crepe-readme",
+      "url": "https://github.com/marl/crepe/raw/refs/heads/master/README.md",
+      "bytes": 8291,
+      "sha256_text": "f404c392b604aa2e15360670c9d06b9d073287ec99474b090ee6d48dc0c89d55"
+    },
+    {
+      "id": "crepe-license",
+      "url": "https://github.com/marl/crepe/raw/refs/heads/master/LICENSE",
+      "bytes": 1079,
+      "sha256_text": "72b2e8b7b1f8f21b667eb241275d4b57cb504d17c0fc624421ec306ef4edc4ac"
+    },
+    {
+      "id": "rubberband-readme",
+      "url": "https://github.com/breakfastquay/rubberband/raw/refs/heads/default/README.md",
+      "bytes": 8288,
+      "sha256_text": "e7a6fc0fd3177e3a166a67e1cb834f6bfdec74c8d8928c71543367558d104ad6"
+    },
+    {
+      "id": "pyin-readme",
+      "url": "https://github.com/c4dm/pyin/raw/refs/heads/master/README.md",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "pyin-model",
+      "url": "https://github.com/c4dm/pyin/raw/refs/heads/master/PYinVamp.cpp",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "instrument-research",
+      "url": "https://api.crossref.org/works?query=ney%20oud%20baglama%20acoustics%20pitch&rows=4",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "yin",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/12002889/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "pyin",
+      "url": "https://qmro.qmul.ac.uk/xmlui/bitstream/handle/123456789/6040/MAUCHpYINFundamental2014Accepted.pdf",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "librosa-pyin",
+      "url": "https://librosa.org/doc/latest/generated/librosa.pyin.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "crepe",
+      "url": "https://arxiv.org/html/1802.06182",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "signalsmith",
+      "url": "https://signalsmith-audio.co.uk/code/stretch/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "rubberband",
+      "url": "https://breakfastquay.com/rubberband/technical.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "violin",
+      "url": "https://www.phys.unsw.edu.au/jw/violintro.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "flute",
+      "url": "https://www.phys.unsw.edu.au/jw/fluteacoustics.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "guitar",
+      "url": "https://www.phys.unsw.edu.au/music/guitar/guitarintro.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "piano",
+      "url": "https://www.speech.kth.se/music/5_lectures/conklin/inharmonicity.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "juce-license",
+      "url": "https://juce.com/legal/juce-8-licence/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "ara",
+      "url": "https://github.com/Celemony/ARA_SDK",
+      "resolved_url": "https://github.com/Celemony/ARA_SDK",
+      "bytes": 294622,
+      "sha256": "15f4ad9728f8b1b04fc478907819200a23c4727793603e08f86d8802b4685d87",
+      "content_type": "text/html; charset=utf-8",
+      "sha256_text": "da26593e4c5d9248d6d37aeeb451aed5216a15c1c0a96086d664af3fd597554d"
+    },
+    {
+      "id": "pyworld",
+      "url": "https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder",
+      "resolved_url": "https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder",
+      "bytes": 315881,
+      "sha256": "67d38ee1c021f707c4a47be340399f3eda9994935fcf2c09cc05453620724435",
+      "content_type": "text/html; charset=utf-8",
+      "sha256_text": "939ba55f15689604ba430494547143a47114e67883b2cd1b15a65fceb867af7e"
+    },
+    {
+      "id": "swiss-corpus",
+      "url": "https://zenodo.org/records/820937",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ]
+}

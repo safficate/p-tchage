@@ -14,11 +14,14 @@ public:
     void split();
     void merge();
     void setNote(double cents, double strength, bool detach);
+    juce::String regionInfo() const;
     int selected = -1;
 private:
     PitchProcessor& processor;
     std::shared_ptr<const mp::Clip> data;
     juce::Image spectrum;
+    mp::CorrectionPlan planned;
+    juce::String planFingerprint;
     std::vector<int> selection;
     int seenRevision = -1;
     std::vector<PitchProcessor::TracePoint> liveTrace;
@@ -48,7 +51,11 @@ private:
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>> buttonAttachments;
     std::vector<std::unique_ptr<juce::ComboBox>> noteDestinations;
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>> destinationAttachments;
-    juce::ToggleButton directSwitch;
+    juce::ToggleButton directSwitch, adaptiveSwitch, minimumSwitch;
+    juce::Slider precisionControl;
+    juce::Label precisionLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> adaptiveAttachment, minimumAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> precisionAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> directAttachment;
     std::array<juce::TextButton, 12> referenceKeys, sourceKeys;
     juce::ComboBox referenceSource, referenceOctave;

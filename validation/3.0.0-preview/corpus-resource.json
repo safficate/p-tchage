@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "wall_seconds": 32.570773051003926,
+  "user_cpu_seconds": 30.456365,
+  "system_cpu_seconds": 1.837804,
+  "max_rss_kib": 25524,
+  "scope": "Cloud Linux process including WAV/CSV export and reanalysis; shared host, not HP EliteBook or normal playback"
+}

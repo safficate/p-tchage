@@ -28,7 +28,7 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item 'build/MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3' dist -Recurse
           Copy-Item 'build/MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro.exe' dist
-          Copy-Item README.md,LICENSE,docs/SONAR-TEST.md,docs/TEST-REPORT.md,docs/WINDOWS-KURULUM.txt dist
+          Copy-Item README.md,LICENSE,docs/SONAR-TEST.md,docs/TEST-REPORT-3.0.md,docs/BUILD-3.0.md,docs/WINDOWS-KURULUM.txt dist
           Copy-Item licenses dist -Recurse
           & 'C:/Program Files (x86)/NSIS/makensis.exe' '/DPRODUCT_BUILD=../dist' packaging/windows.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }

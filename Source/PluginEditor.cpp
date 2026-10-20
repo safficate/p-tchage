@@ -11,6 +11,11 @@ double PitchMap::length() const { return data ? data->audio.getNumSamples() / da
 float PitchMap::x(double t) const { return float(48 + (t - offset) / length() * (getWidth() - 56) * zoom); }
 float PitchMap::y(double m) const { return float(22 + (highPitch - m) / (highPitch - lowPitch) * (getHeight() - 42)); }
 juce::Rectangle<float> PitchMap::bounds(const mp::Note& n) const { return {x(n.start), y(n.centre) - 8, std::max(5.0f, x(n.end) - x(n.start)), 16}; }
+juce::String PitchMap::regionInfo() const {
+    if (selected < 0 || selected >= int(planned.regions.size())) return {};
+    const auto& r = planned.regions[size_t(selected)];
+    return " | Plan " + juce::String(r.appliedCents,2) + " c | Belirsizlik " + juce::String(r.uncertaintyCents,2) + " c | " + r.reason;
+}
 void PitchMap::refresh() {
     for (const auto& point : processor.takeTrace()) {
         if (!liveTrace.empty() && point.time < liveTrace.back().time) liveTrace.clear();
@@ -22,6 +27,7 @@ void PitchMap::refresh() {
     }
     const bool changed = seenRevision != processor.revision;
     if (changed) { seenRevision = processor.revision; data = processor.clip(); }
+    if (data) { const auto fingerprint = mp::settingsToTree(processor.settings()).toXmlString(); if (changed || fingerprint != planFingerprint) { planFingerprint = fingerprint; planned = processor.settings().adaptive ? mp::planCorrection(*data, processor.settings()) : mp::CorrectionPlan{}; } }
     if (data && !data->notes.empty()) {
         const auto settings = processor.settings();
         double low = 128, high = 0;
@@ -110,6 +116,7 @@ void PitchMap::paint(juce::Graphics& g) {
     juce::Path pitch; bool first = true;
     for (auto& f : data->frames) { if (f.midi == 0) { first = true; continue; } if (first) pitch.startNewSubPath(x(f.time), y(f.midi)); else pitch.lineTo(x(f.time), y(f.midi)); first = false; }
     g.setColour(juce::Colour(0xffffcf73)); g.strokePath(pitch, juce::PathStrokeType(1.4f));
+    if (settings.adaptive) { juce::Path target; bool start = true; for (const auto& f : data->frames) { if (f.midi <= 0) { start = true; continue; } const auto yy = y(f.midi + planned.at(f.time) / 100); if (start) target.startNewSubPath(x(f.time), yy); else target.lineTo(x(f.time), yy); start = false; } g.setColour(juce::Colour(0xff70afff)); g.strokePath(target, juce::PathStrokeType(1.5f)); }
     if (processor.parameters.getRawParameterValue("follow")->load() > 0) {
         juce::Path reference; bool start = true;
         for (const auto& p : liveTrace) {
@@ -169,7 +176,7 @@ PitchEditor::PitchEditor(PitchProcessor& p) : AudioProcessorEditor(p), processor
     theme.setColour(juce::TextButton::textColourOffId, text); theme.setColour(juce::TextButton::textColourOnId, text);
     theme.setColour(juce::Slider::textBoxTextColourId, text); theme.setColour(juce::Slider::textBoxOutlineColourId, panel);
     setLookAndFeel(&theme); setWantsKeyboardFocus(true);
-    title.setText("MICROTONAL  /  PITCH MAP PRO", juce::dontSendNotification); title.setFont(juce::FontOptions(23, juce::Font::bold)); title.setColour(juce::Label::textColourId, text); addAndMakeVisible(title);
+    title.setText("PITCHMAP PRO 3.0  /  REGIONAL", juce::dontSendNotification); title.setFont(juce::FontOptions(23, juce::Font::bold)); title.setColour(juce::Label::textColourId, text); addAndMakeVisible(title);
     addAndMakeVisible(map); addAndMakeVisible(statusLabel); addAndMakeVisible(noteLabel); addAndMakeVisible(progressBar); addAndMakeVisible(liveLabel);
     liveLabel.setColour(juce::Label::textColourId, accent);
     statusLabel.setColour(juce::Label::textColourId, text); noteLabel.setColour(juce::Label::textColourId, text);
@@ -187,9 +194,27 @@ PitchEditor::PitchEditor(PitchProcessor& p) : AudioProcessorEditor(p), processor
     button("Set note", [this]{ map.setNote(noteCents.getText().getDoubleValue(), noteStrength.getText().getDoubleValue() / 100, true); });
     button("Rejoin group", [this]{ map.setNote(0, 1, false); });
     button("HARITAYI HAZIRLA", [this]{ processor.applyCorrection(); });
-    buttons.back()->setTooltip("Klip haritasini veya canli kanali ust referans tonlarina uydurur. Duzeltmeyi etkinlestirir; yuzde gerekmez.");
+    buttons.back()->setTooltip("Klip haritasini veya canli kanali alt hedef tonlarina uydurur. Duzeltmeyi etkinlestirir; yuzde gerekmez.");
     button("Gelismis ayarlar", [this]{ advanced = !advanced; resized(); });
     button("Ayarlari sifirla", [this]{ for (int i = 0; i < 12; ++i) { processor.setParameter("cent" + juce::String(i), 0); processor.setParameter("step" + juce::String(i), 0); } });
+    button("Islemi iptal et", [this]{ processor.cancelWork(); });
+    adaptiveSwitch.setButtonText("Dogal bolgesel (klip / offline)"); addAndMakeVisible(adaptiveSwitch);
+    adaptiveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processor.parameters, "adaptive", adaptiveSwitch);
+    adaptiveSwitch.onClick = [this]{
+        if (adaptiveSwitch.getToggleState()) {
+            // Explicitly choosing the new workflow must not leave hidden legacy
+            // octave/percentage controls steering the visible pitch-class keys.
+            processor.setParameter("octave",0);
+            if (processor.parameters.getRawParameterValue("direct")->load()<0.5f)
+                processor.setParameter("referenceMatch",1);
+        }
+        attachGroups(); resized();
+    };
+    minimumSwitch.setButtonText("Gereksiz islemden kacin"); addAndMakeVisible(minimumSwitch);
+    minimumAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processor.parameters, "minimumIntervention", minimumSwitch);
+    precisionControl.setRange(0.1,25,0.1); precisionControl.setTextValueSuffix(" c"); precisionControl.setTextBoxStyle(juce::Slider::TextBoxRight,false,65,24); addAndMakeVisible(precisionControl);
+    precisionAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.parameters,"precision",precisionControl);
+    precisionLabel.setText("Hedef merkez hassasiyeti",juce::dontSendNotification); addAndMakeVisible(precisionLabel);
     directSwitch.setButtonText("Dogrudan cent / nota (yuzdesiz)"); addAndMakeVisible(directSwitch);
     directAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processor.parameters, "direct", directSwitch);
     directSwitch.onClick = [this]{ processor.setParameter("referenceMatch", directSwitch.getToggleState() ? 0 : 1); processor.setParameter("follow", 0); resized(); };
@@ -204,7 +229,7 @@ PitchEditor::PitchEditor(PitchProcessor& p) : AudioProcessorEditor(p), processor
         sliders.back()->setSliderStyle(juce::Slider::IncDecButtons); sliders.back()->setIncDecButtonsMode(juce::Slider::incDecButtonsDraggable_Horizontal); sliders.back()->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 22);
         auto destination = std::make_unique<juce::ComboBox>();
         for (int step = -12; step <= 12; ++step) destination->addItem(noteGroup(i + step) + "  " + (step > 0 ? "+" : "") + juce::String(step * 100) + " c", step + 13);
-        destination->setTooltip("Hedef nota. Do -> Re = +200 cent; Do -> Do# = +100 cent. Ust siradaki HEDEF notanin cent akordu kullanilir.");
+        destination->setTooltip("Hedef nota. Do -> Re = +200 cent; Do -> Do# = +100 cent. Alt siradaki HEDEF notanin cent akordu kullanilir.");
         addAndMakeVisible(*destination);
         destinationAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(processor.parameters, "step" + juce::String(i), *destination));
         noteDestinations.push_back(std::move(destination));
@@ -237,11 +262,11 @@ PitchEditor::PitchEditor(PitchProcessor& p) : AudioProcessorEditor(p), processor
     slider("offset", "Timeline offset", 0, 36000, 0.001, " s");
     for (int i = 0; i < 12; ++i) slider("gq" + juce::String(i), "Group strength", 0, 1, 0.001, "");
     advanced = processor.parameters.getRawParameterValue("referenceMatch")->load() < 0.5f && processor.parameters.getRawParameterValue("direct")->load() < 0.5f;
-    setResizable(true, true); setResizeLimits(1060, 800, 1800, 1200); setSize(1240, 900); updatePairing(); map.refresh(); timerCallback(); startTimerHz(10);
+    setResizable(true, true); setResizeLimits(1060, 680, 1800, 1200); const auto* display = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay(); setSize(display ? juce::jlimit(1060,1240,display->userArea.getWidth()-80) : 1240, display ? juce::jlimit(680,820,display->userArea.getHeight()-80) : 820); updatePairing(); map.refresh(); timerCallback(); startTimerHz(10);
 }
 PitchEditor::~PitchEditor() { stopTimer(); processor.stopAudition(); setLookAndFeel(nullptr); }
 void PitchEditor::updatePairing() {
-    pairingLabel.setText(selectedSource < 0 ? "Alt siradan gercek kaynak notayi, ust siradan hedef tonu dinleyin." : "Kaynak " + noteGroup(selectedSource) + " -> Referans " + noteGroup(selectedReference) + ". Eslestir, sonra Uygula.", juce::dontSendNotification);
+    pairingLabel.setText(selectedSource < 0 ? "Ust siradan gercek kaynagi, alt siradan hedef tonu dinleyin." : "Kaynak " + noteGroup(selectedSource) + " -> Referans " + noteGroup(selectedReference) + ". Eslestir, sonra Uygula.", juce::dontSendNotification);
     pairButton.setEnabled(selectedSource >= 0);
     for (int i = 0; i < 12; ++i) { referenceKeys[size_t(i)].setToggleState(i == selectedReference, juce::dontSendNotification); sourceKeys[size_t(i)].setToggleState(i == selectedSource, juce::dontSendNotification); }
 }
@@ -250,7 +275,7 @@ juce::TextButton& PitchEditor::button(juce::String label, std::function<void()> 
 }
 void PitchEditor::slider(juce::String id, juce::String name, double min, double max, double step, const juce::String& suffix) {
     auto s = std::make_unique<juce::Slider>(); s->setSliderStyle(juce::Slider::LinearHorizontal); s->setRange(min, max, step); s->setTextBoxStyle(juce::Slider::TextBoxRight, false, 75, 22); s->setTextValueSuffix(suffix); addAndMakeVisible(*s);
-    if (id.startsWith("cent")) s->setTooltip("Ustteki referans tonunun ince akordu. +5 c standart notanin 5 cent tizidir. Kaynak Do'yu Re referansina eslestirirseniz Re'nin buradaki akordu kullanilir. Yuzde gerekmez.");
+    if (id.startsWith("cent")) s->setTooltip("Alttaki referans tonunun ince akordu. +5 c standart notanin 5 cent tizidir. Kaynak Do'yu Re referansina eslestirirseniz Re'nin buradaki akordu kullanilir. Yuzde gerekmez.");
     auto l = std::make_unique<juce::Label>(); l->setText(name, juce::dontSendNotification); l->setColour(juce::Label::textColourId, text.withAlpha(0.8f)); addAndMakeVisible(*l);
     sliderAttachments.push_back(std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.parameters, id, *s)); sliders.push_back(std::move(s)); labels.push_back(std::move(l));
 }
@@ -271,7 +296,7 @@ void PitchEditor::attachGroups() {
 void PitchEditor::paint(juce::Graphics& g) {
     g.fillAll(background);
     if (advanced) { g.setColour(panel); g.fillRoundedRectangle(float(getWidth() - 270), 152, 252, float(getHeight() - 230), 9); }
-    g.setColour(text.withAlpha(0.55f)); g.drawText("Scroll: zaman zoom  /  Ctrl+scroll: cent zoom  /  Shift+scroll: kaydir  /  Sari: kaynak  /  Mavi: referans", 24, getHeight() - 62, getWidth() - 48, 18, juce::Justification::left);
+    g.setColour(text.withAlpha(0.55f)); g.drawText("Scroll: zaman zoom  /  Ctrl+scroll: cent zoom  /  Shift+scroll: kaydir  /  Sari: kaynak  /  Mavi: planlanan hedef veya canli referans", 24, getHeight() - 62, getWidth() - 48, 18, juce::Justification::left);
 }
 void PitchEditor::resized() {
     const bool direct = processor.parameters.getRawParameterValue("direct")->load() > 0.5f;
@@ -292,14 +317,21 @@ void PitchEditor::resized() {
     pairingLabel.setBounds(22, 252, contentWidth - 150, 28); pairButton.setBounds(22 + contentWidth - 142, 252, 138, 28);
     map.setBounds(22, 288, contentWidth, std::max(160, getHeight() - 518));
     const int right = getWidth() - 258;
+    const bool adaptive = processor.parameters.getRawParameterValue("adaptive")->load() > 0.5f;
+    adaptiveSwitch.setBounds(advanced ? right : 22, advanced ? 188 : getHeight()-126, advanced ? 232 : 285, 26);
+    minimumSwitch.setVisible(advanced && adaptive); minimumSwitch.setBounds(right,256,232,26);
+    precisionLabel.setVisible(advanced && adaptive); precisionLabel.setBounds(right,290,232,22);
+    precisionControl.setVisible(advanced && adaptive); precisionControl.setBounds(right,313,232,28);
+    buttons[24]->setBounds(getWidth()-420,getHeight()-36,190,26);
     directSwitch.setVisible(advanced); directSwitch.setBounds(right, 156, 232, 26);
-    buttons[13]->setVisible(advanced); buttons[13]->setBounds(right, 188, 112, 26);
-    buttons[14]->setVisible(advanced); buttons[14]->setBounds(right, 220, 112, 26);
-    octaveSelector.setVisible(advanced); octaveSelector.setBounds(right + 119, 220, 113, 26);
+    buttons[13]->setVisible(advanced); buttons[13]->setBounds(right, 220, 112, 26);
+    buttons[14]->setVisible(advanced && !adaptive); buttons[14]->setBounds(right, 220, 112, 26);
+    octaveSelector.setVisible(advanced && !adaptive); octaveSelector.setBounds(right + 119, 220, 113, 26);
     const bool legacy = !direct && processor.parameters.getRawParameterValue("referenceMatch")->load() < 0.5f;
     for (int i = 12; i < 21; ++i) {
-        const int y = 256 + (i - 12) * 49;
-        labels[size_t(i)]->setVisible(advanced); sliders[size_t(i)]->setVisible(advanced);
+        const int y = adaptive && i >= 18 ? 360 + (i-18)*60 : 256 + (i - 12) * 49;
+        const bool visible = advanced && (!adaptive || i >= 18);
+        labels[size_t(i)]->setVisible(visible); sliders[size_t(i)]->setVisible(visible);
         sliders[size_t(i)]->setEnabled(legacy || i == 15 || i == 18 || i == 19 || i == 20);
         labels[size_t(i)]->setBounds(right, y, 230, 19); sliders[size_t(i)]->setBounds(right, y + 19, 230, 27);
     }
@@ -307,11 +339,11 @@ void PitchEditor::resized() {
     for (int i = 0; i < 12; ++i) {
         const int xx = 22 + i * width;
         labels[size_t(i)]->setVisible(false);
-        referenceKeys[size_t(i)].setBounds(xx, 152, width - 5, 40);
-        sliders[size_t(i)]->setBounds(xx, 198, width - 5, 48);
+        sourceKeys[size_t(i)].setBounds(xx, 152, width - 5, 40);
+        sliders[size_t(i)]->setBounds(xx, getHeight() - 182, width - 5, 48);
         sliders[size_t(i)]->setTextBoxStyle(juce::Slider::TextBoxBelow, false, width - 7, 23);
-        sourceKeys[size_t(i)].setBounds(xx, getHeight() - 224, width - 5, 36);
-        noteDestinations[size_t(i)]->setVisible(true); noteDestinations[size_t(i)]->setBounds(xx, getHeight() - 182, width - 5, 25);
+        referenceKeys[size_t(i)].setBounds(xx, getHeight() - 224, width - 5, 36);
+        noteDestinations[size_t(i)]->setVisible(true); noteDestinations[size_t(i)]->setBounds(xx, 198, width - 5, 25);
         labels[size_t(i + 21)]->setVisible(false); sliders[size_t(i + 21)]->setVisible(false);
     }
     const int editing = getHeight() - 126;
@@ -322,7 +354,7 @@ void PitchEditor::resized() {
     buttons[19]->setBounds(482, editing, 81, 25); buttons[20]->setBounds(570, editing, 106, 25);
     noteLabel.setBounds(22, editing + 31, contentWidth, 22);
     progressBar.setBounds(getWidth() - 258, getHeight() - 66, 232, 14);
-    statusLabel.setBounds(22, getHeight() - 36, getWidth() - 44, 26);
+    statusLabel.setBounds(22, getHeight() - 36, getWidth() - (processor.busy ? 450 : 44), 26);
     repaint();
 }
 void PitchEditor::timerCallback() {
@@ -351,11 +383,13 @@ void PitchEditor::timerCallback() {
     if (param("bypass") > 0.5f || param("original") > 0.5f) live += "  |  ORIGINAL / BYPASS";
     else if (param("enabled") < 0.5f) live += "  |  Duzeltme kapali: HEDEFE UYGULA";
     else if (!direct && !match && param("quantize") == 0) live += "  |  Target correction OFF";
+    if (param("adaptive") > 0.5f) live += mapMode || processor.araConnected() ? "  |  Dogal bolgesel plan" : "  |  Bolgesel plan icin klip analizi gerekir";
     liveLabel.setText(live, juce::dontSendNotification);
     for (int i = 0; i < 12; ++i) labels[size_t(i)]->setColour(juce::Label::textColourId, !mapMode && detected > 0 && (int(std::lround(detected)) % 12) == i ? accent : text.withAlpha(0.8f));
     buttons[10]->setButtonText(mapMode ? "Source: Note map" : "Source: Live");
     const auto c = processor.clip();
     buttons[21]->setButtonText(follow > 0 ? "REF. KANALA UYDUR" : "HEDEFE UYGULA");
+    buttons[24]->setVisible(processor.busy);
     buttons[21]->setEnabled(!processor.busy && !processor.capturing);
     referenceSource.setSelectedId(follow + 1, juce::dontSendNotification);
     for (int group = 0; group < 12; ++group) {
@@ -371,8 +405,10 @@ void PitchEditor::timerCallback() {
     if (c && map.selected >= 0 && map.selected < int(c->notes.size())) {
         const auto& n = c->notes[size_t(map.selected)];
         noteLabel.setText(mp::noteName(n.key) + "  |  " + juce::String(mp::midiToHz(n.centre), 2) + " Hz  |  " + juce::String((n.centre - n.key) * 100, 2) + " cents  |  confidence " + juce::String(n.confidence * 100, 0) + "%  |  " + (n.detached ? "independent" : "grouped"), juce::dontSendNotification);
+        noteLabel.setTooltip(noteLabel.getText() + map.regionInfo());
+        if (param("adaptive") > 0.5f) noteLabel.setText(noteLabel.getText() + map.regionInfo(), juce::dontSendNotification);
         if (lastSelected != map.selected) { noteCents.setText(juce::String(n.detached ? n.target : 0, 2)); noteStrength.setText(juce::String(n.detached ? n.strength * 100 : processor.settings().strength * 100, 1)); lastSelected = map.selected; }
-    } else noteLabel.setText("UST: ayarlanabilir referans tonlari. ALT: klibin gercek notalari. Kaynak ve referansi dinle -> Eslestir -> Uygula -> Sonar Bounce.", juce::dontSendNotification);
+    } else noteLabel.setText("UST: klibin gercek notalari. ALT: ayarlanabilir hedef tonlari. Kaynak ve referansi dinle -> Eslestir -> Uygula -> Sonar Bounce.", juce::dontSendNotification);
     const bool octave = processor.parameters.getRawParameterValue("octave")->load() > 0.5f;
     if (octave != octaveSelector.isEnabled()) { octaveSelector.setEnabled(octave); attachGroups(); }
     map.repaint();

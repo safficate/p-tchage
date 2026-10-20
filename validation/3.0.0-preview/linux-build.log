@@ -1,0 +1,12 @@
+[0/2] Re-checking globbed directories...
+[1/8] Building CXX object CMakeFiles/PluginTests.dir/Tests/PluginTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[2/8] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginEditor.cpp.o
+[3/8] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/libMicrotonal Pitch Map Pro_SharedCode.a"
+[4/8] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-linux/Microtonal Pitch Map Pro.so"
+removing moduleinfo.json
+[5/8] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro"
+[6/8] Linking CXX executable LiveTests_artefacts/Release/LiveTests
+[7/8] Linking CXX executable PluginTests_artefacts/Release/PluginTests
+[8/8] Linking CXX executable ARATests_artefacts/Release/ARATests

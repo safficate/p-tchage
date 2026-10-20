@@ -1,5 +1,6 @@
 #pragma once
 #include "PitchEngine.h"
+#include "AdaptivePitch.h"
 #include "RealtimePitch.h"
 #include "Audition.h"
 #include <juce_audio_utils/juce_audio_utils.h>
@@ -49,6 +50,7 @@ public:
     void preset(const juce::File&, bool save);
     void setParameter(const juce::String&, float);
     void applyCorrection();
+    void cancelWork() { cancelRequested = true; needsRender = false; }
     void refreshHostClips();
     void auditionTone(int group, int octave) { previewing = false; audition.tone(group, octave); }
     int auditionSource(int group) { previewing = false; const auto n = audition.source(clip(), group); if (n < 0) { audition.stop(); setStatus("Bu nota kaynak klipte bulunmadi; sahte kaynak tonu calinmadi."); } return n; }
@@ -81,6 +83,7 @@ private:
     std::array<TracePoint, 1024> trace{};
     uint64_t processedSamples = 0;
     std::atomic<bool> renderedNotify{false};
+    std::atomic<bool> cancelRequested{false};
     struct LiveParameters {
         std::array<std::atomic<float>*, 12> cents{}, groups{}, steps{};
         std::array<std::atomic<float>*, 128> octaves{};
@@ -104,7 +107,7 @@ private:
     std::atomic<int64_t> previewPosition{0};
     mutable juce::CriticalSection modelLock, statusLock;
     std::shared_ptr<mp::Clip> model;
-    juce::String message = "Ust tuslar: referans tonu. Alt tuslar: gercek kaynak nota. Eslestir, sonra Uygula.";
+    juce::String message = "Ust tuslar: gercek kaynak nota. Alt tuslar: hedef tonu. Eslestir, sonra Uygula.";
     std::vector<std::vector<mp::Note>> history, future;
     juce::ThreadPool worker{1};
     mp::Settings lastRenderedSettings;

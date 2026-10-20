@@ -1,4 +1,5 @@
 #include "PitchEngine.h"
+#include "AdaptivePitch.h"
 #include "signalsmith-stretch.h"
 #include <numeric>
 #include <stdexcept>
@@ -207,6 +208,7 @@ static juce::AudioBuffer<float> renderPass(const Clip& c, const Settings& s, con
     return output;
 }
 juce::AudioBuffer<float> render(const Clip& c, const Settings& s, const Progress& progress) {
+    if (s.adaptive) return renderAdaptive(c, s, progress);
     bool changes = !s.directShift && !s.matchReference && s.tightness > 0;
     for (const auto& n : c.notes) changes = changes || std::abs(correctionAt(c, s, (n.start + n.end) * 0.5)) > 1e-9;
     if (!changes) { if (progress) progress(1); return c.audio; }
@@ -317,6 +319,7 @@ bool importScala(const juce::File& file, Settings& s, juce::String& error) {
 }
 juce::ValueTree settingsToTree(const Settings& s) {
     juce::ValueTree t("Settings");
+    t.setProperty("adaptive", s.adaptive, nullptr); t.setProperty("minimumIntervention", s.minimumIntervention, nullptr); t.setProperty("precisionCents", s.precisionCents, nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("c" + juce::String(i), s.cents[size_t(i)], nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("step" + juce::String(i), s.semitones[size_t(i)], nullptr);
     t.setProperty("direct", s.directShift, nullptr);
@@ -334,6 +337,7 @@ Settings settingsFromTree(const juce::ValueTree& t) {
     auto value = [&](const juce::String& name, double fallback, double lo, double hi) { const double v = t.getProperty(name, fallback); return std::isfinite(v) ? juce::jlimit(lo, hi, v) : fallback; };
     for (int i = 0; i < 12; ++i) s.cents[size_t(i)] = value("c" + juce::String(i), 0, -200, 200);
     for (int i = 0; i < 12; ++i) s.semitones[size_t(i)] = int(value("step" + juce::String(i), 0, -12, 12));
+    s.adaptive = t.getProperty("adaptive", false); s.minimumIntervention = t.getProperty("minimumIntervention", true); s.precisionCents = value("precisionCents", 1, 0.1, 25);
     s.directShift = t.getProperty("direct", false);
     s.matchReference = t.getProperty("matchReference", false);
     for (int i = 0; i < 12; ++i) s.groupStrength[size_t(i)] = value("g" + juce::String(i), 1, 0, 1);
@@ -345,18 +349,18 @@ Settings settingsFromTree(const juce::ValueTree& t) {
     return s;
 }
 juce::ValueTree clipToTree(const Clip& c) {
-    juce::ValueTree t("Clip"); t.setProperty("rate", c.sampleRate, nullptr); t.setProperty("anchor", c.anchorSeconds, nullptr); t.setProperty("name", c.name, nullptr);
+    juce::ValueTree t("Clip"); t.setProperty("adaptiveAnalysis", c.adaptiveAnalysis, nullptr); t.setProperty("rate", c.sampleRate, nullptr); t.setProperty("anchor", c.anchorSeconds, nullptr); t.setProperty("name", c.name, nullptr);
     t.setProperty("channels", c.audio.getNumChannels(), nullptr); t.setProperty("samples", c.audio.getNumSamples(), nullptr);
     juce::MemoryOutputStream raw;
     for (int ch = 0; ch < c.audio.getNumChannels(); ++ch) for (int i = 0; i < c.audio.getNumSamples(); ++i) raw.writeFloat(c.audio.getSample(ch, i));
     t.setProperty("audio", juce::var(raw.getMemoryBlock()), nullptr);
-    for (const auto& f : c.frames) { juce::ValueTree v("Frame"); v.setProperty("t", f.time, nullptr); v.setProperty("m", f.midi, nullptr); v.setProperty("q", f.confidence, nullptr); v.setProperty("r", f.rms, nullptr); t.addChild(v, -1, nullptr); }
-    for (const auto& n : c.notes) { juce::ValueTree v("Note"); v.setProperty("start", n.start, nullptr); v.setProperty("end", n.end, nullptr); v.setProperty("centre", n.centre, nullptr); v.setProperty("confidence", n.confidence, nullptr); v.setProperty("key", n.key, nullptr); v.setProperty("detached", n.detached, nullptr); v.setProperty("target", n.target, nullptr); v.setProperty("strength", n.strength, nullptr); t.addChild(v, -1, nullptr); }
+    for (const auto& f : c.frames) { juce::ValueTree v("Frame"); v.setProperty("t", f.time, nullptr); v.setProperty("m", f.midi, nullptr); v.setProperty("q", f.confidence, nullptr); v.setProperty("r", f.rms, nullptr); v.setProperty("u", f.uncertainty, nullptr); v.setProperty("onset", f.onset, nullptr); v.setProperty("agreement", f.agreement, nullptr); t.addChild(v, -1, nullptr); }
+    for (const auto& n : c.notes) { juce::ValueTree v("Note"); v.setProperty("start", n.start, nullptr); v.setProperty("end", n.end, nullptr); v.setProperty("centre", n.centre, nullptr); v.setProperty("confidence", n.confidence, nullptr); v.setProperty("key", n.key, nullptr); v.setProperty("detached", n.detached, nullptr); v.setProperty("target", n.target, nullptr); v.setProperty("strength", n.strength, nullptr); v.setProperty("stableStart", n.stableStart, nullptr); v.setProperty("stableEnd", n.stableEnd, nullptr); v.setProperty("uncertainty", n.uncertainty, nullptr); v.setProperty("discrete", n.discrete, nullptr); v.setProperty("overlap", n.overlap, nullptr); t.addChild(v, -1, nullptr); }
     return t;
 }
 std::shared_ptr<Clip> clipFromTree(const juce::ValueTree& t) {
     if (!t.hasType("Clip")) return {};
-    auto c = std::make_shared<Clip>(); c->sampleRate = t["rate"]; const int channels = t["channels"], samples = t["samples"];
+    auto c = std::make_shared<Clip>(); c->adaptiveAnalysis = t.getProperty("adaptiveAnalysis", false); c->sampleRate = t["rate"]; const int channels = t["channels"], samples = t["samples"];
     if (!std::isfinite(c->sampleRate) || c->sampleRate < 8000 || c->sampleRate > 192000 || channels < 1 || channels > 2 || samples < 1 || samples > maxSeconds * c->sampleRate) return {};
     const auto* raw = t["audio"].getBinaryData();
     if (!raw || raw->getSize() > size_t(maxAudioBytes) || raw->getSize() != size_t(channels) * size_t(samples) * 4) return {};
@@ -364,8 +368,8 @@ std::shared_ptr<Clip> clipFromTree(const juce::ValueTree& t) {
     for (int ch = 0; ch < channels; ++ch) for (int i = 0; i < samples; ++i) { const auto v = stream.readFloat(); c->audio.setSample(ch, i, std::isfinite(v) ? v : 0); }
     c->anchorSeconds = t["anchor"]; if (!std::isfinite(c->anchorSeconds)) c->anchorSeconds = 0; c->name = t["name"].toString();
     for (auto v : t) {
-        if (v.hasType("Frame")) { Frame f{double(v["t"]), double(v["m"]), double(v["q"]), double(v["r"])}; if (std::isfinite(f.time) && std::isfinite(f.midi) && std::isfinite(f.confidence)) c->frames.push_back(f); }
-        if (v.hasType("Note")) { Note n{double(v["start"]), double(v["end"]), double(v["centre"]), double(v["confidence"]), int(v["key"]), bool(v["detached"]), double(v["target"]), double(v["strength"])}; if (std::isfinite(n.start) && std::isfinite(n.end) && std::isfinite(n.centre) && std::isfinite(n.target) && std::isfinite(n.strength) && n.start >= 0 && n.end > n.start && n.end <= samples / c->sampleRate && n.key >= 0 && n.key <= 127) c->notes.push_back(n); }
+        if (v.hasType("Frame")) { Frame f{double(v["t"]), double(v["m"]), double(v["q"]), double(v["r"]), double(v["u"]), double(v["onset"]), double(v.getProperty("agreement", 1.0))}; if (std::isfinite(f.time) && std::isfinite(f.midi) && std::isfinite(f.confidence)) c->frames.push_back(f); }
+        if (v.hasType("Note")) { Note n{double(v["start"]), double(v["end"]), double(v["centre"]), double(v["confidence"]), int(v["key"]), bool(v["detached"]), double(v["target"]), double(v["strength"]), double(v["stableStart"]), double(v["stableEnd"]), double(v["uncertainty"]), bool(v["discrete"]), bool(v["overlap"])}; if (std::isfinite(n.start) && std::isfinite(n.end) && std::isfinite(n.centre) && std::isfinite(n.target) && std::isfinite(n.strength) && n.start >= 0 && n.end > n.start && n.end <= samples / c->sampleRate && n.key >= 0 && n.key <= 127) c->notes.push_back(n); }
     }
     std::sort(c->frames.begin(), c->frames.end(), [](auto& a, auto& b){ return a.time < b.time; });
     std::sort(c->notes.begin(), c->notes.end(), [](auto& a, auto& b){ return a.start < b.start; });

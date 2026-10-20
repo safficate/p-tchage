@@ -1,61 +1,35 @@
-MICROTONAL PITCH MAP PRO 0.2.0 — WINDOWS x64
+PITCHMAP PRO 3.0 — WINDOWS x64 MÜHENDİSLİK ÖNİZLEMESİ
 
-ZIP'i tamamen çıkarın. MicrotonalPitchMapPro-Setup-x64.exe dosyasını çalıştırın.
-Eski 0.1 sürümünü kapatın; Sonar'ı kurulumdan sonra yeniden açın ve VST3 tarayın.
-Elle kurulum: "Microtonal Pitch Map Pro.vst3" klasörünün TAMAMINI
-C:\Program Files\Common Files\VST3\ içine kopyalayın. İçindeki DLL'i tek başına taşımayın.
-Standalone EXE ayrı deneme içindir; Sonar efekti VST3 klasörüdür.
+1. ZIP'i tamamen çıkarın. MicrotonalPitchMapPro-Setup-x64.exe dosyasını çalıştırın.
+   Eklenti C:\Program Files\Common Files\VST3 içine kurulur.
+   Alternatif: “Microtonal Pitch Map Pro.vst3” klasörünün tamamını buraya kopyalayın.
+2. Sonar'da VST3 taramasını yenileyin; eklentiyi bir ses kanalına ekleyin.
+   Bu ortamda Sonar çalıştırılmadı. Sonar uyumluluğu doğrulanmış değildir.
+3. Klipleri çaldırmadan almak için hostun desteklediği ARA/Region FX gerekir.
+   Normal kanal efekti bütün proje kliplerine erişemez. Load WAV ile de çalışabilirsiniz.
+4. “Dogal bolgesel (klip/offline)” açıkken klibi analiz edin.
+   ÜST sıra gerçek kaynak nota parçalarını, ALT sıra ayarlanabilen hedef tonları çalar.
+5. Kaynak ve hedef notayı seçin. Hedef cent değerini girin, ESLESTIR ve HEDEFE UYGULA.
+   Kaynak Do +10 c, hedef Do +5 c ise istek -5 c olur.
+   Do'yu Re yapmak iki yarım seslik hedef eşlemesidir; yüzde gerekmez.
+   Kaynağa doğrudan +5 c eklemek için Gelişmiş'te doğrudan cent/nota modunu kullanın.
+6. A/B ile dinleyin. Uygun olduğunda Sonar üzerinden bounce/render alın.
+   WAV dışa aktarma da vardır. Normal canlı kanal ve offline bölgesel motor farklıdır.
 
-KLİBİ ÇALMADAN İÇERİ ALMA
-Sonar destekleyip listeliyorsa seçili ses klibine Region FX / ARA efekti olarak
-Microtonal Pitch Map Pro ekleyin. Klip paylaşımı açıldığında analiz kendiliğinden
-başlar. Normal kanal FX yuvası tüm proje kliplerini eklentiye açmaz.
-ARA listesinde görünmüyorsa bu Sonar'da doğrulanmamış bir durumdur: normal FX
-olarak canlı sesi işleyebilir veya WAV yükleyebilirsiniz. Bu iki yöntem, ARA
-ile oynatmadan klip alındığı anlamına gelmez.
+Motor güvenilmez merkezleri ve algıladığı çelişkili kuyruk çakışmalarını atlayabilir;
+çok kısa geçişlerde düzeltmeyi azaltabilir. Hedef cent her malzemede garanti değildir.
+Sıfır düzeltme ve korunan atak örnekleri kontrollü testlerde birebir korunmuştur.
+Gerçek enstrüman tınısı ve doğallığı için dinleme değerlendirmesi hâlâ gereklidir.
 
-12 ÜST + 12 ALT TUŞ
-Üst tuşlar: programın referans tonları. Altındaki cent alanını ayarlayıp tıklayın.
-Alt tuşlar: kaynak klipte gerçekten bulunan notalar. Aynı tuşa tekrar tıklamak
-başka bir örneğini dinletir. Kaynakta olmayan nota pasiftir.
-Alttan kaynak Do'yu, üstten hedef Re'yi seçin; ESLESTIR, sonra HEDEFE UYGULA.
-Bu işlem Do'yu Re'ye çeker; yüzde girmeniz gerekmez.
-Do'yu Do'ya eşleyip üst Do'yu +5 cent yaparsanız hedef Do +5 cent olur.
-Kaynak Do zaten +10 cent ise uygulanan değişim -5 cent'tir.
-Kaynağa doğrudan +5 cent EKLEMEK için Gelişmiş > Doğrudan cent/nota modunu açın.
-Varsayılan eşleştirme, kaynak notanın merkezini üstteki hedef tona uydurur.
-Düzeltme Uygula'ya basınca etkinleşir. A/B orijinal ile karşılaştırır.
-Dur butonu deneme tonunu keser. DAW ses motorunun çalışıyor olması gerekir.
-Son olarak Sonar'da Bounce/Render yapın.
+Sidechain şu anda eşzamanlı referans takibi yapar. Kalıcı referans haritası öğrenme
+bu sürümde bitmedi. Akor içindeki bağımsız notaları ayırıp akortlayamaz.
+AI asistanı, neural ayırma ve özel piyano modeli uygulanmış özellikler değildir.
 
-SIDECHAIN (İSTEĞE BAĞLI)
-İstediğiniz referans kanaldan eklentinin Reference (sidechain) girişine send açın.
-Sidechain: cent uyumu = mevcut notayı koruyup referansın cent akordunu izler.
-Sidechain: nota + cent = referansın notasına da çeker.
-REF. KANALA UYDUR'a basın. Yalnızca eklentinin takılı olduğu kanal düzeltilir.
-Referans kanal değiştirilmez. Kaynak oktavını koruma varsayılan açıktır.
-Referans yoksa veya güvenilir pitch bulunamazsa referans düzeltmesi uygulanmaz.
-Canlı sidechain sonucunu Sonar Bounce ile alın; referanssız WAV dışa aktarımı yapılmaz.
+Windows PE x64 dosyaları üretilir; Wine testleri native Windows/Sonar testi sayılmaz.
+44.1/48 kHz; harici ses kartı/MIDI gerekmez. DAW'ın seçili ses sürücüsünü kullanır.
+Canlı efekt gecikmesi 150 ms'dir; host telafisi gerekir. ARA önbelleği sıfır gecikmelidir.
+Parametreler/haritalar/kaynak ses proje durumuna yazılır; proje dosyası büyüyebilir.
 
-GRAFİK
-Sarı: kaynak pitch. Mavi: hedef veya ölçülen sidechain referansı.
-Ctrl+tekerlek: pitch yakınlaştırma. Tekerlek: zaman yakınlaştırma.
-Shift+tekerlek: zaman kaydırma. Küçük cent farklarını görmek için yakınlaştırın.
-İnceleme tek sesli vokal/enstrüman içindir; akorları seslerine ayırmaz.
-
-SES VE KAYIT
-44.1/48 kHz mono/stereo desteklenir. Harici ses kartı veya MIDI gerekmez.
-Sonar'ın seçtiği ses sürücüsü kullanılır. Dahili ses sistemiyle çalışması
-hedeflenmiştir; laptop/Windows/Sonar performansı henüz ölçülmemiştir.
-Normal canlı FX gecikmesi 150 ms; Sonar'ın gecikme telafisi etkin olmalıdır.
-ARA önceden hazırlanmış klip yolu sıfır gecikme bildirir.
-Maksimum 10 dakika / 240 MiB PCM. Analiz ve klip render'ı arka plandadır.
-Parametreler, kaynak, nota haritası ve eşlemeler proje durumuna kaydedilir;
-ARA arşivine de kaydedilir. Projeyi kaydedip yeniden açarak kontrol edin.
-
-DOĞRULAMA DURUMU
-Bu bir test sürümüdür. Güncel Cakewalk Sonar'da tarama, Region FX, playback,
-bounce, proje yeniden açma ve HP EliteBook performansı burada test edilmedi.
-Gerçekleştirilen otomatik testlerin sonuçları TEST-REPORT.md içindedir.
-Windows testleri Wine altında yürütülür; Sonar sertifikası değildir.
-SONAR-TEST.md bilgisayarınızda yapılacak kontrolleri açıklar.
+ZIP içindeki README.md, TEST-REPORT-3.0.md, SONAR-TEST.md ve lisansları okuyun.
+Eski 0.2.0 dağıtım dosyaları değiştirilmedi. Yeni önizleme aynı eklenti kimliğini taşır;
+kurulum yerel 0.2.0 eklentisinin yerini alabilir. İlk denemeyi proje kopyasında yapın.

@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     juce::ScopedJuceInitialiser_GUI gui;
     try {
         std::cout << "Stage: processor and safe defaults\n";
-        PitchProcessor p; p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.setParameter("enabled", 1); p.prepareToPlay(48000, 256);
+        PitchProcessor p; p.setParameter("adaptive", 0); p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.setParameter("enabled", 1); p.prepareToPlay(48000, 256);
         check(p.parameters.getRawParameterValue("quantize")->load() == 0, "Safe default strength");
         p.setParameter("cent0", -20); p.setParameter("quantize", 0.5f); p.setParameter("reference", 442);
         juce::MemoryBlock state; p.getStateInformation(state);
@@ -56,13 +56,64 @@ int main(int argc, char** argv) {
         restored.getStateInformation(state); PitchProcessor roundTrip; roundTrip.setStateInformation(state.getData(), int(state.getSize()));
         check(roundTrip.clip() && roundTrip.clip()->notes.size() == 1 && roundTrip.clip()->audio.getNumSamples() == 96000, "Full plugin state restores PCM and note map");
         restored.setPlayHead(nullptr);
+        std::cout << "Stage: adaptive defaults, legacy migration and analysis metadata\n";
+        PitchProcessor adaptiveState;
+        check(adaptiveState.parameters.getRawParameterValue("adaptive")->load() == 1, "New instances default to adaptive offline processing");
+        juce::ValueTree legacy("MicrotonalPitchMapPro"); legacy.setProperty("version", 2, nullptr);
+        legacy.addChild(adaptiveState.parameters.copyState(), -1, nullptr);
+        juce::MemoryOutputStream legacyStream; legacy.writeToStream(legacyStream);
+        adaptiveState.setStateInformation(legacyStream.getData(), int(legacyStream.getDataSize()));
+        check(adaptiveState.parameters.getRawParameterValue("adaptive")->load() == 0, "Version 2 state keeps legacy DSP semantics");
+        auto metadata = clip; metadata.adaptiveAnalysis = true;
+        metadata.notes.front().stableStart = 0.12; metadata.notes.front().stableEnd = 1.8;
+        metadata.notes.front().uncertainty = 0.7; metadata.notes.front().discrete = true; metadata.notes.front().overlap = true;
+        metadata.frames.front().uncertainty = 0.8; metadata.frames.front().onset = 0.6; metadata.frames.front().agreement = 0.9;
+        const auto decoded = mp::clipFromTree(mp::clipToTree(metadata));
+        check(decoded && decoded->adaptiveAnalysis && decoded->notes.front().discrete && decoded->notes.front().overlap, "Adaptive event flags survive serialized state");
+        check(std::abs(decoded->notes.front().stableStart - 0.12) < 1e-9 && std::abs(decoded->notes.front().uncertainty - 0.7) < 1e-9, "Stable bounds and centre uncertainty survive serialized state");
+        check(std::abs(decoded->frames.front().onset - 0.6) < 1e-9 && std::abs(decoded->frames.front().agreement - 0.9) < 1e-9, "Frame onset and detector agreement survive serialized state");
+        restored.setParameter("adaptive", 1); restored.setParameter("precision", 0.5f); restored.setParameter("minimumIntervention", 0);
+        restored.getStateInformation(state); adaptiveState.setStateInformation(state.getData(), int(state.getSize()));
+        check(adaptiveState.parameters.getRawParameterValue("adaptive")->load() == 1 && adaptiveState.parameters.getRawParameterValue("precision")->load() == 0.5f && adaptiveState.parameters.getRawParameterValue("minimumIntervention")->load() == 0, "Adaptive user controls survive full host state");
+        const auto beforeCancel = restored.clip(); restored.analyse(); restored.cancelWork();
+        const auto cancelDeadline = juce::Time::getMillisecondCounter() + 30000;
+        while (restored.busy && juce::Time::getMillisecondCounter() < cancelDeadline) juce::Thread::sleep(1);
+        check(!restored.busy && restored.clip() == beforeCancel, "Cancelled background analysis does not replace the previous source/map");
+        std::cout << "Stage: adaptive rendered clip reaches the host callback\n";
+        auto adaptiveClip = clip; mp::analyseAdaptive(adaptiveClip);
+        adaptiveState.setParameter("adaptive", 1); adaptiveState.setParameter("precision", 1);
+        adaptiveState.setParameter("direct", 1); adaptiveState.setParameter("referenceMatch", 0);
+        adaptiveState.setParameter("cent9", -5); adaptiveState.setParameter("formants", 0);
+        adaptiveState.setParameter("enabled", 1); adaptiveState.setParameter("bypass", 0);
+        adaptiveState.setParameter("original", 0); adaptiveState.setParameter("wet", 1); adaptiveState.setParameter("useRender", 1);
+        juce::ValueTree adaptiveRoot("MicrotonalPitchMapPro"); adaptiveRoot.setProperty("version", mp::stateVersion, nullptr);
+        adaptiveRoot.addChild(adaptiveState.parameters.copyState(), -1, nullptr); adaptiveRoot.addChild(mp::clipToTree(adaptiveClip), -1, nullptr);
+        juce::MemoryOutputStream adaptiveStream; adaptiveRoot.writeToStream(adaptiveStream);
+        adaptiveState.setStateInformation(adaptiveStream.getData(), int(adaptiveStream.getDataSize()));
+        adaptiveState.prepareToPlay(48000, 256); adaptiveState.render();
+        const auto adaptiveDeadline = juce::Time::getMillisecondCounter() + 30000;
+        while (adaptiveState.busy && juce::Time::getMillisecondCounter() < adaptiveDeadline) juce::Thread::sleep(1);
+        check(!adaptiveState.busy && adaptiveState.hasRender(), "Adaptive processor publishes a complete offline render");
+        TestPlayHead adaptiveHead; adaptiveHead.sample = 48000; adaptiveState.setPlayHead(&adaptiveHead);
+        playback.clear(); adaptiveState.processBlock(playback, midi);
+        const auto adaptivePitch = mp::detectPitch(playback.getReadPointer(0), 4096, 48000).first;
+        std::cout << "Adaptive host callback shift: " << (mp::hzToMidi(adaptivePitch)-69)*100 << " cents\n";
+        check(adaptivePitch > 0 && std::abs((mp::hzToMidi(adaptivePitch)-69)*100+5) < 1, "New adaptive -5 cent PCM actually reaches the host callback");
+        adaptiveState.setPlayHead(nullptr);
         if (argc == 2 && juce::String(argv[1]) == "--audio-only") {
             std::cout << "Plugin parameter/source/map state and offline host playback checks passed\n"; return 0;
         }
         std::cout << "Stage: editor construction\n";
+        restored.setParameter("adaptive",0); restored.setParameter("octave",1);
+
         restored.setParameter("referenceMatch", 1); restored.setParameter("direct", 0);
         auto editor = std::unique_ptr<juce::AudioProcessorEditor>(restored.createEditor());
         check(editor && editor->getWidth() >= 1060, "Real editor constructs");
+        bool switched=false;
+        for(auto* child:editor->getChildren()) if(auto* toggle=dynamic_cast<juce::ToggleButton*>(child); toggle && toggle->getButtonText().startsWith("Dogal bolgesel")) {
+            toggle->setToggleState(true,juce::sendNotificationSync); if(toggle->onClick)toggle->onClick(); switched=true;
+        }
+        check(switched && restored.parameters.getRawParameterValue("octave")->load()==0 && restored.parameters.getRawParameterValue("referenceMatch")->load()==1,"Choosing adaptive UI clears hidden legacy octave and percentage steering");
         int percentages = 0;
         for (auto* child : editor->getChildren()) if (auto* slider = dynamic_cast<juce::Slider*>(child); slider && slider->getMaximum() == 1) {
             check(slider->getTextFromValue(0.5).contains("50.0%"), "Actual attached slider must display 50 percent correctly");

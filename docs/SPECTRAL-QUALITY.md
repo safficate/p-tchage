@@ -1,0 +1,11 @@
+# Spectral quality and backend decision
+
+Pitch estimates and audible processing are evaluated separately. The existing [Signalsmith Stretch](https://github.com/Signalsmith-Audio/signalsmith-stretch) backend is retained; its pinned README documents input/output latency, the automation time convention, presets and formant factor/base. The renderer sets automation at input position minus input latency and compensates the full processing delay in the returned PCM. It flushes with silence while preserving output length.
+
+The first benchmark compares actual source and rendered F0 contours, centre errors, attack sample identity, peak levels and stereo behavior. Equal/inverted stereo is processed once and reconstructed; general stereo stays multichannel. Common-mode transposition preserves relative cents, but this does not imply exact unchanged spectra, decay or beat frequencies. No independent ensemble players are corrected.
+
+Formant compensation remains optional: a moving spectral envelope may be appropriate for vocal tract resonances, but a fixed violin/oud body response is not the same model. Incorrect base-F0 estimates can bias the compensation. Corpus tests initially disable it for objective contour measurement; real instrument timbre comparison must include on/off. No universal instrument formant setting is selected automatically.
+
+Rubber Band's actual README was consulted: GPL-2-or-later with a separate commercial license option, additional build-dependent libraries and no measured advantage yet in this corpus. It is not added. WORLD source/filter resynthesis and STK physical models are also research, not substitutes for preserved original recordings. A replacement requires demonstrably better audio and an approved compatible distribution model, not just a different algorithm name.
+
+Metrics do not replace listening: vibrato residual correlation/RMS, onset timing, stereo phase/width, spectral envelope and decay should accompany AB/BA randomized listening on licensed recordings. No human listening panel was run by this cloud task. Metallic sound, pre-echo, smearing and phase coloration remain possible on material outside the tested synthetic domain. Logs distinguish tuning accuracy from all other quality claims.

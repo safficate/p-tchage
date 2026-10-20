@@ -9,17 +9,21 @@
 namespace mp {
 constexpr double maxSeconds = 600.0;
 constexpr int64_t maxAudioBytes = 240LL * 1024 * 1024;
-constexpr int stateVersion = 2;
-struct Frame { double time = 0, midi = 0, confidence = 0, rms = 0; };
+constexpr int stateVersion = 3;
+struct Frame { double time = 0, midi = 0, confidence = 0, rms = 0; double uncertainty = 0, onset = 0, agreement = 1; };
 struct Note {
     double start = 0, end = 0, centre = 69, confidence = 0;
     int key = 69;
     bool detached = false;
     double target = 0, strength = 1;
+    double stableStart = 0, stableEnd = 0, uncertainty = 0;
+    bool discrete = false, overlap = false;
 };
 struct Settings {
     std::array<double, 12> cents {};
     std::array<int, 12> semitones {};
+    bool adaptive = false, minimumIntervention = true;
+    double precisionCents = 1;
     bool directShift = false;
     bool matchReference = false;
     std::array<double, 12> groupStrength {1,1,1,1,1,1,1,1,1,1,1,1};
@@ -35,6 +39,7 @@ struct Clip {
     juce::String name;
     std::vector<Frame> frames;
     std::vector<Note> notes;
+    bool adaptiveAnalysis = false;
 };
 using Progress = std::function<bool(double)>;
 double hzToMidi(double hz);

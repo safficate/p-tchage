@@ -1,0 +1,3 @@
+ARA rate=44100 source=10.0529 corrected=204.902 expected=205 cents
+ARA rate=48000 source=10.0259 corrected=204.946 expected=205 cents
+44 ARA transfer, trim, bounce and state assertions passed

@@ -5,7 +5,7 @@ Target amd64-unicode
 !ifndef PRODUCT_BUILD
   !define PRODUCT_BUILD "../dist"
 !endif
-Name "Microtonal Pitch Map Pro 0.2.0"
+Name "Microtonal Pitch Map Pro 3.0.0 Engineering Preview"
 OutFile "${PRODUCT_BUILD}/MicrotonalPitchMapPro-Setup-x64.exe"
 InstallDir "$COMMONFILES64\VST3"
 RequestExecutionLevel admin
@@ -33,7 +33,8 @@ Section "Windows x64 VST3" SEC01
   File /nonfatal "${PRODUCT_BUILD}/Microtonal Pitch Map Pro.exe"
   File "../docs/WINDOWS-KURULUM.txt"
   File "../docs/SONAR-TEST.md"
-  File "../docs/TEST-REPORT.md"
+  File "../docs/TEST-PLAN-3.0.md"
+  File "../docs/BUILD-3.0.md"
   File "../LICENSE"
   File /r "../licenses"
   SetShellVarContext all
@@ -43,7 +44,7 @@ Section "Windows x64 VST3" SEC01
   WriteUninstaller "$PROGRAMFILES64\Microtonal Pitch Map Pro\Uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MicrotonalPitchMapPro" "DisplayName" "Microtonal Pitch Map Pro"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MicrotonalPitchMapPro" "UninstallString" '"$PROGRAMFILES64\Microtonal Pitch Map Pro\Uninstall.exe"'
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MicrotonalPitchMapPro" "DisplayVersion" "0.2.0"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MicrotonalPitchMapPro" "DisplayVersion" "3.0.0-preview"
 SectionEnd
 Section "Uninstall"
   SetRegView 64

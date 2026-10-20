@@ -1,0 +1,299 @@
+Start testing: Oct 20 22:55 UTC
+----------------------------------------------------------
+1/6 Testing: pitch_engine
+1/6 Test: pitch_engine
+Command: "/workspace/p-tchage/build-linux/PitchTests_artefacts/Release/PitchTests"
+Directory: /workspace/p-tchage/build-linux
+"pitch_engine" start time: Oct 20 22:55 UTC
+Output:
+----------------------------------------------------------
+rate=44100 strength=0 measured=69.1005 stereo error=0
+rate=44100 strength=0.5 measured=68.9483 stereo error=0
+rate=44100 strength=1 measured=68.8023 stereo error=0
+Positive target measured=69.1987
+OFFLINE rate=44100 relative=0 entered=-5 measured=-5.19486 expected=-5 cents
+OFFLINE rate=44100 relative=0 entered=3 measured=3.26891 expected=3 cents
+OFFLINE rate=44100 relative=0 entered=5 measured=5.09707 expected=5 cents
+OFFLINE rate=44100 relative=0 entered=10 measured=10.04 expected=10 cents
+OFFLINE rate=44100 relative=1 entered=-5 measured=5.15653 expected=5 cents
+OFFLINE rate=44100 relative=1 entered=3 measured=12.8444 expected=13 cents
+OFFLINE rate=44100 relative=1 entered=5 measured=15.0861 expected=15 cents
+OFFLINE rate=44100 relative=1 entered=10 measured=20.2984 expected=20 cents
+Sample rate 44100: all checks passed; 2s offline render 84.9 ms
+rate=48000 strength=0 measured=69.1003 stereo error=0
+rate=48000 strength=0.5 measured=68.9456 stereo error=0
+rate=48000 strength=1 measured=68.7989 stereo error=0
+Positive target measured=69.1982
+OFFLINE rate=48000 relative=0 entered=-5 measured=-5.45232 expected=-5 cents
+OFFLINE rate=48000 relative=0 entered=3 measured=2.94534 expected=3 cents
+OFFLINE rate=48000 relative=0 entered=5 measured=5.23132 expected=5 cents
+OFFLINE rate=48000 relative=0 entered=10 measured=10.021 expected=10 cents
+OFFLINE rate=48000 relative=1 entered=-5 measured=5.26354 expected=5 cents
+OFFLINE rate=48000 relative=1 entered=3 measured=12.878 expected=13 cents
+OFFLINE rate=48000 relative=1 entered=5 measured=15.1289 expected=15 cents
+OFFLINE rate=48000 relative=1 entered=10 measured=19.8944 expected=20 cents
+Sample rate 48000: all checks passed; 2s offline render 47.05 ms
+82 assertions passed
+<end of output>
+Test time =   5.38 sec
+----------------------------------------------------------
+Test Passed.
+"pitch_engine" end time: Oct 20 22:55 UTC
+"pitch_engine" time elapsed: 00:00:05
+----------------------------------------------------------
+
+2/6 Testing: regional_audio
+2/6 Test: regional_audio
+Command: "/workspace/p-tchage/build-linux/RegionalTests_artefacts/Release/RegionalTests"
+Directory: /workspace/p-tchage/build-linux
+"regional_audio" start time: Oct 20 22:55 UTC
+Output:
+----------------------------------------------------------
+VIBRATO rate=44100 shift=-9.10769 correlation=0.991774 contour_rms_cents=1.38731
+violin-vibrato rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+violin-legato rate=44100 notes=2 correction_step_1ms=0.162646 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ensemble-common-drift rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ney-slide-noise rate=44100 notes=2 correction_step_1ms=0.169864 2 bolge islendi; 0 bolge temkinli; 1 bolge hassasiyet teyidi gerektiriyor.
+baglama-plucks rate=44100 notes=3 correction_step_1ms=0.00371157 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+oud-body-resonance rate=44100 notes=3 correction_step_1ms=0.000564731 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+guitar-overlap rate=44100 notes=5 correction_step_1ms=0.0400364 5 bolge islendi; 0 bolge temkinli; 2 bolge hassasiyet teyidi gerektiriyor.
+piano-inharmonic-decay rate=44100 notes=3 correction_step_1ms=0.00119265 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=8 voiced=207 wrong=0
+missing-fundamental rate=44100 notes=1 correction_step_1ms=0.53402 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=9 voiced=207 wrong=0
+changing-harmonics rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+microtonal-variants rate=44100 notes=2 correction_step_1ms=3.02925e-05 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+already-tuned rate=44100 notes=1 correction_step_1ms=0 0 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+VIBRATO rate=48000 shift=-9.38464 correlation=0.991216 contour_rms_cents=1.52447
+violin-vibrato rate=48000 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+violin-legato rate=48000 notes=2 correction_step_1ms=0.158314 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ensemble-common-drift rate=48000 notes=2 correction_step_1ms=0.035697 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ney-slide-noise rate=48000 notes=2 correction_step_1ms=0.164772 2 bolge islendi; 0 bolge temkinli; 1 bolge hassasiyet teyidi gerektiriyor.
+baglama-plucks rate=48000 notes=3 correction_step_1ms=0.000976757 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+oud-body-resonance rate=48000 notes=3 correction_step_1ms=0.000610497 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+guitar-overlap rate=48000 notes=10 correction_step_1ms=0.00600628 10 bolge islendi; 0 bolge temkinli; 7 bolge hassasiyet teyidi gerektiriyor.
+piano-inharmonic-decay rate=48000 notes=3 correction_step_1ms=0.000418806 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=8 voiced=225 wrong=0
+missing-fundamental rate=48000 notes=1 correction_step_1ms=0.527362 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=9 voiced=225 wrong=0
+changing-harmonics rate=48000 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+microtonal-variants rate=48000 notes=2 correction_step_1ms=4.19965e-05 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+already-tuned rate=48000 notes=1 correction_step_1ms=0 0 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FINE rate=44100 requested=-20 actual=-19.7565 regional_mean=-19.7583
+INDEPENDENT requested=-20 actual=-20.1495
+FINE rate=44100 requested=-5 actual=-5.59625 regional_mean=-5.59531
+INDEPENDENT requested=-5 actual=-4.30936
+FINE rate=44100 requested=-3 actual=-3.32963 regional_mean=-3.32827
+INDEPENDENT requested=-3 actual=-2.64605
+FINE rate=44100 requested=3 actual=2.91476 regional_mean=2.91806
+INDEPENDENT requested=3 actual=2.69078
+FINE rate=44100 requested=5 actual=5.29154 regional_mean=5.29802
+INDEPENDENT requested=5 actual=4.92441
+FINE rate=44100 requested=20 actual=19.3124 regional_mean=19.3081
+INDEPENDENT requested=20 actual=20.5088
+FINE rate=48000 requested=-20 actual=-20.0218 regional_mean=-20.0164
+INDEPENDENT requested=-20 actual=-19.9724
+FINE rate=48000 requested=-5 actual=-5.68818 regional_mean=-5.67344
+INDEPENDENT requested=-5 actual=-4.07832
+FINE rate=48000 requested=-3 actual=-3.36858 regional_mean=-3.35165
+INDEPENDENT requested=-3 actual=-2.54104
+FINE rate=48000 requested=3 actual=3.1311 regional_mean=3.12476
+INDEPENDENT requested=3 actual=2.7024
+FINE rate=48000 requested=5 actual=5.21553 regional_mean=5.21273
+INDEPENDENT requested=5 actual=4.93557
+FINE rate=48000 requested=20 actual=19.442 regional_mean=19.445
+INDEPENDENT requested=20 actual=20.798
+13040 regional rendered-audio assertions passed
+<end of output>
+Test time =  30.86 sec
+----------------------------------------------------------
+Test Passed.
+"regional_audio" end time: Oct 20 22:55 UTC
+"regional_audio" time elapsed: 00:00:30
+----------------------------------------------------------
+
+3/6 Testing: plugin_state_and_playback
+3/6 Test: plugin_state_and_playback
+Command: "/workspace/p-tchage/build-linux/PluginTests_artefacts/Release/PluginTests" "--audio-only"
+Directory: /workspace/p-tchage/build-linux
+"plugin_state_and_playback" start time: Oct 20 22:55 UTC
+Output:
+----------------------------------------------------------
+Stage: GUI runtime initialization
+Stage: processor and safe defaults
+Stage: parameter state restore
+Stage: source fixture and analysis
+Stage: offline render
+2000 stereo callback blocks, 256 frames: 14.426 ms on cloud host
+Stage: adaptive defaults, legacy migration and analysis metadata
+Stage: adaptive rendered clip reaches the host callback
+Adaptive host callback shift: -4.92454 cents
+Plugin parameter/source/map state and offline host playback checks passed
+<end of output>
+Test time =   1.16 sec
+----------------------------------------------------------
+Test Passed.
+"plugin_state_and_playback" end time: Oct 20 22:56 UTC
+"plugin_state_and_playback" time elapsed: 00:00:01
+----------------------------------------------------------
+
+4/6 Testing: plugin_editor
+4/6 Test: plugin_editor
+Command: "/workspace/p-tchage/build-linux/PluginTests_artefacts/Release/PluginTests"
+Directory: /workspace/p-tchage/build-linux
+"plugin_editor" start time: Oct 20 22:56 UTC
+Output:
+----------------------------------------------------------
+Stage: GUI runtime initialization
+Stage: processor and safe defaults
+Stage: parameter state restore
+Stage: source fixture and analysis
+Stage: offline render
+2000 stereo callback blocks, 256 frames: 9.088 ms on cloud host
+Stage: adaptive defaults, legacy migration and analysis metadata
+Stage: adaptive rendered clip reaches the host callback
+Adaptive host callback shift: -4.92454 cents
+Stage: editor construction
+Stage: editor paint
+Plugin parameter state, pass-through processing and editor smoke tests passed
+<end of output>
+Test time =   1.44 sec
+----------------------------------------------------------
+Test Passed.
+"plugin_editor" end time: Oct 20 22:56 UTC
+"plugin_editor" time elapsed: 00:00:01
+----------------------------------------------------------
+
+5/6 Testing: ara_clip_transfer
+5/6 Test: ara_clip_transfer
+Command: "/workspace/p-tchage/build-linux/ARATests_artefacts/Release/ARATests"
+Directory: /workspace/p-tchage/build-linux
+"ara_clip_transfer" start time: Oct 20 22:56 UTC
+Output:
+----------------------------------------------------------
+ARA rate=44100 source=10.0529 corrected=204.903 expected=205 cents
+ARA rate=48000 source=10.0259 corrected=204.946 expected=205 cents
+44 ARA transfer, trim, bounce and state assertions passed
+<end of output>
+Test time =   3.19 sec
+----------------------------------------------------------
+Test Passed.
+"ara_clip_transfer" end time: Oct 20 22:56 UTC
+"ara_clip_transfer" time elapsed: 00:00:03
+----------------------------------------------------------
+
+6/6 Testing: live_audio
+6/6 Test: live_audio
+Command: "/workspace/p-tchage/build-linux/LiveTests_artefacts/Release/LiveTests"
+Directory: /workspace/p-tchage/build-linux
+"live_audio" start time: Oct 20 22:56 UTC
+Output:
+----------------------------------------------------------
+rate=44100 strength=0 elapsed_ms=141.494
+rate=44100 strength=0 elapsed_ms=152.779
+rate=44100 strength=0 elapsed_ms=120.189
+LIVE target=-20c measured=10.0516c expected=10c latency=6615
+rate=44100 strength=0.5 elapsed_ms=134.43
+LIVE target=-20c measured=-4.98025c expected=-5c latency=6615
+rate=44100 strength=1 elapsed_ms=151.725
+LIVE target=-20c measured=-19.8832c expected=-20c latency=6615
+rate=44100 strength=1 elapsed_ms=135.992
+LIVE target=+20c measured=19.9887c
+rate=44100 strength=1 elapsed_ms=131.208
+rate=44100 strength=1 elapsed_ms=151.776
+rate=44100 strength=1 elapsed_ms=143.799
+rate=44100 strength=1 elapsed_ms=158.184
+rate=44100 strength=1 elapsed_ms=101.387
+rate=44100 strength=1 elapsed_ms=130.613
+rate=44100 strength=1 elapsed_ms=155.537
+rate=44100 strength=1 elapsed_ms=143.329
+rate=44100 strength=0 elapsed_ms=143.373
+DIRECT fine=-20 measured=-9.9443 expected=-10
+rate=44100 strength=0 elapsed_ms=146.677
+DIRECT fine=-5 measured=5.04267 expected=5
+rate=44100 strength=0 elapsed_ms=144.691
+DIRECT fine=-3 measured=7.09443 expected=7
+rate=44100 strength=0 elapsed_ms=157.738
+DIRECT fine=3 measured=13.0557 expected=13
+rate=44100 strength=0 elapsed_ms=132.135
+DIRECT fine=5 measured=15.0525 expected=15
+rate=44100 strength=0 elapsed_ms=124.612
+DIRECT fine=10 measured=20.0416 expected=20
+rate=44100 strength=0 elapsed_ms=145.634
+DIRECT fine=37.5 measured=47.5519 expected=47.5
+rate=44100 strength=0 elapsed_ms=127.454
+DIRECT C note step=1 fine=5 measured=115.017 expected=115
+rate=44100 strength=0 elapsed_ms=137.083
+DIRECT C note step=2 fine=5 measured=215.038 expected=215
+rate=44100 strength=0 elapsed_ms=134.92
+DIRECT C note step=-1 fine=5 measured=-84.9865 expected=-85
+rate=44100 strength=0 elapsed_ms=133.307
+REFERENCE C destination=0 fine=5 measured=5.07883 expected=5
+rate=44100 strength=0 elapsed_ms=130.743
+REFERENCE C destination=1 fine=5 measured=104.992 expected=105
+rate=44100 strength=0 elapsed_ms=134.535
+REFERENCE C destination=2 fine=5 measured=205.009 expected=205
+SIDECHAIN mode=1 measured=-4.98643 expected=-5
+SIDECHAIN mode=1 measured=-5.00914 expected=-5
+SIDECHAIN mode=2 measured=-192.989 expected=-193
+rate=44100 strength=0 elapsed_ms=210.266
+rate=44100 strength=0 elapsed_ms=145.834
+rate=48000 strength=0 elapsed_ms=148.015
+rate=48000 strength=0 elapsed_ms=149.066
+rate=48000 strength=0 elapsed_ms=92.194
+LIVE target=-20c measured=10.0258c expected=10c latency=7200
+rate=48000 strength=0.5 elapsed_ms=128.765
+LIVE target=-20c measured=-5.04912c expected=-5c latency=7200
+rate=48000 strength=1 elapsed_ms=127.024
+LIVE target=-20c measured=-20.0105c expected=-20c latency=7200
+rate=48000 strength=1 elapsed_ms=134.69
+LIVE target=+20c measured=19.9695c
+rate=48000 strength=1 elapsed_ms=130.429
+rate=48000 strength=1 elapsed_ms=138.36
+rate=48000 strength=1 elapsed_ms=155.554
+rate=48000 strength=1 elapsed_ms=149.132
+rate=48000 strength=1 elapsed_ms=99.094
+rate=48000 strength=1 elapsed_ms=219.188
+rate=48000 strength=1 elapsed_ms=137.696
+rate=48000 strength=1 elapsed_ms=130.175
+rate=48000 strength=0 elapsed_ms=139.119
+DIRECT fine=-20 measured=-10.0117 expected=-10
+rate=48000 strength=0 elapsed_ms=146.699
+DIRECT fine=-5 measured=5.02562 expected=5
+rate=48000 strength=0 elapsed_ms=141.383
+DIRECT fine=-3 measured=7.08847 expected=7
+rate=48000 strength=0 elapsed_ms=144.282
+DIRECT fine=3 measured=13.0102 expected=13
+rate=48000 strength=0 elapsed_ms=135.976
+DIRECT fine=5 measured=15.0076 expected=15
+rate=48000 strength=0 elapsed_ms=142.209
+DIRECT fine=10 measured=19.9951 expected=20
+rate=48000 strength=0 elapsed_ms=136.578
+DIRECT fine=37.5 measured=47.5109 expected=47.5
+rate=48000 strength=0 elapsed_ms=145.542
+DIRECT C note step=1 fine=5 measured=114.985 expected=115
+rate=48000 strength=0 elapsed_ms=143.366
+DIRECT C note step=2 fine=5 measured=214.988 expected=215
+rate=48000 strength=0 elapsed_ms=139.243
+DIRECT C note step=-1 fine=5 measured=-85.0295 expected=-85
+rate=48000 strength=0 elapsed_ms=145.966
+REFERENCE C destination=0 fine=5 measured=5.10617 expected=5
+rate=48000 strength=0 elapsed_ms=200.449
+REFERENCE C destination=1 fine=5 measured=105.104 expected=105
+rate=48000 strength=0 elapsed_ms=133.03
+REFERENCE C destination=2 fine=5 measured=204.97 expected=205
+SIDECHAIN mode=1 measured=-5.04905 expected=-5
+SIDECHAIN mode=1 measured=-5.06682 expected=-5
+SIDECHAIN mode=2 measured=-192.997 expected=-193
+rate=48000 strength=0 elapsed_ms=142.133
+rate=48000 strength=0 elapsed_ms=145.37
+242 live audio assertions passed; no file, no transport and no message-loop dependency
+<end of output>
+Test time =  10.20 sec
+----------------------------------------------------------
+Test Passed.
+"live_audio" end time: Oct 20 22:56 UTC
+"live_audio" time elapsed: 00:00:10
+----------------------------------------------------------
+
+End testing: Oct 20 22:56 UTC

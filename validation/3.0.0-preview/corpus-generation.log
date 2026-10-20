@@ -1,0 +1,55 @@
+VIBRATO rate=44100 shift=-9.10769 correlation=0.991774 contour_rms_cents=1.38731
+violin-vibrato rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+violin-legato rate=44100 notes=2 correction_step_1ms=0.162646 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ensemble-common-drift rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ney-slide-noise rate=44100 notes=2 correction_step_1ms=0.169864 2 bolge islendi; 0 bolge temkinli; 1 bolge hassasiyet teyidi gerektiriyor.
+baglama-plucks rate=44100 notes=3 correction_step_1ms=0.00371157 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+oud-body-resonance rate=44100 notes=3 correction_step_1ms=0.000564731 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+guitar-overlap rate=44100 notes=5 correction_step_1ms=0.0400364 5 bolge islendi; 0 bolge temkinli; 2 bolge hassasiyet teyidi gerektiriyor.
+piano-inharmonic-decay rate=44100 notes=3 correction_step_1ms=0.00119265 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=8 voiced=207 wrong=0
+missing-fundamental rate=44100 notes=1 correction_step_1ms=0.53402 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=9 voiced=207 wrong=0
+changing-harmonics rate=44100 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+microtonal-variants rate=44100 notes=2 correction_step_1ms=3.02925e-05 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+already-tuned rate=44100 notes=1 correction_step_1ms=0 0 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+VIBRATO rate=48000 shift=-9.38464 correlation=0.991216 contour_rms_cents=1.52447
+violin-vibrato rate=48000 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+violin-legato rate=48000 notes=2 correction_step_1ms=0.158314 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ensemble-common-drift rate=48000 notes=2 correction_step_1ms=0.035697 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+ney-slide-noise rate=48000 notes=2 correction_step_1ms=0.164772 2 bolge islendi; 0 bolge temkinli; 1 bolge hassasiyet teyidi gerektiriyor.
+baglama-plucks rate=48000 notes=3 correction_step_1ms=0.000976757 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+oud-body-resonance rate=48000 notes=3 correction_step_1ms=0.000610497 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+guitar-overlap rate=48000 notes=10 correction_step_1ms=0.00600628 10 bolge islendi; 0 bolge temkinli; 7 bolge hassasiyet teyidi gerektiriyor.
+piano-inharmonic-decay rate=48000 notes=3 correction_step_1ms=0.000418806 3 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=8 voiced=225 wrong=0
+missing-fundamental rate=48000 notes=1 correction_step_1ms=0.527362 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FUNDAMENTAL kind=9 voiced=225 wrong=0
+changing-harmonics rate=48000 notes=1 correction_step_1ms=0 1 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+microtonal-variants rate=48000 notes=2 correction_step_1ms=4.19965e-05 2 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+already-tuned rate=48000 notes=1 correction_step_1ms=0 0 bolge islendi; 0 bolge temkinli; 0 bolge hassasiyet teyidi gerektiriyor.
+FINE rate=44100 requested=-20 actual=-19.7565 regional_mean=-19.7583
+INDEPENDENT requested=-20 actual=-20.1495
+FINE rate=44100 requested=-5 actual=-5.59625 regional_mean=-5.59531
+INDEPENDENT requested=-5 actual=-4.30936
+FINE rate=44100 requested=-3 actual=-3.32963 regional_mean=-3.32827
+INDEPENDENT requested=-3 actual=-2.64605
+FINE rate=44100 requested=3 actual=2.91476 regional_mean=2.91806
+INDEPENDENT requested=3 actual=2.69078
+FINE rate=44100 requested=5 actual=5.29154 regional_mean=5.29802
+INDEPENDENT requested=5 actual=4.92441
+FINE rate=44100 requested=20 actual=19.3124 regional_mean=19.3081
+INDEPENDENT requested=20 actual=20.5088
+FINE rate=48000 requested=-20 actual=-20.0218 regional_mean=-20.0164
+INDEPENDENT requested=-20 actual=-19.9724
+FINE rate=48000 requested=-5 actual=-5.68818 regional_mean=-5.67344
+INDEPENDENT requested=-5 actual=-4.07832
+FINE rate=48000 requested=-3 actual=-3.36858 regional_mean=-3.35165
+INDEPENDENT requested=-3 actual=-2.54104
+FINE rate=48000 requested=3 actual=3.1311 regional_mean=3.12476
+INDEPENDENT requested=3 actual=2.7024
+FINE rate=48000 requested=5 actual=5.21553 regional_mean=5.21273
+INDEPENDENT requested=5 actual=4.93557
+FINE rate=48000 requested=20 actual=19.442 regional_mean=19.445
+INDEPENDENT requested=20 actual=20.798
+13148 regional rendered-audio assertions passed
