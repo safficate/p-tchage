@@ -131,6 +131,12 @@ int main(int argc, char** argv) {
     juce::ScopedJuceInitialiser_GUI gui;
     try {
         for (double rate : {44100.0, 48000.0}) {
+            PitchProcessor relative; relative.prepareToPlay(rate, 257);
+            relative.setParameter("direct",1); relative.setParameter("referenceMatch",0);
+            relative.setParameter("globalCents",5); relative.setParameter("cent9",2);
+            relative.setParameter("formants",0);
+            check(std::abs(measure(run(relative,rate,0),rate)-17)<1,
+                  "Live relative mode must add global +5 and note +2 to source +10 cents");
             PitchProcessor fresh; fresh.prepareToPlay(rate, 257); fresh.setParameter("cent9", -20);
             checkDry(run(fresh, rate, 0, 1, false, false, 69.1, false), rate, fresh.getLatencySamples());
             fresh.applyCorrection();

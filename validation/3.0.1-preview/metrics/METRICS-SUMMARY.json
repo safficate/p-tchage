@@ -1,0 +1,13 @@
+{
+  "cases": 36,
+  "synthetic": true,
+  "real_recordings": false,
+  "peak": 0.43790650367736816,
+  "max_independent_spectral_error_cents": 0.9379100512496557,
+  "known_attack_max_absolute_difference": 0,
+  "bit_exact_cases": [
+    "44100-already-tuned",
+    "48000-already-tuned"
+  ],
+  "limitations": "Spectral envelope change and contour residuals are diagnostic, not perceptual quality scores; no human listening or native Sonar test."
+}

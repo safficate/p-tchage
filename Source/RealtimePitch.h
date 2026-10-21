@@ -13,6 +13,7 @@ public:
         std::array<float, 12> cents{}, groupStrength{};
         std::array<int, 12> semitones{};
         bool directShift = true;
+        double globalCents = 0;
         bool matchReference = false, analysisOnly = false, preserveOctave = true;
         int followReference = 0;
         float referenceMidi = 0;

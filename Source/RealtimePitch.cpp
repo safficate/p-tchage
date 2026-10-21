@@ -128,7 +128,7 @@ struct RealtimePitch::Impl {
             const int targetKey = key + c.semitones[size_t(group)];
             return juce::jlimit(-24.0, 24.0, targetKey + c.cents[size_t((targetKey % 12 + 12) % 12)] / 100 + 12 * std::log2(c.reference / 440.0) - centre);
         }
-        if (c.directShift) return c.semitones[size_t(group)] + (c.octaveMode ? c.octaveCents[size_t(key)] : c.cents[size_t(group)]) / 100.0;
+        if (c.directShift) return c.semitones[size_t(group)] + (c.octaveMode ? c.octaveCents[size_t(key)] : c.cents[size_t(group)]) / 100.0 + c.globalCents / 100.0;
         const double target = key + (c.octaveMode ? c.octaveCents[size_t(key)] : c.cents[size_t(group)]) / 100.0 + 12 * std::log2(c.reference / 440.0);
         const uint32_t hash = uint32_t(key) * 1664525u + uint32_t(c.seed) * 1013904223u + noteCounter * 2246822519u;
         const double human = c.humanize * (double(hash % 20001) / 10000 - 1) / 100;

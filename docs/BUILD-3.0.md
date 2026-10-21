@@ -1,4 +1,4 @@
-# Reproducing 3.0 engineering preview
+# Reproducing 3.0.1 engineering preview
 
 ## Windows native
 
@@ -8,7 +8,7 @@ Outputs: `build/MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Ma
 
 Run the regional test executable with an optional output directory to recreate the 24 instrument-inspired synthetic cases and their input/output/AB WAV, plan JSON and analysis CSV: `RegionalTests.exe C:\pitchmap-corpus`. The suite also exports +/-3/5/20-cent calibration fixtures at both rates (36 cases total). Exit status must be zero. These are synthetic stress models, not licensed real performances.
 
-For the real DLL harness, use the WindowsVst3Audio CMake target with the built DLL path. CTest exercises static engine/processor/ARA integration; DLL factory validation is separate. See Tests/WindowsVst3Audio.cpp and its console usage. A successful build or Wine run does not prove host compatibility. Perform docs/SONAR-TEST.md in the current stable Sonar on the intended laptop.
+For the real DLL harness, use the WindowsVst3Audio CMake target with the built DLL path. CTest exercises static engine/processor/ARA integration; DLL factory validation is separate. WorkflowTests exercises analysis-only proposals, original preview, explicit clip Apply, actual changed PCM, target audition, cursor anchoring and state migration. RegionalTests also checks left-only/right-only ±5-cent rendering at both rates. See Tests/WindowsVst3Audio.cpp and its console usage. A successful build or Wine run does not prove host compatibility. Perform docs/SONAR-TEST.md in the current stable Sonar on the intended laptop.
 
 ## Cloud toolchain used here
 

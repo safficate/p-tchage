@@ -1,0 +1,18 @@
+Internal ctest changing into directory: /workspace/p-tchage/build-linux
+Test project /workspace/p-tchage/build-linux
+    Start 1: pitch_engine
+1/6 Test #1: pitch_engine .....................   Passed    6.32 sec
+    Start 2: plugin_state_and_playback
+2/6 Test #2: plugin_state_and_playback ........   Passed    1.36 sec
+    Start 3: plugin_editor
+3/6 Test #3: plugin_editor ....................   Passed    1.67 sec
+    Start 4: correction_workflow
+4/6 Test #4: correction_workflow ..............   Passed    6.13 sec
+    Start 5: ara_clip_transfer
+5/6 Test #5: ara_clip_transfer ................   Passed    4.80 sec
+    Start 6: live_audio
+6/6 Test #6: live_audio .......................   Passed   10.15 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =  30.46 sec

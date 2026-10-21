@@ -120,6 +120,7 @@ double correctionAt(const Clip& c, const Settings& s, double time) {
         const auto group = size_t((n.key % 12 + 12) % 12);
         double shift = s.semitones[group] + s.cents[group] / 100;
         if (s.octaveMode) if (auto o = s.octaveCents.find(n.key); o != s.octaveCents.end()) shift = s.semitones[group] + o->second / 100;
+        shift += s.globalCents / 100;
         if (n.detached) shift = n.target / 100;
         if (s.smoothingMs > 0) shift *= juce::jlimit(0.0, 1.0, std::min(time - n.start, n.end - time) / (s.smoothingMs / 1000));
         return juce::jlimit(-24.0, 24.0, shift);
@@ -322,6 +323,7 @@ juce::ValueTree settingsToTree(const Settings& s) {
     t.setProperty("adaptive", s.adaptive, nullptr); t.setProperty("minimumIntervention", s.minimumIntervention, nullptr); t.setProperty("precisionCents", s.precisionCents, nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("c" + juce::String(i), s.cents[size_t(i)], nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("step" + juce::String(i), s.semitones[size_t(i)], nullptr);
+    t.setProperty("globalCents", s.globalCents, nullptr);
     t.setProperty("direct", s.directShift, nullptr);
     t.setProperty("matchReference", s.matchReference, nullptr);
     for (int i = 0; i < 12; ++i) t.setProperty("g" + juce::String(i), s.groupStrength[size_t(i)], nullptr);
@@ -338,6 +340,7 @@ Settings settingsFromTree(const juce::ValueTree& t) {
     for (int i = 0; i < 12; ++i) s.cents[size_t(i)] = value("c" + juce::String(i), 0, -200, 200);
     for (int i = 0; i < 12; ++i) s.semitones[size_t(i)] = int(value("step" + juce::String(i), 0, -12, 12));
     s.adaptive = t.getProperty("adaptive", false); s.minimumIntervention = t.getProperty("minimumIntervention", true); s.precisionCents = value("precisionCents", 1, 0.1, 25);
+    s.globalCents = value("globalCents", 0, -200, 200);
     s.directShift = t.getProperty("direct", false);
     s.matchReference = t.getProperty("matchReference", false);
     for (int i = 0; i < 12; ++i) s.groupStrength[size_t(i)] = value("g" + juce::String(i), 1, 0, 1);

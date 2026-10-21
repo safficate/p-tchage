@@ -30,7 +30,7 @@ struct Queue final : IParamValueQueue {
     tresult PLUGIN_API addPoint(int32, ParamValue v, int32& index) override { value = v; index = 0; return kResultOk; }
 };
 struct Changes final : IParameterChanges {
-    std::array<Queue, 8> queues;
+    std::array<Queue, 9> queues;
     tresult PLUGIN_API queryInterface(const TUID, void** object) override { *object = nullptr; return kNoInterface; }
     uint32 PLUGIN_API addRef() override { return 1; }
     uint32 PLUGIN_API release() override { return 1; }
@@ -57,7 +57,8 @@ static ParamValue enteredValue(IEditController* controller, ParamID id, double v
     require(controller->getParamValueByString(id, utf16, result) == kResultOk, "Actual VST3 parameter text parsing failed");
     return result;
 }
-static void audioCase(IPluginFactory* factory, const TUID cid, double rate, double strength, double target, bool offline, bool direct = false, int step = 0, int sourceKey = 69, bool match = false, int follow = 0, double referenceMidi = 56.95) {
+static int completedCases=0;
+static void audioCase(IPluginFactory* factory, const TUID cid, double rate, double strength, double target, bool offline, bool direct = false, int step = 0, int sourceKey = 69, bool match = false, int follow = 0, double referenceMidi = 56.95, double globalCents = 0) {
     IComponent* component = nullptr;
     require(factory->createInstance(cid, INLINE_UID_OF(IComponent), reinterpret_cast<void**>(&component)) == kResultOk, "VST3 component creation failed");
     require(component->initialize(nullptr) == kResultOk, "VST3 component initialize failed");
@@ -82,6 +83,7 @@ static void audioCase(IPluginFactory* factory, const TUID cid, double rate, doub
     changes.queues[5].id = find(controller, "Correction enabled"); changes.queues[5].value = 1;
     changes.queues[6].id = find(controller, "Match tuned reference tones"); changes.queues[6].value = match ? 1 : 0;
     changes.queues[7].id = find(controller, "Sidechain reference mode"); changes.queues[7].value = enteredValue(controller, changes.queues[7].id, follow);
+    changes.queues[8].id = find(controller, "Relative cents for the entire source"); changes.queues[8].value = enteredValue(controller, changes.queues[8].id, globalCents);
     SpeakerArrangement arrangement = SpeakerArr::kStereo;
     SpeakerArrangement inputs[2] = {SpeakerArr::kStereo, follow ? SpeakerArr::kStereo : SpeakerArr::kEmpty};
     require(processor->setBusArrangements(inputs, 2, &arrangement, 1) == kResultOk, "Stereo bus arrangement failed");
@@ -123,13 +125,13 @@ static void audioCase(IPluginFactory* factory, const TUID cid, double rate, doub
     }
     require(crossings > 100 && last > first, "VST3 output has no measurable tone");
     const double measuredHz = (crossings - 1) * rate / (last - first), measuredCents = 1200 * std::log2(measuredHz / baseHz);
-    const double expected = follow == 1 ? (referenceMidi - std::round(referenceMidi)) * 100 : follow == 2 ? (referenceMidi + 12 * std::round((sourceKey - referenceMidi) / 12) - sourceKey) * 100 : match ? target + step * 100 : direct ? 10 + target + step * 100 : 10 + strength * (target - 10);
-    std::cout << "ACTUAL VST3 rate=" << rate << " direct=" << direct << " strength=" << strength << " fine=" << target << " step=" << step << " expected=" << expected << " measured=" << measuredCents << " cents latency=" << latency << " mode=" << (offline ? "offline" : "realtime") << '\n';
+    const double expected = follow == 1 ? (referenceMidi - std::round(referenceMidi)) * 100 : follow == 2 ? (referenceMidi + 12 * std::round((sourceKey - referenceMidi) / 12) - sourceKey) * 100 : match ? target + step * 100 : direct ? 10 + target + globalCents + step * 100 : 10 + strength * (target - 10);
+    std::cout << "ACTUAL VST3 rate=" << rate << " direct=" << direct << " strength=" << strength << " global=" << globalCents << " fine=" << target << " step=" << step << " expected=" << expected << " measured=" << measuredCents << " cents latency=" << latency << " mode=" << (offline ? "offline" : "realtime") << '\n';
     require(std::abs(measuredCents - expected) < 1, "Actual VST3 output missed entered target by more than 1 cent");
     processor->setProcessing(false); component->setActive(false);
     controllerConnection->disconnect(componentConnection); componentConnection->disconnect(controllerConnection);
     controllerConnection->release(); componentConnection->release(); controller->terminate(); controller->release();
-    processor->release(); component->terminate(); component->release();
+    processor->release(); component->terminate(); component->release();++completedCases;
 }
 int wmain(int argc, wchar_t** argv) {
     std::cout << std::unitbuf;
@@ -148,6 +150,8 @@ int wmain(int argc, wchar_t** argv) {
             for (double rate : {44100.0, 48000.0}) for (double strength : {0.0, 0.5, 1.0}) audioCase(factory, info.cid, rate, strength, -20, false);
             audioCase(factory, info.cid, 48000, 1, 20, true); tested = true;
             for (double rate : {44100.0, 48000.0}) {
+                audioCase(factory, info.cid, rate, 0, 2, false, true, 0, 69, false, 0, 56.95, 5);
+                audioCase(factory, info.cid, rate, 0, 5, false, false, 0, 69, true, 0, 56.95, 99);
                 for (double fine : {-3.0, 5.0, 10.0}) audioCase(factory, info.cid, rate, 0, fine, false, true);
                 audioCase(factory, info.cid, rate, 0, 0, false, true, 1, 60);
                 audioCase(factory, info.cid, rate, 0, 0, false, true, 2, 60);
@@ -159,6 +163,6 @@ int wmain(int argc, wchar_t** argv) {
         }
         require(tested, "No VST3 audio effect tested"); factory->release();
         const auto exit = reinterpret_cast<Entry>(GetProcAddress(module, "ExitDll")); require(!exit || exit(), "ExitDll failed"); FreeLibrary(module);
-        std::cout << "29 actual Windows VST3 streaming target/shift/reference/sidechain cases passed\n"; return 0;
+        std::cout << completedCases << " actual Windows VST3 streaming target/shift/reference/sidechain cases passed\n"; return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

@@ -15,13 +15,15 @@ public:
     void merge();
     void setNote(double cents, double strength, bool detach);
     juce::String regionInfo() const;
+    const juce::String& proposalText() const { return proposalDisplay; }
     int selected = -1;
 private:
     PitchProcessor& processor;
     std::shared_ptr<const mp::Clip> data;
     juce::Image spectrum;
     mp::CorrectionPlan planned;
-    juce::String planFingerprint;
+    juce::String planFingerprint, proposalDisplay;
+    std::shared_ptr<const PitchProcessor::Result> shownResult;
     std::vector<int> selection;
     int seenRevision = -1;
     std::vector<PitchProcessor::TracePoint> liveTrace;
@@ -51,6 +53,11 @@ private:
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>> buttonAttachments;
     std::vector<std::unique_ptr<juce::ComboBox>> noteDestinations;
     std::vector<std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>> destinationAttachments;
+    juce::ComboBox correctionGoal;
+    juce::Slider allCents, clipStart;
+    juce::Label allCentsLabel, clipStartLabel;
+    juce::TextEditor proposalBox;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> allCentsAttachment, clipStartAttachment;
     juce::ToggleButton directSwitch, adaptiveSwitch, minimumSwitch;
     juce::Slider precisionControl;
     juce::Label precisionLabel;

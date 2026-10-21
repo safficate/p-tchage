@@ -1,0 +1,4 @@
+IMPORT offset=30.000001907 status=WAV yuklendi. Baslangic 30.000 s (DAW imleci). Analiz et, farki incele, Uygula.
+ABSOLUTE source=+10 target=+5 measured=4.35684 cents from A440
+RELATIVE source=+10 global=+5 note=+2 measured=17.3337 cents from A440
+41 correction workflow assertions passed

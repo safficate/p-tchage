@@ -131,6 +131,8 @@ int main() {
                 check(std::abs(p.clip()->anchorSeconds - 1) < 1e-9 && p.clip()->audio.getNumSamples() == int(rate * 1.8), "ARA trimmed source must retain its exact DAW timeline position");
                 check(std::abs(p.clip()->audio.getSample(0, 0) - host.samples[size_t(rate * 0.1)]) < 1e-6f, "ARA must use the host clip's trimmed source start");
                 const double raw = bounce(p, host, true); check(std::abs(raw - 10) < 1, "ARA original audition must preserve source pitch");
+                // A previous WAV cursor offset must never move host-owned ARA clips.
+                p.setParameter("offset",30);
                 p.setParameter("step9", 2); p.setParameter("cent11", 5); p.applyCorrection(); waitWorker(p);
                 const double corrected = bounce(p, host, false);
                 std::cout << "ARA rate=" << rate << " source=" << raw << " corrected=" << corrected << " expected=205 cents\n";

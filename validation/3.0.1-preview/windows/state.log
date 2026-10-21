@@ -1,0 +1,10 @@
+Stage: GUI runtime initialization
+Stage: processor and safe defaults
+Stage: parameter state restore
+Stage: source fixture and analysis
+Stage: offline render
+2000 stereo callback blocks, 256 frames: 14.1316 ms on cloud host
+Stage: adaptive defaults, legacy migration and analysis metadata
+Stage: adaptive rendered clip reaches the host callback
+Adaptive host callback shift: -4.9232 cents
+Plugin parameter/source/map state and offline host playback checks passed

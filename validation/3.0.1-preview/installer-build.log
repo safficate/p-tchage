@@ -1,0 +1,23 @@
+MakeNSIS v3.11-1 - Copyright 1999-2025 Contributors
+See the file COPYING for license details.
+Credits can be found in the Users Manual.
+
+Command line defined: "PRODUCT_BUILD=/workspace/p-tchage/dist/windows-x64-3.0.1-preview"
+Processing script file: "packaging/windows.nsi" (UTF8)
+
+Processed 1 file, writing output (amd64-unicode):
+
+Output: "/workspace/p-tchage/dist/windows-x64-3.0.1-preview/MicrotonalPitchMapPro-Setup-x64.exe"
+Install: 5 pages (320 bytes), 1 section (4120 bytes), 486 instructions (13608 bytes), 284 strings (80436 bytes), 2 language tables (644 bytes).
+Uninstall: 2 pages (192 bytes), 1 section (4120 bytes), 57 instructions (1596 bytes), 141 strings (4746 bytes), 2 language tables (500 bytes).
+Datablock optimizer saved 127791 bytes (~1.5%).
+
+Using zlib compression.
+
+EXE header size:              117248 / 103936 bytes
+Install code:                  19044 / 97588 bytes
+Install data:                8025849 / 20373194 bytes
+Uninstall code+data:           11978 / 16297 bytes
+CRC (0xE8862F27):                  4 / 4 bytes
+
+Total size:                  8174123 / 20591019 bytes (39.6%)

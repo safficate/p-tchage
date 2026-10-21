@@ -50,7 +50,10 @@ public:
     void preset(const juce::File&, bool save);
     void setParameter(const juce::String&, float);
     void applyCorrection();
-    void cancelWork() { cancelRequested = true; needsRender = false; }
+    struct Result { mp::CorrectionPlan plan; juce::String fingerprint; std::shared_ptr<const mp::Clip> source; };
+    std::shared_ptr<const Result> correctionResult() const;
+    void auditionTarget(int group, int octave, int sourceNote);
+    void cancelWork() { cancelRequested = true; needsRender = false; renderRequested=false; }
     void refreshHostClips();
     void auditionTone(int group, int octave) { previewing = false; audition.tone(group, octave); }
     int auditionSource(int group) { previewing = false; const auto n = audition.source(clip(), group); if (n < 0) { audition.stop(); setStatus("Bu nota kaynak klipte bulunmadi; sahte kaynak tonu calinmadi."); } return n; }
@@ -92,6 +95,7 @@ private:
         std::atomic<float>* octave = nullptr, *formants = nullptr, *bypass = nullptr, *original = nullptr;
         std::atomic<float>* useRender = nullptr, *offset = nullptr;
         std::atomic<float>* direct = nullptr;
+        std::atomic<float>* globalCents = nullptr;
         std::atomic<float>* enabled = nullptr, *matchReference = nullptr, *follow = nullptr, *preserveOctave = nullptr;
     } liveParameters;
     void processAudio(juce::AudioBuffer<float>&, juce::MidiBuffer&, bool forceBypass);
@@ -105,7 +109,11 @@ private:
     std::atomic<double> captureAnchor{0};
     double runtimeRate = 48000;
     std::atomic<int64_t> previewPosition{0};
-    mutable juce::CriticalSection modelLock, statusLock;
+    mutable juce::CriticalSection modelLock, statusLock, resultLock;
+    std::shared_ptr<const Result> latestResult;
+    std::atomic<bool> renderRequested{false};
+    std::atomic<double> hostSeconds{0};
+    std::atomic<bool> hostPositionKnown{false};
     std::shared_ptr<mp::Clip> model;
     juce::String message = "Ust tuslar: gercek kaynak nota. Alt tuslar: hedef tonu. Eslestir, sonra Uygula.";
     std::vector<std::vector<mp::Note>> history, future;

@@ -357,6 +357,9 @@ juce::var CorrectionPlan::toJson() const {
 }
 juce::AudioBuffer<float> renderAdaptive(const Clip& c,const Settings& s,const Progress& progress,CorrectionPlan* result) {
     auto plan=planCorrection(c,s); juce::AudioBuffer<float> output;
+    int verificationChannel=0;
+    for(int ch=1;ch<c.audio.getNumChannels();++ch)
+        if(c.audio.getRMSLevel(ch,0,c.audio.getNumSamples())>c.audio.getRMSLevel(verificationChannel,0,c.audio.getNumSamples()))verificationChannel=ch;
     if (progress && !progress(0)) { plan.cancelled=true; if(result)*result=plan; return {}; }
     for(int pass=0;pass<4;++pass){
         bool cancelled=false;
@@ -369,14 +372,14 @@ juce::AudioBuffer<float> renderAdaptive(const Clip& c,const Settings& s,const Pr
             const double halfWindow = verifyWindow/(2*c.sampleRate);
             const double begin=std::max(r.stableStart+halfWindow,r.start+0.12),end=std::min(r.stableEnd-halfWindow,r.end-0.08); if(end-begin<0.08)continue;
             for(int point=0;point<8;++point){const double time=begin+(end-begin)*(point+0.5)/8;const int at=int(time*c.sampleRate)-verifyWindow/2;if(at<0||at+verifyWindow>output.getNumSamples())continue;
-                const auto [source,sc]=detectPitch(c.audio.getReadPointer(0,at),verifyWindow,c.sampleRate);const auto [dest,dc]=detectPitch(output.getReadPointer(0,at),verifyWindow,c.sampleRate);
+                const auto [source,sc]=detectPitch(c.audio.getReadPointer(verificationChannel,at),verifyWindow,c.sampleRate);const auto [dest,dc]=detectPitch(output.getReadPointer(verificationChannel,at),verifyWindow,c.sampleRate);
                 if(source>0&&dest>0&&sc>0.85&&dc>0.85){const double shift=100*(hzToMidi(dest)-hzToMidi(source));if(std::abs(shift-r.appliedCents)<20){shifts.push_back(shift);errors.push_back(r.appliedCents-shift);confidence+=dc;}}
             }
             if(shifts.size()>=4){r.achievedCents=median(shifts);r.periodicAchievedCents=r.achievedCents;r.verificationConfidence=confidence/shifts.size();double error=median(errors);
                 if(verifyWindow>4096){const int count=std::min(int(c.sampleRate*1.2),int((r.stableEnd-r.stableStart)*c.sampleRate*0.8));const int at=int((r.stableStart+r.stableEnd)*0.5*c.sampleRate)-count/2;
                     if(at>=0&&at+count<=output.getNumSamples()){
-                        const double source=stableSpectralCentre(c.audio.getReadPointer(0,at),count,c.sampleRate,midiToHz(r.centre));
-                        const double dest=source>0?stableSpectralCentre(output.getReadPointer(0,at),count,c.sampleRate,source*std::exp2(r.appliedCents/1200)):0;
+                        const double source=stableSpectralCentre(c.audio.getReadPointer(verificationChannel,at),count,c.sampleRate,midiToHz(r.centre));
+                        const double dest=source>0?stableSpectralCentre(output.getReadPointer(verificationChannel,at),count,c.sampleRate,source*std::exp2(r.appliedCents/1200)):0;
                         if(source>0&&dest>0){const double measured=1200*std::log2(dest/source);if(std::abs(measured-r.appliedCents)<20){r.spectralVerification=true;r.spectralAchievedCents=measured;r.achievedCents=(measured+r.periodicAchievedCents)/2;error=r.appliedCents-r.achievedCents;}}
                     }
                 }

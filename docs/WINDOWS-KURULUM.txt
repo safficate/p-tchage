@@ -1,4 +1,4 @@
-PITCHMAP PRO 3.0 — WINDOWS x64 MÜHENDİSLİK ÖNİZLEMESİ
+PITCHMAP PRO 3.0.1 — WINDOWS x64 MÜHENDİSLİK ÖNİZLEMESİ
 
 1. ZIP'i tamamen çıkarın. MicrotonalPitchMapPro-Setup-x64.exe dosyasını çalıştırın.
    Eklenti C:\Program Files\Common Files\VST3 içine kurulur.
@@ -7,14 +7,32 @@ PITCHMAP PRO 3.0 — WINDOWS x64 MÜHENDİSLİK ÖNİZLEMESİ
    Bu ortamda Sonar çalıştırılmadı. Sonar uyumluluğu doğrulanmış değildir.
 3. Klipleri çaldırmadan almak için hostun desteklediği ARA/Region FX gerekir.
    Normal kanal efekti bütün proje kliplerine erişemez. Load WAV ile de çalışabilirsiniz.
-4. “Dogal bolgesel (klip/offline)” açıkken klibi analiz edin.
-   ÜST sıra gerçek kaynak nota parçalarını, ALT sıra ayarlanabilen hedef tonları çalar.
-5. Kaynak ve hedef notayı seçin. Hedef cent değerini girin, ESLESTIR ve HEDEFE UYGULA.
-   Kaynak Do +10 c, hedef Do +5 c ise istek -5 c olur.
-   Do'yu Re yapmak iki yarım seslik hedef eşlemesidir; yüzde gerekmez.
-   Kaynağa doğrudan +5 c eklemek için Gelişmiş'te doğrudan cent/nota modunu kullanın.
-6. A/B ile dinleyin. Uygun olduğunda Sonar üzerinden bounce/render alın.
-   WAV dışa aktarma da vardır. Normal canlı kanal ve offline bölgesel motor farklıdır.
+4. WAV için ana ekrandaki “WAV baslangici” değerini klibin Sonar'daki başlangıcına
+   eşitleyin. Sonar son imleç konumunu bildirdiyse yüklemede oradan alınır;
+   konum bildirilmediyse sıfırdır. ARA kliplerinin konumu hosttan gelir.
+5. Ana ekrandan amacınızı seçin:
+   “Hedef / makam notalarina akortla”: hedef notanın cent akordunu belirleyin.
+   Kaynak La +10 c, hedef La +5 c ise program -5 c fark hesaplar.
+   Do -> Re için Do'nun altındaki nota listesinden Re seçin; yüzde yoktur.
+   Alternatif: üst Do ve alt Re'yi seçip ESLESTIR'e basın.
+   Hedefin dayanağı sizin haritanızdır; varsayılan A440 / 12 eşit aralıktır.
+   Makam ses kaydından kendiliğinden tahmin edilmez.
+6. “Kaynaga cent / nota ekle”: genel cent alanına örneğin +5 girin.
+   Kaynak notanın kendi cent/nota ayarı buna eklenir. Kaynak La +10 c,
+   genel +5 c ve La ayarı +2 c ise hedef La +17 c olur.
+7. “ANALIZ ET / AYAR BELIRLE” kaynak perdeyi ölçer. Aşağıdaki panel
+   kaynak -> hedef -> cent farkı -> plan -> gerekçe bilgisini gösterir.
+   Analiz tek başına sesi değiştirmez. “DINLE / A-B” ile orijinal klibi
+   uygulamadan önce de dinleyebilirsiniz. ÜST tuşlar gerçek kaynak parçaları,
+   ALT tuşlar hedef tonları çalar. Göreli modda hedef, kaynaktan hesaplanır.
+8. “ONERIYI UYGULA” düzeltmeyi sese işler. Panelde güvenilir ölçüm bulunan
+   bölgelerin gerçek çıkış cent'i ve sapması görünür. Mavi çizgi planı gösterir.
+   Hedefi sonradan değiştirirseniz yeni Uygula'ya kadar önceki işlenmiş klip
+   duyulur; panel yeni öneriyi gösterir. Ek bir onay penceresi yoktur.
+9. A/B ile karşılaştırın; sonra Sonar üzerinden bounce/render alın veya WAV
+   dışa aktarın. WAV, son uygulanmış işlenmiş sesi ve A/B/Wet ayarını kaydeder;
+   bekleyen hedefleri kendiliğinden işlemez. Canlı kanal/sidechain modunda etkin ayarlar anlık çalışır;
+   yukarıdaki analiz/öneri/işleme akışı offline klipler içindir.
 
 Motor güvenilmez merkezleri ve algıladığı çelişkili kuyruk çakışmalarını atlayabilir;
 çok kısa geçişlerde düzeltmeyi azaltabilir. Hedef cent her malzemede garanti değildir.
@@ -30,6 +48,6 @@ Windows PE x64 dosyaları üretilir; Wine testleri native Windows/Sonar testi sa
 Canlı efekt gecikmesi 150 ms'dir; host telafisi gerekir. ARA önbelleği sıfır gecikmelidir.
 Parametreler/haritalar/kaynak ses proje durumuna yazılır; proje dosyası büyüyebilir.
 
-ZIP içindeki README.md, TEST-REPORT-3.0.md, SONAR-TEST.md ve lisansları okuyun.
+ZIP içindeki README.md, TEST-REPORT-3.0.1.md, SONAR-TEST.md ve lisansları okuyun.
 Eski 0.2.0 dağıtım dosyaları değiştirilmedi. Yeni önizleme aynı eklenti kimliğini taşır;
 kurulum yerel 0.2.0 eklentisinin yerini alabilir. İlk denemeyi proje kopyasında yapın.

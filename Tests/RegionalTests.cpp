@@ -134,6 +134,18 @@ int main(int argc,char** argv){
             std::cout<<"FINE rate="<<rate<<" requested="<<amount<<" actual="<<actual<<" regional_mean="<<total/valid<<'\n';
             if(std::abs(actual-amount)>=1){auto f=juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("pitchmap3-fine-diagnostic.wav");f.deleteFile();mp::writeWav(f,output,rate);}
 check(std::abs(actual-amount)<1,"Stable regional fine-cent translation must be within one cent");const double independent=1200*std::log2(independentFrequency(output,rate)/440);std::cout<<"INDEPENDENT requested="<<amount<<" actual="<<independent<<'\n'; if(std::abs(independent-amount)>=1){auto f=juce::File::getSpecialLocation(juce::File::tempDirectory).getChildFile("pitchmap3-fine-diagnostic.wav");f.deleteFile();mp::writeWav(f,output,rate);std::cout<<"DIAGNOSTIC "<<f.getFullPathName()<<'\n';}check(std::abs(independent-amount)<1,"Independent zero-crossing frequency must confirm the actual requested cents");}
+        for(double rate:{44100.0,48000.0})for(int channel:{0,1})for(double amount:{-5.0,5.0}){
+            auto c=fixture(11,rate);c.audio.clear(1-channel,0,c.audio.getNumSamples());mp::analyseAdaptive(c);
+            mp::Settings s;s.adaptive=true;s.directShift=true;s.formants=false;s.globalCents=amount;
+            mp::CorrectionPlan plan;const auto output=mp::renderAdaptive(c,s,{},&plan);
+            juce::AudioBuffer<float> mono(1,output.getNumSamples());mono.copyFrom(0,0,output,channel,0,output.getNumSamples());
+            const double actual=1200*std::log2(independentFrequency(mono,rate)/440);
+            std::cout<<"SINGLE_CHANNEL rate="<<rate<<" channel="<<channel<<" requested="<<amount<<" independent="<<actual<<'\n';
+            check(!plan.regions.empty()&&plan.regions.front().verificationAvailable,"Calibration must verify the audible channel even when channel zero is silent");
+            check(plan.regions.front().verificationPassed,"Audible-channel cent verification must pass");
+            check(std::abs(actual-amount)<1,"Left-only and right-only actual output must meet the same one-cent gate");
+            check(output.getMagnitude(1-channel,0,output.getNumSamples())==0,"Correction must not create audio in the silent stereo channel");
+        }
         std::cout<<assertions<<" regional rendered-audio assertions passed\n";return 0;
     }catch(const std::exception& e){std::cerr<<"FAIL after "<<assertions<<" checks: "<<e.what()<<'\n';return 1;}
 }

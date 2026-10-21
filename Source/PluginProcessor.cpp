@@ -16,6 +16,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PitchProcessor::layout() {
     p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"adaptive", 1}, "Adaptive regional correction (offline)", true));
     p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"minimumIntervention", 1}, "Minimum intervention", true));
     add("precision", "Requested centre precision cents", 0.1f, 25, 0.1f, 1);
+    add("globalCents", "Relative cents for the entire source", -200, 200, 0.01f, 0);
     p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"direct", 1}, "Direct cent and note shifts", false));
     p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"enabled", 1}, "Correction enabled", false));
     p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"referenceMatch", 1}, "Match tuned reference tones", true));
@@ -43,7 +44,7 @@ parameters(*this, nullptr, "Parameters", layout()) {
     p.octave = raw("octave"); p.formants = raw("formants"); p.bypass = raw("bypass"); p.original = raw("original");
     p.useRender = raw("useRender"); p.offset = raw("offset");
     p.direct = raw("direct");
-    p.enabled = raw("enabled"); p.matchReference = raw("referenceMatch"); p.follow = raw("follow"); p.preserveOctave = raw("preserveOctave");
+    p.globalCents=raw("globalCents"); p.enabled = raw("enabled"); p.matchReference = raw("referenceMatch"); p.follow = raw("follow"); p.preserveOctave = raw("preserveOctave");
     startTimer(500);
 }
 PitchProcessor::~PitchProcessor() { stopTimer(); cancelRequested = true; worker.removeAllJobs(true, -1); }
@@ -86,6 +87,7 @@ void PitchProcessor::processAudio(juce::AudioBuffer<float>& b, juce::MidiBuffer&
     const auto position = getPlayHead() ? getPlayHead()->getPosition() : juce::Optional<juce::AudioPlayHead::PositionInfo>{};
     const auto sampleTime = position ? position->getTimeInSamples() : juce::Optional<int64_t>{};
     const bool playing = position && position->getIsPlaying();
+    if(sampleTime) { hostSeconds.store(double(*sampleTime)/runtimeRate); hostPositionKnown=true; }
 #if JucePlugin_Enable_ARA
     if (araConnected() && position) processBlockForARA(b, isRealtime(), *position);
 #endif
@@ -109,7 +111,7 @@ void PitchProcessor::processAudio(juce::AudioBuffer<float>& b, juce::MidiBuffer&
     const bool cached = rendered && (preview || (value(p.follow) == 0 && (araConnected() || value(p.useRender) > 0.5f) && playing && sampleTime));
     mp::RealtimePitch::Controls controls;
     for (size_t i = 0; i < 12; ++i) { controls.cents[i] = value(p.cents[i]); controls.groupStrength[i] = value(p.groups[i]); controls.semitones[i] = int(value(p.steps[i])); }
-    controls.directShift = value(p.direct) > 0.5f;
+    controls.directShift = value(p.direct) > 0.5f; controls.globalCents=value(p.globalCents);
     controls.matchReference = value(p.matchReference) > 0.5f;
     controls.followReference = int(value(p.follow)); controls.referenceMidi = sidechainPitch.load(); controls.preserveOctave = value(p.preserveOctave) > 0.5f;
     for (size_t i = 0; i < 128; ++i) controls.octaveCents[i] = value(p.octaves[i]);
@@ -122,9 +124,9 @@ void PitchProcessor::processAudio(juce::AudioBuffer<float>& b, juce::MidiBuffer&
     if (!araConnected() || controls.followReference > 0) {
         if (cached) realtime.processDelay(b); else realtime.process(b, controls);
     }
-    if (cached && !bypass) {
+    if (cached && (!bypass || (preview && !forceBypass))) {
         const double delaySeconds = getLatencySamples() / runtimeRate;
-        const double start = (preview ? double(previewPosition.load()) / runtimeRate : double(*sampleTime) / runtimeRate - rendered->anchor - value(p.offset)) - delaySeconds;
+        const double start = (preview ? double(previewPosition.load()) / runtimeRate : double(*sampleTime) / runtimeRate - rendered->anchor - (araConnected() ? 0 : value(p.offset))) - delaySeconds;
         const float wet = controls.wet;
         for (int i = 0; i < b.getNumSamples(); ++i) {
             const double sourcePosition = (start + i / runtimeRate) * rendered->rate;
@@ -136,7 +138,7 @@ void PitchProcessor::processAudio(juce::AudioBuffer<float>& b, juce::MidiBuffer&
                 const float corrected = x + float(sourcePosition - a) * (y - x);
                 const float originalA = rendered->source->audio.getSample(sourceChannel, a), originalB = rendered->source->audio.getSample(sourceChannel, next);
                 const float dry = preview ? originalA + float(sourcePosition - a) * (originalB - originalA) : b.getSample(ch, i);
-                b.setSample(ch, i, original ? dry : dry + wet * (corrected - dry));
+                b.setSample(ch, i, original || bypass ? dry : dry + wet * (corrected - dry));
             }
         }
         if (preview) { previewPosition += b.getNumSamples(); if ((double(previewPosition.load()) - getLatencySamples()) / runtimeRate >= rendered->audio.getNumSamples() / rendered->rate) previewing = false; }
@@ -147,8 +149,12 @@ void PitchProcessor::processAudio(juce::AudioBuffer<float>& b, juce::MidiBuffer&
         float reference = controls.referenceMidi;
         const float source = realtime.detectedMidi();
         if (controls.followReference == 0 && source > 0) {
-            const int key = juce::jlimit(0, 127, int(std::lround(source))) + controls.semitones[size_t(int(std::lround(source)) % 12)];
-            reference = float(key + controls.cents[size_t((key % 12 + 12) % 12)] / 100);
+            const int sourceKey = juce::jlimit(0,127,int(std::lround(source)));
+            const auto group = size_t(sourceKey % 12);
+            const int key = sourceKey + controls.semitones[group];
+            reference = controls.directShift
+                ? float(source + controls.semitones[group] + (controls.globalCents + (controls.octaveMode ? controls.octaveCents[size_t(sourceKey)] : controls.cents[group])) / 100)
+                : float(key + controls.cents[size_t((key % 12 + 12) % 12)] / 100 + 12 * std::log2(controls.reference / 440));
         } else if (reference > 0 && source > 0 && controls.preserveOctave) reference += float(12 * std::round((source - reference) / 12));
         const double time = (sampleTime ? double(*sampleTime + b.getNumSamples()) : double(processedSamples)) / runtimeRate - 2048.0 / runtimeRate;
         trace[size_t(write.blockSize1 > 0 ? write.startIndex1 : write.startIndex2)] = {time, source, reference};
@@ -161,7 +167,7 @@ mp::Settings PitchProcessor::settings() const {
     mp::Settings s; s.adaptive = p("adaptive") > 0.5; s.minimumIntervention = p("minimumIntervention") > 0.5; s.precisionCents = p("precision");
     for (int i = 0; i < 12; ++i) s.cents[size_t(i)] = p("cent" + juce::String(i));
     for (int i = 0; i < 12; ++i) s.semitones[size_t(i)] = int(p("step" + juce::String(i)));
-    s.directShift = p("direct") > 0.5;
+    s.directShift = p("direct") > 0.5; s.globalCents=p("globalCents");
     s.matchReference = p("referenceMatch") > 0.5;
     for (int i = 0; i < 12; ++i) s.groupStrength[size_t(i)] = p("gq" + juce::String(i));
     for (int i = 0; i < 128; ++i) s.octaveCents[i] = p("oct" + juce::String(i));
@@ -184,7 +190,7 @@ void PitchProcessor::applyCorrection() {
     }
     if (auto c = clip()) {
         setParameter("useRender", 1);
-        needsRender = true;
+        needsRender = true; renderRequested=true;
         if (c->notes.empty() || (settings().adaptive && !c->adaptiveAnalysis)) analyse(); else render();
     } else {
         setParameter("useRender", 0);
@@ -194,6 +200,21 @@ void PitchProcessor::applyCorrection() {
 std::shared_ptr<const mp::Clip> PitchProcessor::clip() const { const juce::ScopedLock lock(modelLock); return model; }
 void PitchProcessor::setStatus(juce::String s) { const juce::ScopedLock lock(statusLock); message = std::move(s); }
 juce::String PitchProcessor::status() const { const juce::ScopedLock lock(statusLock); return message; }
+std::shared_ptr<const PitchProcessor::Result> PitchProcessor::correctionResult() const {
+    const juce::ScopedLock lock(resultLock); return latestResult;
+}
+void PitchProcessor::auditionTarget(int group,int octave,int sourceNote) {
+    const auto s=settings();
+    if(!s.directShift){auditionTone(group,octave);return;}
+    auto c=clip(); int index=sourceNote;
+    if(c && (index<0 || index>=int(c->notes.size()) || c->notes[size_t(index)].key%12!=group)) {
+        index=-1;for(size_t i=0;i<c->notes.size();++i)if(c->notes[i].key%12==group){index=int(i);break;}
+    }
+    if(!c || index<0 || index>=int(c->notes.size())){setStatus("Goreli hedefi dinlemek icin once bu kaynak notayi analiz edin.");return;}
+    mp::Settings constant=s;constant.smoothingMs=0;
+    const auto& n=c->notes[size_t(index)];
+    previewing=false; audition.frequency(mp::midiToHz(n.centre+mp::correctionAt(*c,constant,(n.start+n.end)/2)));
+}
 void PitchProcessor::publish(std::unique_ptr<Rendered> r) {
     auto* fresh = r.get(); retained.push_back(std::move(r)); current.store(fresh);
     const auto* active = hazard.load();
@@ -202,25 +223,30 @@ void PitchProcessor::publish(std::unique_ptr<Rendered> r) {
 void PitchProcessor::install(std::shared_ptr<mp::Clip> c) {
     const juce::ScopedLock lock(modelLock); model = std::move(c); history.clear(); future.clear(); ++revision;
     // Previously rendered audio must not play against a new source.
-    current.store(nullptr); needsRender = true;
+    current.store(nullptr); needsRender = true; renderRequested=false;
+    const juce::ScopedLock resultGuard(resultLock); latestResult.reset();
 }
 void PitchProcessor::load(const juce::File& f) {
     if (capturing || busy.exchange(true)) return;
-    worker.addJob([this, f] { juce::String error; auto c = mp::loadAudio(f, error); if (c) { install(c); setStatus("Loaded " + c->name + ". Click Analyze."); } else setStatus(error); progress = 0; busy = false; });
+    const double position=hostSeconds.load(); const bool known=hostPositionKnown.load();
+    worker.addJob([this, f, position, known] { juce::String error; auto c=mp::loadAudio(f,error);
+        if(c){install(c);setParameter("useRender",1);setParameter("offset",known?float(std::max(0.0,position)):0);
+            setStatus("WAV yuklendi. Baslangic "+juce::String(known?position:0,3)+" s"+(known?" (DAW imleci). ":" (DAW konumu yok; gerekirse WAV baslangicini gir). ")+"Analiz et, farki incele, Uygula.");}
+        else setStatus(error); progress=0;busy=false; });
 }
 void PitchProcessor::analyse() {
     if (capturing) return;
     if (busy.exchange(true)) return;
     auto c = clip(); if (!c) { busy = false; setStatus("Load or capture audio first"); return; }
-    cancelRequested = false; const bool adaptive = settings().adaptive;
-    worker.addJob([this, c, adaptive] {
+    cancelRequested = false; const bool adaptive = settings().adaptive; const bool applyAfter=renderRequested.exchange(false);
+    worker.addJob([this, c, adaptive, applyAfter] {
         setStatus("Analyzing monophonic pitch offline..."); auto next = std::make_shared<mp::Clip>(*c);
         auto update = [this](double p) { progress = p; return !cancelRequested.load(); };
         if (adaptive) mp::analyseAdaptive(*next, update); else mp::analyse(*next, update);
         if (cancelRequested) { setStatus("Analiz iptal edildi; onceki kaynak korundu."); busy = false; return; }
-        install(next);
+        install(next); renderRequested=applyAfter;
         if (next->notes.empty()) { needsRender = false; setStatus("No reliable notes detected. Use a longer, isolated instrument or vocal; correction was not applied."); }
-        else setStatus(juce::String(next->notes.size()) + " notes detected. Preparing the entered targets for map playback.");
+        else setStatus(juce::String(next->notes.size()) + " bolge olculdu. Onerinin dayanagini ve cent farklarini inceleyin; Uygula ile sesi degistirin.");
         busy = false;
     });
 }
@@ -230,14 +256,16 @@ void PitchProcessor::render() {
     auto c = clip(); if (!c) { busy = false; return; }
     if (c->notes.empty()) { needsRender = false; busy = false; setStatus("Analyze the source first: no reliable note map is available for correction."); return; }
     const auto s = settings();
-    needsRender = false; cancelRequested = false;
+    needsRender = false; cancelRequested = false; renderRequested=false;
     worker.addJob([this, c, s] {
         setStatus("Rendering corrected audio offline..."); auto r = std::make_unique<Rendered>(); r->rate = c->sampleRate; r->anchor = c->anchorSeconds; r->source = c;
         mp::CorrectionPlan plan; auto update = [this](double p) { progress = p; return !cancelRequested.load(); };
         r->audio = s.adaptive ? mp::renderAdaptive(*c, s, update, &plan) : mp::render(*c, s, update);
         if (cancelRequested || r->audio.getNumSamples() != c->audio.getNumSamples()) { setStatus("Render iptal edildi; kismi ses yayinlanmadi."); busy = false; return; }
+        auto verified=std::make_shared<Result>();verified->plan=std::move(plan);verified->source=c;verified->fingerprint=mp::settingsToTree(s).toXmlString();
+        {const juce::ScopedLock lock(resultLock);latestResult=verified;}
         publish(std::move(r)); lastRenderedSettings = s; renderedNotify = true;
-        setStatus(s.adaptive ? plan.summary() : "Render ready. Map playback uses edited notes; Live input processes incoming audio."); busy = false;
+        setStatus(s.adaptive ? verified->plan.summary() : "Render ready. Map playback uses edited notes; Live input processes incoming audio."); busy = false;
     });
 }
 void PitchProcessor::refreshHostClips() {
@@ -273,8 +301,12 @@ void PitchProcessor::timerCallback() {
     refreshHostClips();
     if (captureFull.exchange(false)) capture(false);
     const auto fingerprint = mp::settingsToTree(settings()).toXmlString();
-    if (fingerprint != settingsFingerprint) { settingsFingerprint = fingerprint; needsRender = true; }
-    if (!busy && !capturing && !cancelRequested && clip() && needsRender && liveParameters.follow->load() == 0 && (liveParameters.enabled->load() > 0.5f || previewing) && (liveParameters.useRender->load() > 0.5f || previewing)) render();
+    if (fingerprint != settingsFingerprint) {
+        if(settingsFingerprint.isNotEmpty() && clip() && !busy && !renderRequested)
+            setStatus("Hedefler degisti; yeni degerler henuz sese uygulanmadi. Oneriyi inceleyip Uygula.");
+        settingsFingerprint=fingerprint;needsRender=true;
+    }
+    if (!busy && !capturing && !cancelRequested && clip() && needsRender && renderRequested && liveParameters.follow->load() == 0 && (liveParameters.enabled->load() > 0.5f || previewing) && (liveParameters.useRender->load() > 0.5f || previewing)) render();
 }
 void PitchProcessor::capture(bool start) {
     if (start) {
@@ -287,12 +319,18 @@ void PitchProcessor::capture(bool start) {
         worker.addJob([this] {
             while (inCallback.load()) juce::Thread::yield();
             const int count = captured.load();
-            if (count > 0) { auto c = std::make_shared<mp::Clip>(); c->sampleRate = runtimeRate; c->anchorSeconds = captureAnchor; c->name = "Captured Sonar track"; c->audio.setSize(2, count); for (int ch = 0; ch < 2; ++ch) c->audio.copyFrom(ch, 0, captureBuffer, ch, 0, count); install(c); setStatus("Capture stored. Click Analyze."); }
+            if (count > 0) { auto c = std::make_shared<mp::Clip>(); c->sampleRate = runtimeRate; c->anchorSeconds = captureAnchor; c->name = "Captured Sonar track"; c->audio.setSize(2, count); for (int ch = 0; ch < 2; ++ch) c->audio.copyFrom(ch, 0, captureBuffer, ch, 0, count); install(c); setParameter("useRender",1);setParameter("offset",0);setStatus("Capture stored. Click Analyze."); }
             else setStatus("No audio captured. Start DAW playback while capture is active."); busy = false;
         });
     }
 }
-void PitchProcessor::preview(bool start) { if (!previewing && !inCallback) previewPosition = 0; previewing = start; }
+void PitchProcessor::preview(bool start) {
+    if(start && busy)return;
+    if(start && !hasRender())if(auto c=clip()) {
+        auto r=std::make_unique<Rendered>();r->audio=c->audio;r->source=c;r->rate=c->sampleRate;r->anchor=c->anchorSeconds;publish(std::move(r));
+    }
+    if(!previewing && !inCallback)previewPosition=0;previewing=start;
+}
 void PitchProcessor::editNotes(std::vector<mp::Note> notes) {
     if (busy) return;
     const juce::ScopedLock lock(modelLock); if (!model) return;
@@ -320,12 +358,13 @@ void PitchProcessor::setStateInformation(const void* data, int bytes) {
     worker.removeAllJobs(true, -1);
     cancelRequested = false;
     auto state = root.getChildWithName("Parameters"); if (state.isValid()) parameters.replaceState(state);
+    if (int(root["version"]) < 4) setParameter("globalCents",0);
     if (int(root["version"]) < 3) setParameter("adaptive", 0);
     if (int(root["version"]) == 1) {
         setParameter("direct", 0); setParameter("referenceMatch", 0); setParameter("enabled", 1);
         for (int i = 0; i < 12; ++i) setParameter("step" + juce::String(i), 0);
     }
-    install(mp::clipFromTree(root.getChildWithName("Clip"))); restoredClipPending = clip() != nullptr; busy = false; setStatus("Project restored; offline render will refresh.");
+    install(mp::clipFromTree(root.getChildWithName("Clip"))); renderRequested=clip()!=nullptr && liveParameters.enabled->load()>0.5f; restoredClipPending = clip() != nullptr; busy = false; setStatus("Project restored; offline render will refresh.");
 }
 std::vector<PitchProcessor::TracePoint> PitchProcessor::takeTrace() {
     std::vector<TracePoint> result;
@@ -343,19 +382,26 @@ void PitchProcessor::importScale(const juce::File& file) {
 }
 void PitchProcessor::exportAudio(const juce::File& f) {
     if (liveParameters.follow->load() > 0) { setStatus("Canli sidechain eslestirmesini Sonar Bounce/Render ile kaydedin. Referanssiz WAV uretimi yapilmadi."); return; }
-    if (busy.exchange(true)) return; auto c = clip(); const auto s = settings();
+    if (busy.exchange(true)) return;
+    auto c = clip();
     if (!c) { busy = false; setStatus("Capture the Sonar input or load a WAV before exporting a file."); return; }
-    if (c->notes.empty() && liveParameters.enabled->load() > 0.5f) { busy = false; setStatus("Click Apply correction first: the source needs a reliable note map before corrected WAV export."); return; }
     cancelRequested = false;
     const float wet = liveParameters.wet->load();
     const bool dry = liveParameters.enabled->load() < 0.5f || liveParameters.bypass->load() > 0.5f || liveParameters.original->load() > 0.5f || wet == 0;
-    worker.addJob([this, c, s, f, wet, dry] {
-        auto audio = dry ? c->audio : mp::render(*c, s, [this](double p) { progress = p; return !cancelRequested.load(); });
-        if (cancelRequested || audio.getNumSamples() != c->audio.getNumSamples()) { setStatus("Disa aktarma iptal edildi; dosya yazilmadi."); busy = false; return; }
+    auto* applied = current.load();
+    if (!dry && (!applied || !correctionResult())) {
+        busy = false; setStatus("Duzeltilmis WAV icin once ONERIYI UYGULA. Henuz islenmis sonuc yok."); return;
+    }
+    // Export the same immutable PCM as playback. Re-rendering current controls
+    // here could silently apply a pending proposal or select a different engine.
+    auto source = !dry ? applied->source : c;
+    worker.addJob([this, source, applied, f, wet, dry] {
+        auto audio = dry ? source->audio : applied->audio;
+        if (cancelRequested) { setStatus("Disa aktarma iptal edildi; dosya yazilmadi."); busy = false; return; }
         if (!dry && wet < 1) for (int ch = 0; ch < audio.getNumChannels(); ++ch) for (int i = 0; i < audio.getNumSamples(); ++i) {
-            const float original = c->audio.getSample(ch, i); audio.setSample(ch, i, original + wet * (audio.getSample(ch, i) - original));
+            const float original = source->audio.getSample(ch, i); audio.setSample(ch, i, original + wet * (audio.getSample(ch, i) - original));
         }
-        setStatus(mp::writeWav(f, audio, c->sampleRate) ? "Exported 24-bit WAV using the current correction, A/B and Wet/Dry settings" : "Export failed: choose a new writable filename"); busy = false;
+        setStatus(mp::writeWav(f, audio, source->sampleRate) ? "Duyulan son uygulanmis sonuc WAV olarak kaydedildi; bekleyen hedef degisiklikleri dahil degil." : "Export failed: choose a new writable filename"); busy = false;
     });
 }
 void PitchProcessor::exportMidi(const juce::File& f) { auto c = clip(); if (c) setStatus(mp::writeMidi(f, *c, settings()) ? "Exported MIDI with pitch-bend data (+/-2 semitone range)" : "MIDI export failed: choose a new filename"); }

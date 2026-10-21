@@ -1,0 +1,252 @@
+[0/2] Re-checking globbed directories...
+[1/58] Linking CXX static library PitchEngine.lib
+[2/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginEditor.cpp.obj
+[3/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/ARAIntegration.cpp.obj
+[4/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.obj
+[5/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.obj
+[6/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.obj
+[7/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.obj
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp(61,2): warning: This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored [-W#pragma-messages]
+   61 |  JUCE_COMPILER_WARNING ("This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored")
+      |  ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/system/juce_PlatformDefs.h(292,38): note: expanded from macro 'JUCE_COMPILER_WARNING'
+  292 |  #define JUCE_COMPILER_WARNING(msg)  _Pragma (JUCE_STRINGIFY (message (msg)))
+      |                                      ^
+<scratch space>(37,2): note: expanded from here
+   37 |  message ("This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored")
+      |  ^
+1 warning generated.
+[8/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.obj
+[9/58] Building C object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.obj
+[10/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics.cpp.obj
+[11/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_events/juce_events.cpp.obj
+[12/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.obj
+[13/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_data_structures/juce_data_structures.cpp.obj
+[14/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.cpp.obj
+[15/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.obj
+[16/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.obj
+[17/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/juce_core.cpp.obj
+[18/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.obj
+[19/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.obj
+[20/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.obj
+[21/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.obj
+[22/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.obj
+[23/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.obj
+[24/58] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/Microtonal Pitch Map Pro_SharedCode.lib"
+[25/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.obj
+[26/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.obj
+[27/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.obj
+[28/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.obj
+[29/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.obj
+[30/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.obj
+[31/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.obj
+[32/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+[33/58] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro.exe"
+[34/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.obj
+[35/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.obj
+[36/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.obj
+[37/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.obj
+[38/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+[39/58] Building CXX object CMakeFiles/PitchTests.dir/Tests/PitchTests.cpp.obj
+[40/58] Linking CXX executable PitchTests_artefacts/Release/PitchTests.exe
+[41/58] Building CXX object CMakeFiles/RegionalTests.dir/Tests/RegionalTests.cpp.obj
+[42/58] Linking CXX executable RegionalTests_artefacts/Release/RegionalTests.exe
+[43/58] Building CXX object CMakeFiles/PluginTests.dir/Tests/PluginTests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[44/58] Building CXX object CMakeFiles/PluginTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[45/58] Linking CXX executable PluginTests_artefacts/Release/PluginTests.exe
+[46/58] Building CXX object CMakeFiles/LiveTests.dir/Tests/LiveTests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[47/58] Building CXX object CMakeFiles/LiveTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[48/58] Linking CXX executable LiveTests_artefacts/Release/LiveTests.exe
+[49/58] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.obj
+[50/58] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-win/Microtonal Pitch Map Pro.vst3"
+removing moduleinfo.json
+[51/58] Building CXX object CMakeFiles/ARATests.dir/Tests/ARATests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[52/58] Generating WorkflowTests_artefacts/JuceLibraryCode/WorkflowTests_resources.rc
+[53/58] Building CXX object CMakeFiles/WorkflowTests.dir/Tests/WorkflowTests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[54/58] Building CXX object CMakeFiles/WorkflowTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[55/58] Building RC object CMakeFiles/WorkflowTests_rc_lib.dir/WorkflowTests_artefacts/JuceLibraryCode/WorkflowTests_resources.rc.res
+[56/58] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests.exe
+[57/58] Building CXX object CMakeFiles/ARATests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[58/58] Linking CXX executable ARATests_artefacts/Release/ARATests.exe
+[0/2] Re-checking globbed directories...
+[1/12] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.obj
+[2/12] Building CXX object CMakeFiles/WorkflowTests.dir/Tests/WorkflowTests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[3/12] Building CXX object CMakeFiles/WindowsVst3Audio.dir/Tests/WindowsVst3Audio.cpp.obj
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:12:
+In file included from /workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstaudioprocessor.h:19:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstcomponent.h(23,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   23 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:12:
+In file included from /workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstaudioprocessor.h:19:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstcomponent.h(217,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  217 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:12:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstaudioprocessor.h(23,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   23 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:12:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstaudioprocessor.h(470,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  470 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:14:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivsteditcontroller.h(23,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   23 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:14:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivsteditcontroller.h(753,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  753 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:15:
+In file included from /workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstmessage.h:19:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstattributes.h(23,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   23 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:15:
+In file included from /workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstmessage.h:19:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstattributes.h(155,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  155 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:15:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstmessage.h(22,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   22 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:15:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstmessage.h(100,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  100 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:16:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstparameterchanges.h(23,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+   23 | #include "pluginterfaces/base/falignpush.h"
+      |          ^
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/base/falignpush.h(35,11): note: previous '#pragma pack' directive that modifies alignment is here
+   35 |                 #pragma pack(16)
+      |                         ^
+In file included from /workspace/p-tchage/Tests/WindowsVst3Audio.cpp:16:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/pluginterfaces/vst/ivstparameterchanges.h(147,10): warning: the current #pragma pack alignment value is modified in the included file [-Wpragma-pack]
+  147 | #include "pluginterfaces/base/falignpop.h"
+      |          ^
+note: previous '#pragma pack' directive that modifies alignment is here
+12 warnings generated.
+[4/12] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginEditor.cpp.obj
+[5/12] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/Microtonal Pitch Map Pro_SharedCode.lib"
+[6/12] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-win/Microtonal Pitch Map Pro.vst3"
+removing moduleinfo.json
+[7/12] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro.exe"
+[8/12] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests.exe
+[9/12] Linking CXX executable LiveTests_artefacts/Release/LiveTests.exe
+[10/12] Linking CXX executable ARATests_artefacts/Release/ARATests.exe
+[11/12] Linking CXX executable WindowsVst3Audio.exe
+[12/12] Linking CXX executable PluginTests_artefacts/Release/PluginTests.exe
+[0/2] Re-checking globbed directories...
+[1/9] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.obj
+[2/9] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/Microtonal Pitch Map Pro_SharedCode.lib"
+[3/9] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro.exe"
+[4/9] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-win/Microtonal Pitch Map Pro.vst3"
+removing moduleinfo.json
+[5/9] Linking CXX executable PluginTests_artefacts/Release/PluginTests.exe
+[6/9] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests.exe
+[7/9] Linking CXX executable LiveTests_artefacts/Release/LiveTests.exe
+[8/9] Building CXX object CMakeFiles/ARATests.dir/Tests/ARATests.cpp.obj
+In file included from <built-in>:466:
+<command line>(19,9): warning: 'JUCE_STANDALONE_APPLICATION' macro redefined [-Wmacro-redefined]
+   19 | #define JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+      |         ^
+<command line>(18,9): note: previous definition is here
+   18 | #define JUCE_STANDALONE_APPLICATION 1
+      |         ^
+1 warning generated.
+[9/9] Linking CXX executable ARATests_artefacts/Release/ARATests.exe

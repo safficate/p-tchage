@@ -2,8 +2,12 @@
 
 namespace mp {
 void Audition::tone(int note, int oct) {
+    fixedFrequency=0;
     group = juce::jlimit(0, 11, note); octave = juce::jlimit(-1, 9, oct);
     ++request; mode = 1;
+}
+void Audition::frequency(double hz) {
+    fixedFrequency=juce::jlimit(20.0,16000.0,hz); ++request; mode=1;
 }
 int Audition::source(std::shared_ptr<const Clip> clip, int note) {
     if (!clip) return -1;
@@ -27,7 +31,8 @@ bool Audition::process(juce::AudioBuffer<float>& b, double rate, const std::arra
     do { selected = selection.load(); hazard.store(selected); } while (selected != selection.load());
     if (kind == 2 && !selected) { hazard = nullptr; return false; }
     const int key = group.load();
-    const double frequency = reference * std::exp2(((octave.load() + 1) * 12 + key - 69 + cents[size_t(key)] / 100.0) / 12);
+    const double generated = reference * std::exp2(((octave.load() + 1) * 12 + key - 69 + cents[size_t(key)] / 100.0) / 12);
+    const double frequency = fixedFrequency.load()>0 ? fixedFrequency.load() : generated;
     const double duration = kind == 1 ? 3 : selected->end - selected->begin;
     for (int i = 0; i < b.getNumSamples(); ++i) {
         const double seconds = position / rate;

@@ -1,0 +1,130 @@
+[0/2] Re-checking globbed directories...
+[1/2] Re-running CMake...
+-- Checking for module 'libcurl'
+--   Package 'libcurl', required by 'virtual:world', not found
+-- Checking for modules 'webkit2gtk-4.0;gtk+-x11-3.0'
+--   Package 'webkit2gtk-4.0', required by 'virtual:world', not found
+--   Package 'gtk+-x11-3.0', required by 'virtual:world', not found
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/p-tchage/build-linux
+[0/2] Re-checking globbed directories...
+[1/56] Building CXX object CMakeFiles/PitchEngine.dir/Source/RealtimePitch.cpp.o
+[2/56] Linking CXX static library libPitchEngine.a
+[3/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.o
+[4/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginEditor.cpp.o
+[5/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/ARAIntegration.cpp.o
+[6/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+[7/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+[8/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+[9/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+In file included from /workspace/.cloud-tools/vendor/JUCE/modules/juce_core/system/juce_StandardHeader.h:95,
+                 from /workspace/.cloud-tools/vendor/JUCE/modules/juce_core/juce_core.h:215,
+                 from /workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics.h:67,
+                 from /workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.h:68,
+                 from /workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp:55:
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/system/juce_PlatformDefs.h:292:38: note: ‘#pragma message: This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored’
+  292 |  #define JUCE_COMPILER_WARNING(msg)  _Pragma (JUCE_STRINGIFY (message (msg)))
+      |                                      ^~~~~~~
+/workspace/.cloud-tools/vendor/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp:61:2: note: in expansion of macro ‘JUCE_COMPILER_WARNING’
+   61 |  JUCE_COMPILER_WARNING ("This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored")
+      |  ^~~~~~~~~~~~~~~~~~~~~
+[10/56] Building C object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
+[11/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_events/juce_events.cpp.o
+[12/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/juce_core.cpp.o
+[13/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
+[14/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+[15/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.cpp.o
+[16/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
+[17/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
+[18/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+[19/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+[20/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
+[21/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+[22/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[23/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[24/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[25/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[26/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+[27/56] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/libMicrotonal Pitch Map Pro_SharedCode.a"
+[28/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[29/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[30/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[31/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[32/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[33/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_Standalone.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[34/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[35/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[36/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[37/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[38/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[39/56] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro"
+[40/56] Linking CXX executable PitchTests_artefacts/Release/PitchTests
+[41/56] Building CXX object CMakeFiles/RegionalTests.dir/Tests/RegionalTests.cpp.o
+[42/56] Linking CXX executable RegionalTests_artefacts/Release/RegionalTests
+[43/56] Building CXX object CMakeFiles/PluginTests.dir/Tests/PluginTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[44/56] Building CXX object CMakeFiles/PluginTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[45/56] Linking CXX executable PluginTests_artefacts/Release/PluginTests
+[46/56] Building CXX object CMakeFiles/MicrotonalPitchMapPro_VST3.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[47/56] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-linux/Microtonal Pitch Map Pro.so"
+removing moduleinfo.json
+[48/56] Building CXX object CMakeFiles/WorkflowTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[49/56] Building CXX object CMakeFiles/LiveTests.dir/Tests/LiveTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[50/56] Building CXX object CMakeFiles/WorkflowTests.dir/Tests/WorkflowTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[51/56] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests
+[52/56] Building CXX object CMakeFiles/ARATests.dir/Tests/ARATests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[53/56] Building CXX object CMakeFiles/LiveTests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[54/56] Linking CXX executable LiveTests_artefacts/Release/LiveTests
+[55/56] Building CXX object CMakeFiles/ARATests.dir/workspace/.cloud-tools/vendor/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[56/56] Linking CXX executable ARATests_artefacts/Release/ARATests
+[0/2] Re-checking globbed directories...
+[1/9] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.o
+[2/9] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginEditor.cpp.o
+[3/9] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/libMicrotonal Pitch Map Pro_SharedCode.a"
+[4/9] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-linux/Microtonal Pitch Map Pro.so"
+removing moduleinfo.json
+[5/9] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro"
+[6/9] Linking CXX executable PluginTests_artefacts/Release/PluginTests
+[7/9] Linking CXX executable LiveTests_artefacts/Release/LiveTests
+[8/9] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests
+[9/9] Linking CXX executable ARATests_artefacts/Release/ARATests
+[0/2] Re-checking globbed directories...
+[1/7] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-linux/Microtonal Pitch Map Pro.so"
+removing moduleinfo.json
+[2/7] Linking CXX executable PluginTests_artefacts/Release/PluginTests
+[3/7] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro"
+[4/7] Linking CXX executable LiveTests_artefacts/Release/LiveTests
+[5/7] Linking CXX executable ARATests_artefacts/Release/ARATests
+[6/7] Building CXX object CMakeFiles/WorkflowTests.dir/Tests/WorkflowTests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[7/7] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests
+[0/2] Re-checking globbed directories...
+[1/9] Building CXX object CMakeFiles/MicrotonalPitchMapPro.dir/Source/PluginProcessor.cpp.o
+[2/9] Linking CXX static library "MicrotonalPitchMapPro_artefacts/Release/libMicrotonal Pitch Map Pro_SharedCode.a"
+[3/9] Building CXX object CMakeFiles/ARATests.dir/Tests/ARATests.cpp.o
+<command-line>: warning: "JUCE_STANDALONE_APPLICATION" redefined
+<command-line>: note: this is the location of the previous definition
+[4/9] Linking CXX executable "MicrotonalPitchMapPro_artefacts/Release/Standalone/Microtonal Pitch Map Pro"
+[5/9] Linking CXX shared module "MicrotonalPitchMapPro_artefacts/Release/VST3/Microtonal Pitch Map Pro.vst3/Contents/x86_64-linux/Microtonal Pitch Map Pro.so"
+removing moduleinfo.json
+[6/9] Linking CXX executable PluginTests_artefacts/Release/PluginTests
+[7/9] Linking CXX executable LiveTests_artefacts/Release/LiveTests
+[8/9] Linking CXX executable ARATests_artefacts/Release/ARATests
+[9/9] Linking CXX executable WorkflowTests_artefacts/Release/WorkflowTests

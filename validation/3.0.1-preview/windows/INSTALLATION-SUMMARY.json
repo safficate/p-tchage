@@ -1,0 +1,8 @@
+{
+  "installed_dll_sha256": "b8f1961aecfcbf50ad096e80f665ee2fb025254f0796c1dfd7b25046cfe696f7",
+  "matches_packaged_dll": true,
+  "plugin_directory_removed": true,
+  "application_directory_removed": true,
+  "uninstall_exit_scope": "NSIS launcher exit code plus completed filesystem cleanup; temporary child exit not separately captured",
+  "native_windows": false
+}

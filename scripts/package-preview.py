@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import zipfile
 from pathlib import Path
@@ -31,19 +32,24 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parent.parent
     validation = args.stage / 'validation'
-    names = ['engine', 'regional', 'state', 'live', 'ara', 'actual-vst3', 'install', 'installed-vst3', 'uninstall']
+    report = json.loads((validation / 'TEST-RESULTS.json').read_text())
+    names = ['engine', 'regional', 'state', 'live', 'ara', 'actual-vst3', 'workflow', 'install', 'installed-vst3', 'uninstall']
     for name in names:
         assert (validation / 'windows' / (name + '.code')).read_text().strip() == '0', name
-    assert '13040 regional rendered-audio assertions passed' in (validation / 'windows/regional.log').read_text()
-    assert '29 actual Windows VST3' in (validation / 'windows/actual-vst3.log').read_text()
-    assert '100% tests passed, 0 tests failed out of 6' in (validation / 'linux-ctest.log').read_text()
+    assert f"{report['regional_assertions']} regional rendered-audio assertions passed" in (validation / 'windows/regional.log').read_text()
+    assert f"{report['actual_dll_cases']} actual Windows VST3" in (validation / 'windows/actual-vst3.log').read_text()
+    assert f"{report['workflow_assertions']} correction workflow assertions passed" in (validation / 'windows/workflow.log').read_text()
+    assert f"100% tests passed, 0 tests failed out of {report['native_linux_groups']}" in (validation / 'linux-ctest.log').read_text()
     assert len(list(args.corpus.glob('*-original.wav'))) == 36
     source_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     binaries = ['Microtonal Pitch Map Pro.exe', 'Microtonal Pitch Map Pro.vst3/Contents/x86_64-win/Microtonal Pitch Map Pro.vst3', 'MicrotonalPitchMapPro-Setup-x64.exe']
-    manifest = dict(version='3.0.0-engineering-preview', source_commit=source_commit,
+    version = re.search(r'project\(MicrotonalPitchMapPro VERSION ([0-9.]+)', (root / 'CMakeLists.txt').read_text()).group(1)
+    assert report['version'] == version + '-engineering-preview'
+    manifest = dict(version=report['version'], source_commit=source_commit,
                     windows_execution='Wine 10 on Linux; not native Windows',
-                    native_linux_ctest_groups=6, regional_assertions=13040,
-                    exported_corpus_assertions=13148, actual_vst3_cases=29,
+                    native_linux_ctest_groups=report['native_linux_groups'], regional_assertions=report['regional_assertions'],
+                    exported_corpus_assertions=report['corpus_export_assertions'], actual_vst3_cases=report['actual_dll_cases'],
+                    workflow_assertions=report['workflow_assertions'],
                     sonar_tested=False, target_laptop_tested=False, native_windows_gui_tested=False,
                     real_recordings_tested=False, human_listening_panel=False,
                     windows_exit_codes={n: 0 for n in names},
