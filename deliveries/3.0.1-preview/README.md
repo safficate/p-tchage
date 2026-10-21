@@ -2,6 +2,8 @@
 
 [Kurulum dosyasını indir (EXE, 8 MB)](MicrotonalPitchMapPro-Setup-x64.exe?raw=true) · [Tam paket (ZIP, 35 MB)](Plugin-Windows-x64.zip?raw=true)
 
+**Yayıncı uyarısı:** Dosyalar güvenilir bir kod imzalama sertifikasıyla imzalanmadı. Windows yayıncıyı doğrulayamaz. [Kurulum EXE’si içermeyen VST3 ZIP’i](Plugin-VST3-Manual.zip?raw=true) elle kurulabilir; içindeki ELLE-KURULUM.txt dosyasını izleyin. Bu yöntem Smart App Control / kurum politikasını aşmaz.
+
 EXE'yi çalıştırın. ZIP kullanıyorsanız önce tamamını çıkarıp içindeki kurulum EXE'sini çalıştırın. Sonar'da VST3 taramasını yenileyin.
 
 Ana ekranda “hedef notaya akortla” veya “kaynağa cent ekle” seçilir. Analiz kaynak -> hedef -> fark -> plan bilgisini gösterir; Uygula gerçek sesi işler. Ölçülebilen çıkış/sapma aynı paneldedir. DINLE / A-B karşılaştırma içindir. WAV başlangıcı Sonar'daki klibin konumuyla aynı olmalıdır; ARA host konumunu kullanır.

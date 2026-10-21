@@ -20,6 +20,10 @@
     "MicrotonalPitchMapPro-Setup-x64.exe": {
       "bytes": 8174123,
       "sha256": "8e10f3ccc5a94254a444cd7c951dfd02a1e0e9e3f11abfc8c9a1f38ee2d270c5"
+    },
+    "Plugin-VST3-Manual.zip": {
+      "bytes": 3970357,
+      "sha256": "2aed6bba311e15711bde6417f3de47ad4f8e24012353216cd137b58764606aaa"
     }
   }
 }
