@@ -1,0 +1,25 @@
+{
+  "source_commit": "22a7d79b35b55eddf73a511954fcec41451aff91",
+  "artifacts": {
+    "AudioExamples-44100.zip": {
+      "bytes": 30369037,
+      "sha256": "501814728e0f8147441af2d15aef7ea3e3310e16e3d534d9c1e5983e84e3ffa8"
+    },
+    "AudioExamples-48000.zip": {
+      "bytes": 32886983,
+      "sha256": "ad7f74ac458a455af87bc33c23b858c1595c492a27fad32bfe0876e31e79c9ee"
+    },
+    "Plugin-Windows-x64.zip": {
+      "bytes": 34691393,
+      "sha256": "5861419fee6d607f3ef0c96f0360c2a1c9cb4a0ba266c5ed523536cf62098092"
+    },
+    "Source.zip": {
+      "bytes": 33976545,
+      "sha256": "fca212292dee2c0a4ba04bab24455cae6d3f6092a8a440f6b26894ef6807997f"
+    },
+    "MicrotonalPitchMapPro-Setup-x64.exe": {
+      "bytes": 8174123,
+      "sha256": "8e10f3ccc5a94254a444cd7c951dfd02a1e0e9e3f11abfc8c9a1f38ee2d270c5"
+    }
+  }
+}
