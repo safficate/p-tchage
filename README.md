@@ -1,8 +1,10 @@
-# Pitchmap Pro 3.1.0
+# Pitchmap Pro 3.1.1
 
 Windows x64 VST3 built with JUCE and Signalsmith Stretch. This revision replaces the new-instance interface with a live source/target workspace. Legacy projects retain their previous editor and processing semantics.
 
-Read [the Turkish usage guide](docs/KULLANIM-3.1-TR.md), [implementation and research](docs/SMOOTHER-RESEARCH-3.1.md) and [test report](docs/TEST-REPORT-3.1.md). Builds are delivered on the development branch; no GitHub Release is published.
+The top-right language menu opens in English and supports Chinese, German, Turkish, French, Arabic, Spanish, Portuguese and Italian. Language is saved per project instance; it does not change the audio. See [language behavior and fonts](docs/LANGUAGES-3.1.1-TR.md).
+
+Read [the Turkish usage guide](docs/KULLANIM-3.1-TR.md), [implementation and research](docs/SMOOTHER-RESEARCH-3.1.md), [audio test report](docs/TEST-REPORT-3.1.md) and [3.1.1 language verification](docs/TEST-REPORT-3.1.1.md). Builds are delivered on the development branch; no GitHub Release is published.
 
 ## Workflow
 

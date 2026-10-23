@@ -76,6 +76,7 @@ public:
     struct TracePoint { double time = 0; float source = 0, reference = 0; };
     std::vector<TracePoint> takeTrace();
     juce::String status() const;
+    int uiLanguage() const;
     float liveMidi() const { return cachePlaying.load()?cachedMidi.load():realtime.detectedMidi(); }
     float liveCents() const { return cachePlaying.load()?cachedCents.load():realtime.appliedCents(); }
     float liveInputLevel() const { return realtime.inputLevel(); }
@@ -109,7 +110,7 @@ public:
     double targetForSource(int sourceClass,double sourceMidi) const;
     void loadReference(const juce::File&);
     void exportFeedback(const juce::File&,const juce::String& userNote);
-    void appendConversation(const juce::String& role,const juce::String& text){workspace.appendConversation(role,text);}
+    void appendConversation(const juce::String& role,const juce::String& text);
     juce::String analysisSummary();
     double transportSeconds()const{return hostSeconds.load();}
     bool transportIsPlaying()const{return hostPlaying.load();}

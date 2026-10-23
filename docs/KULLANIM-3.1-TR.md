@@ -1,4 +1,4 @@
-# Pitchmap Pro 3.1.0 — kullanım
+# Pitchmap Pro — kullanım
 
 ## Kurulum
 
@@ -7,6 +7,8 @@ Sonar'ı kapatın. ZIP'i açın; içindeki **Microtonal Pitch Map Pro.vst3 klas�
 Sonar'ın güncel sürümü ve gerçek Windows masaüstü bu ortamda test edilmedi. Pakette Windows x64 PE VST3 bulunur; Wine testleri Sonar testi değildir.
 
 ## İlk kullanım
+
+3.1.1 ilk açılışta İngilizcedir. Sağ üst dil menüsünden Türkçe seçebilirsiniz. İngilizce MATCH, Türkçe EŞİTLE düğmesiyle aynı işlemdir. Dil seçimi örnek bazında projeye kaydedilir; ayrıntılar LANGUAGES-3.1.1-TR.md içindedir.
 
 1. Eklentiyi düzeltilecek ses kanalına ekleyin. Sonar'dan çalın; ayrı Play, WAV açma veya Capture gerekmez. Normal kanal efekti henüz üzerinden geçmemiş klipleri kendiliğinden alamaz.
 2. Üstte KAYNAKTA OLCULEN satırına okunan notaların cent merkezleri ve gözlem oranları gelir. Okunmayan nota işaretlidir ama elle düzenlenebilir. Çok seyrek güvenilir nota da sayılır. Bu oranlar karar notasını kesin olarak belirlemez; merkez seçimi kullanıcıdadır.

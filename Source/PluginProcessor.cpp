@@ -2,6 +2,7 @@
 #include "PluginEditor.h"
 #include "LiveEditor.h"
 #include "ARAIntegration.h"
+#include "Localization.h"
 
 namespace {
 struct SharedReference {juce::String id,name;std::array<mp::TuningCentre,12> source;};
@@ -73,6 +74,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PitchProcessor::layout() {
     for(int i=0;i<12;++i){add("source"+juce::String(i),"Manual source cents",-200,200,.01f,0);p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"sourceOn"+juce::String(i),1},"Manual source present",false));}
     for (auto id : {"octave", "formants", "useRender", "bypass", "original"})
         p.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{id, 1}, id, false));
+    p.add(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{"uiLanguage",1},"Interface language",0,mp::languageCount-1,0));
     return p;
 }
 PitchProcessor::PitchProcessor(bool legacyDefaults) : AudioProcessor(BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true).withInput("Reference (sidechain)", juce::AudioChannelSet::stereo(), false).withOutput("Output", juce::AudioChannelSet::stereo(), true)),
@@ -321,7 +323,9 @@ void PitchProcessor::applyCorrection() {
 }
 std::shared_ptr<const mp::Clip> PitchProcessor::clip() const { const juce::ScopedLock lock(modelLock); return model; }
 void PitchProcessor::setStatus(juce::String s) { const juce::ScopedLock lock(statusLock); message = std::move(s); }
-juce::String PitchProcessor::status() const { const juce::ScopedLock lock(statusLock); return message; }
+int PitchProcessor::uiLanguage() const {return juce::jlimit(0,mp::languageCount-1,int(parameters.getRawParameterValue("uiLanguage")->load()));}
+juce::String PitchProcessor::status() const { const juce::ScopedLock lock(statusLock); return mp::localizeStatus(message,uiLanguage()); }
+void PitchProcessor::appendConversation(const juce::String& role,const juce::String& text){workspace.appendConversation(mp::localize(role,uiLanguage()),role=="Sistem"?mp::localizeStatus(text,uiLanguage()):text);}
 std::shared_ptr<const PitchProcessor::Result> PitchProcessor::correctionResult() const {
     const juce::ScopedLock lock(resultLock); return latestResult;
 }
@@ -498,6 +502,7 @@ void PitchProcessor::setStateInformation(const void* data, int bytes) {
     ++parameterGeneration;audioMemory.clear();audioMemory.drain();
     cancelRequested = false;
     auto state = root.getChildWithName("Parameters"); if (state.isValid()) parameters.replaceState(state);
+    if(!state.getChildWithProperty("id","uiLanguage").isValid())setParameter("uiLanguage",0);
     legacyProject=int(root["version"])<6;
     workspace.restore(root.getChildWithName("LiveWorkspace"));
     {const juce::ScopedLock lock(referencesLock);const auto restoredId=root.getProperty("instanceId").toString();
@@ -632,28 +637,29 @@ void PitchProcessor::alignReferenceCentre(){
     const float target=mode==3?linkedCents[size_t(group)].load():workspace.referenceCents(group);
     setParameter("referenceBase",target-float(sourceCents));setParameter("globalCents",target-float(sourceCents));
 }
-juce::String PitchProcessor::activityText()const{const juce::ScopedLock lock(statusLock);return activity.joinIntoString("    |    ");}
+juce::String PitchProcessor::activityText()const{const juce::ScopedLock lock(statusLock);juce::StringArray translated;for(const auto& row:activity)translated.add(mp::localizeStatus(row,uiLanguage()));return translated.joinIntoString("    |    ");}
 juce::String PitchProcessor::analysisSummary(){
-    const auto data=workspaceSnapshot();juce::String out="Pitchmap Pro 3.1.0\nKaynak: tek temel frekansli analiz; bagimsiz polifonik ayirma yok.\n";
-    out+="Kare: "+juce::String(int(data.frames.size()))+"; bolge: "+juce::String(int(data.regions.size()))+"\n";
-    for(int i=0;i<12;++i){const auto& c=data.source[size_t(i)];const bool manual=parameters.getRawParameterValue("sourceOn"+juce::String(i))->load()>.5f;if(c.known||manual)out+=mp::noteName(60+i)+(manual?" [elle]":" [olculen]")+": kaynak "+juce::String(manual?parameters.getRawParameterValue("source"+juce::String(i))->load():c.cents,2)+" c; hedef "+juce::String((targetForSource(i,60+i)-60-i)*100,2)+" c\n";}
-    out+="DSP komutu: "+juce::String(liveCents(),2)+" c; etkin gecis: "+juce::String(effectiveSmoothing(),1)+" ms; etkin miktar: "+juce::String(effectiveAmount()*100,1)+"%.\n";
-    if(auto result=correctionResult()){int measured=0,passed=0;double largest=0;for(const auto& r:result->plan.regions)if(r.verificationAvailable){++measured;if(r.verificationPassed)++passed;largest=std::max(largest,std::abs(r.achievedCents-r.requestedCents));}out+="Hazir perde motoru (cilalama oncesi): olculen "+juce::String(measured)+", tolerans icinde "+juce::String(passed)+", en buyuk hedef farki "+juce::String(largest,2)+" c.\n";}
-    out+="Bunlar bagimsiz olculmus cikis perdesi veya insan dogalligi testi degildir.\n";
+    const auto tr=[this](const char* text){return mp::localize(text,uiLanguage());};
+    const auto data=workspaceSnapshot();juce::String out="Pitchmap Pro "+juce::String(JucePlugin_VersionString)+"\n"+tr("Analysis uses one fundamental; independent polyphonic separation is unavailable.")+"\n";
+    out+=tr("Frames")+": "+juce::String(int(data.frames.size()))+"; "+tr("Regions")+": "+juce::String(int(data.regions.size()))+"\n";
+    for(int i=0;i<12;++i){const auto& c=data.source[size_t(i)];const bool manual=parameters.getRawParameterValue("sourceOn"+juce::String(i))->load()>.5f;if(c.known||manual)out+=mp::noteName(60+i)+" ["+tr(manual?"Manual":"Measured")+"]: "+tr("Source")+" "+juce::String(manual?parameters.getRawParameterValue("source"+juce::String(i))->load():c.cents,2)+" c; "+tr("Target")+" "+juce::String((targetForSource(i,60+i)-60-i)*100,2)+" c\n";}
+    out+=tr("DSP command")+": "+juce::String(liveCents(),2)+" c; "+tr("Effective transition")+": "+juce::String(effectiveSmoothing(),1)+" ms; "+tr("Effective amount")+": "+juce::String(effectiveAmount()*100,1)+"%.\n";
+    if(auto result=correctionResult()){int measured=0,passed=0;double largest=0;for(const auto& r:result->plan.regions)if(r.verificationAvailable){++measured;if(r.verificationPassed)++passed;largest=std::max(largest,std::abs(r.achievedCents-r.requestedCents));}out+=tr("Prepared pitch engine (before polish)")+": "+tr("Measured regions")+" "+juce::String(measured)+", "+tr("Within tolerance")+" "+juce::String(passed)+", "+tr("Largest target error")+" "+juce::String(largest,2)+" c.\n";}
+    out+=tr("These are DSP commands, not independent output measurements or a naturalness test.")+"\n";
     return out;
 }
 juce::String PitchProcessor::feedbackText(){
-    return analysisSummary()+"\nSON ISLEMLER\n"+activityText()+"\n\nAYARLAR\n"+parameters.copyState().toXmlString()+"\nSonar yerel testi ve insan dinleme sonucu bu rapordan otomatik cikarilamaz.\n";
+    return analysisSummary()+"\n"+mp::localize("RECENT OPERATIONS",uiLanguage())+"\n"+activityText()+"\n\n"+mp::localize("SETTINGS",uiLanguage())+"\n"+parameters.copyState().toXmlString()+"\n"+mp::localize("Actual Sonar testing and human listening cannot be inferred from this report.",uiLanguage())+"\n";
 }
-void PitchProcessor::exportFeedback(const juce::File& file,const juce::String& note){file.replaceWithText(feedbackText()+"\nKULLANICI NOTU\n"+note);}
+void PitchProcessor::exportFeedback(const juce::File& file,const juce::String& note){file.replaceWithText(feedbackText()+"\n"+mp::localize("User note",uiLanguage())+"\n"+note);}
 void PitchProcessor::captureAssistantAudio(){if(assistantBusy)return;int state=assistantCaptureState.load();if(state==0||state==3)assistantCaptureState.compare_exchange_strong(state,1);}
 void PitchProcessor::askAssistant(const juce::String& key,const juce::String& model,const juce::String& input,bool withAudio){
     if(key.isEmpty()){appendConversation("Sistem","OpenAI API anahtari gerekiyor. ChatGPT aboneligi API erisimi saglamaz. Ses dosyasi gonderilmez.");return;}
     if(assistantBusy.exchange(true))return;
     std::shared_ptr<juce::AudioBuffer<float>> audio;const double audioRate=runtimeRate;
     if(withAudio){const juce::ScopedLock guard(assistantCaptureLock);int state=3;if(!assistantCaptureState.compare_exchange_strong(state,4)){appendConversation("Sistem","Once 12 saniyelik ses ornegini tamamlayin.");assistantBusy=false;return;}audio=std::make_shared<juce::AudioBuffer<float>>(assistantCapture);assistantCaptureState=3;}
-    appendConversation("Sen",input);const auto summary=analysisSummary()+"\nSOHBET GECMISI\n"+workspace.snapshot().conversation.getLastCharacters(10000);
-    assistantWorker.addJob([this,key,model,input,summary,withAudio,audio,audioRate]{
+    const auto replyLanguage=mp::languageName(uiLanguage());appendConversation("Sen",input);const auto summary=analysisSummary()+"\nSOHBET GECMISI\n"+workspace.snapshot().conversation.getLastCharacters(10000);
+    assistantWorker.addJob([this,key,model,input,summary,withAudio,audio,audioRate,replyLanguage]{
         juce::String allow="globalCents,pitchAmount,glideMs,centreMs,maxRate,centreNarrow,vibratoKeep,natural,pitchOn,pitchAuto,amountAuto,toneOn,toneAuto,toneDepth,toneThreshold,toneAttack,toneRelease,toneLow,toneHigh,toneMix,toneRange0,toneRange1,toneRange2,toneRange3,toneRange4,uiScale,centreNote,expression,wet,bypass,formants,globalNotes,harmonicGuard,attackGuard,humanOn,humanAuto,humanDepth,humanTime,finishOn,finishAuto,finishRegion,finishCutoff,finishAmount,finishStart,finishEnd,target0,target1,target2,target3,target4,target5,target6,target7,target8,target9,target10,target11";
         for(int i=0;i<12;++i)allow+=",source"+juce::String(i)+",sourceOn"+juce::String(i)+",step"+juce::String(i);
         allow+=",complete";
@@ -662,7 +668,7 @@ void PitchProcessor::askAssistant(const juce::String& key,const juce::String& mo
         auto* format=new juce::DynamicObject();format->setProperty("type","json_object");if(!withAudio)root->setProperty("response_format",juce::var(format));else delete format;
         juce::Array<juce::var> messages;
         auto message=[&](const char* role,const juce::String& text){auto* m=new juce::DynamicObject();m->setProperty("role",role);m->setProperty("content",text);messages.add(juce::var(m));};
-        message("system","Turkce bir ses duzenleme asistansin. Ses ornegi yoksa sadece raporu biliyorsun; varsa yalniz eklenen 12 saniyeyi dinleyebilirsin. Gercek olcum disinda basari, dinleme veya test sonucu uydurma. Yalniz kullanicinin istedigi ayarlari degistir. JSON don: {\"text\":\"aciklama\",\"changes\":[{\"parameter\":\"izinli ad\",\"value\":0}]}. Izinli: "+allow+". target0..11 kullanicinin belirttigi mutlak hedef centidir. API anahtari, kod, komut, ag istegi veya dosya islemi isteme.\n"+summary);
+        message("system","You are an audio editing assistant. Respond in "+replyLanguage+". Ses ornegi yoksa sadece raporu biliyorsun; varsa yalniz eklenen 12 saniyeyi dinleyebilirsin. Gercek olcum disinda basari, dinleme veya test sonucu uydurma. Yalniz kullanicinin istedigi ayarlari degistir. JSON don: {\"text\":\"aciklama\",\"changes\":[{\"parameter\":\"izinli ad\",\"value\":0}]}. Izinli: "+allow+". target0..11 kullanicinin belirttigi mutlak hedef centidir. API anahtari, kod, komut, ag istegi veya dosya islemi isteme.\n"+summary);
         if(withAudio){
             juce::MemoryBlock pcm;auto out=std::make_unique<juce::MemoryOutputStream>(pcm,false);juce::WavAudioFormat wav;
             std::unique_ptr<juce::AudioFormatWriter> writer(wav.createWriterFor(out.get(),audioRate,2,16,{},0));
@@ -688,7 +694,7 @@ void PitchProcessor::askAssistant(const juce::String& key,const juce::String& mo
             if(!allowed.contains(id)||!parameter||!(value.isInt()||value.isInt64()||value.isDouble())||!std::isfinite(number)||number<parameter->getNormalisableRange().start||number>parameter->getNormalisableRange().end){valid=false;break;}
             changes.push_back({id,float(number)});
         }
-        if(valid){for(const auto& change:changes){if(change.id.startsWith("target"))setTargetCentre(change.id.substring(6).getIntValue(),change.value);else if(change.id.startsWith("source")&&!change.id.startsWith("sourceOn"))setMeasuredCentre(change.id.substring(6).getIntValue(),change.value);else setParameter(change.id,change.value);}appendConversation("Asistan",parsed["text"].toString()+"\nUygulanan ayar sayisi: "+juce::String(int(changes.size())));}
+        if(valid){for(const auto& change:changes){if(change.id.startsWith("target"))setTargetCentre(change.id.substring(6).getIntValue(),change.value);else if(change.id.startsWith("source")&&!change.id.startsWith("sourceOn"))setMeasuredCentre(change.id.substring(6).getIntValue(),change.value);else setParameter(change.id,change.value);}appendConversation("Asistan",parsed["text"].toString()+"\n"+mp::localize("Applied settings",uiLanguage())+": "+juce::String(int(changes.size())));}
         else appendConversation("Sistem","Yanit izinli ayar sinirlarini asti; hicbir degisiklik uygulanmadi.");
         assistantBusy=false;
     });
@@ -705,7 +711,7 @@ void PitchProcessor::auditionCentre(int group,bool target){
 }
 
 void PitchProcessor::parameterChanged(const juce::String& id,float){
-    if(id=="wet"||id=="bypass"||id=="uiScale"||id=="complete"||id=="sourceOn"||id.startsWith("source"))return;
+    if(id=="wet"||id=="bypass"||id=="uiScale"||id=="uiLanguage"||id=="complete"||id=="sourceOn"||id.startsWith("source"))return;
     ++parameterGeneration;preparedReady=false;preparedDirty=true;
 }
 void PitchProcessor::markComplete(){const bool alreadyComplete=smooth.complete->load()>.5f;setParameter("complete",1);assembleRequested=!alreadyComplete||!clip();preparedDirty=true;preparePerformance();}

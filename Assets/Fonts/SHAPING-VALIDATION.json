@@ -1,0 +1,79 @@
+{
+  "backend": "System HarfBuzz C API",
+  "font": "ArabicUI.ttf",
+  "checks": [
+    {
+      "text": "العربية",
+      "direction": "RTL",
+      "input_codepoints": 7,
+      "shaped_glyphs": [
+        283,
+        82,
+        314,
+        17,
+        312,
+        18,
+        30,
+        47,
+        71,
+        7
+      ],
+      "contextual_substitution": true,
+      "original_position_match": true
+    },
+    {
+      "text": "سلام",
+      "direction": "RTL",
+      "input_codepoints": 4,
+      "shaped_glyphs": [
+        73,
+        10,
+        70,
+        36
+      ],
+      "contextual_substitution": true,
+      "original_position_match": true
+    },
+    {
+      "text": "لا",
+      "direction": "RTL",
+      "input_codepoints": 2,
+      "shaped_glyphs": [
+        9,
+        72
+      ],
+      "contextual_substitution": true,
+      "original_position_match": true
+    },
+    {
+      "text": "التصحيح الطبيعي",
+      "direction": "RTL",
+      "input_codepoints": 15,
+      "shaped_glyphs": [
+        314,
+        101,
+        47,
+        314,
+        17,
+        312,
+        15,
+        43,
+        71,
+        7,
+        2,
+        23,
+        314,
+        17,
+        25,
+        39,
+        283,
+        17,
+        71,
+        7
+      ],
+      "contextual_substitution": true,
+      "original_position_match": true
+    }
+  ],
+  "limitations": "Font shaping test only; actual plugin painting is verified separately."
+}

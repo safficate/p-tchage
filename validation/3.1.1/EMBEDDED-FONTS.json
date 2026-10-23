@@ -1,0 +1,23 @@
+{
+  "dll_sha256": "06b8947cfe344de8dcac258f0419dff367355f6716b0f7cc09ec8e6e01b59b91",
+  "fonts": [
+    {
+      "file": "ChineseUI.ttf",
+      "sha256": "5caa9d65c8313ecf7b6172ac8326dd1a1d1adf5874193183ca253b3a2fa75a71",
+      "bytes": 196344,
+      "exact_font_bytes_present_in_dll": true
+    },
+    {
+      "file": "ArabicUI.ttf",
+      "sha256": "ad01c5b01877945ff68e8feebfcc2aaf4abb210b05a7fc7292856a59b31f4397",
+      "bytes": 161740,
+      "exact_font_bytes_present_in_dll": true
+    },
+    {
+      "file": "LatinUI.ttf",
+      "sha256": "bd15774ee46e7499643712c54bf4d85bf191503cb2c4cb665a120fa8e79f55e3",
+      "bytes": 74336,
+      "exact_font_bytes_present_in_dll": true
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+Windows x64: clang 19 targeting MSVC ABI; Windows SDK 10.0.26100, static MSVC CRT; Wine 10 on Linux.
+source /workspace/.cloud-tools/windows-build-env.sh
+cmake --build build-win-clang --parallel 2
+
+Native Linux: GCC 14, JUCE 8.0.12, Xvfb display :99.
+source /workspace/.cloud-tools/activate-dev.sh
+cmake --build build-linux --parallel 2
+DISPLAY=:99 FONTCONFIG_FILE=/workspace/.cloud-tools/fonts.conf ctest --test-dir build-linux --output-on-failure --parallel 2
+
+Windows cmd test sequence captured in RUN-WINDOWS.cmd; each exit code captured immediately.
+GUI PNGs are software paintEntireComponent output from real linked editor components.
+Actual Windows VST3 DLL is independently loaded by WindowsVst3Audio.exe for 47 audio cases.
+No native Windows desktop, Cakewalk Sonar, HP laptop, real API service or human listening test performed.

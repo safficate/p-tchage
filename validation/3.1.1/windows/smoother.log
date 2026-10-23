@@ -1,0 +1,25 @@
+TARGET 44100 key=38 source=12 target=5 measured=5.01878
+TARGET 44100 key=38 source=-7 target=5 measured=5.0376
+TARGET 44100 key=50 source=12 target=5 measured=5.00546
+TARGET 44100 key=50 source=-7 target=5 measured=5.00779
+TARGET 44100 key=62 source=12 target=5 measured=4.92939
+TARGET 44100 key=62 source=-7 target=5 measured=5.00882
+TARGET 44100 key=74 source=12 target=5 measured=4.92336
+TARGET 44100 key=74 source=-7 target=5 measured=5.07408
+TARGET 44100 key=86 source=12 target=5 measured=5.03164
+TARGET 44100 key=86 source=-7 target=5 measured=4.99949
+TONE 44100 resonance=2940.38 amplitude=0.065551 cut=3.66875
+PREPARED 44100 status=Regional audio is ready. Restart playback or use Sonar Bounce. busy=0 render=1
+TARGET 48000 key=38 source=12 target=5 measured=5.88653
+TARGET 48000 key=38 source=-7 target=5 measured=5.02746
+TARGET 48000 key=50 source=12 target=5 measured=5.00292
+TARGET 48000 key=50 source=-7 target=5 measured=4.98222
+TARGET 48000 key=62 source=12 target=5 measured=4.89537
+TARGET 48000 key=62 source=-7 target=5 measured=5.15087
+TARGET 48000 key=74 source=12 target=5 measured=5.26181
+TARGET 48000 key=74 source=-7 target=5 measured=5.5171
+TARGET 48000 key=86 source=12 target=5 measured=5.18297
+TARGET 48000 key=86 source=-7 target=5 measured=4.99403
+TONE 48000 resonance=2940.38 amplitude=0.0656533 cut=3.65438
+PREPARED 48000 status=Regional audio is ready. Restart playback or use Sonar Bounce. busy=0 render=1
+135 smoother/workspace assertions passed; callback allocations=0

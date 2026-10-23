@@ -1,0 +1,41 @@
+Bundled en font: 71 distinct catalog characters covered
+Bundled zh-Hans font: 360 distinct catalog characters covered
+Bundled de font: 77 distinct catalog characters covered
+Bundled tr font: 79 distinct catalog characters covered
+Bundled fr font: 78 distinct catalog characters covered
+Bundled ar font: 44 distinct catalog characters covered
+Bundled es font: 76 distinct catalog characters covered
+Bundled pt font: 86 distinct catalog characters covered
+Bundled it font: 72 distinct catalog characters covered
+Language switching audio invariant at 44100 Hz; maximum sample difference=0
+Language switching audio invariant at 48000 Hz; maximum sample difference=0
+Constructed first real editor
+Constructed second real editor
+Verified real interface language en
+Verified real interface language zh-Hans
+Verified real interface language de
+Verified real interface language tr
+Verified real interface language fr
+Verified real interface language ar
+Verified real interface language es
+Verified real interface language pt
+Verified real interface language it
+Rendered en-main.png
+Rendered en-pitch-detail.png
+Rendered en-tone-detail.png
+Rendered en-repair-detail.png
+Rendered en-ai.png
+Rendered en-history.png
+Rendered zh-Hans-main.png
+Rendered zh-Hans-pitch-detail.png
+Rendered zh-Hans-tone-detail.png
+Rendered zh-Hans-repair-detail.png
+Rendered zh-Hans-ai.png
+Rendered zh-Hans-history.png
+Rendered ar-main.png
+Rendered ar-pitch-detail.png
+Rendered ar-tone-detail.png
+Rendered ar-repair-detail.png
+Rendered ar-ai.png
+Rendered ar-history.png
+4583 localization/catalog/interface/state assertions passed

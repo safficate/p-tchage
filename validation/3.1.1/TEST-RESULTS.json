@@ -1,0 +1,22 @@
+{
+  "version": "3.1.1",
+  "native_linux_groups_passed": 9,
+  "localization_assertions": 4583,
+  "languages": 9,
+  "catalog_rows": 181,
+  "actual_windows_vst3_cases": 47,
+  "new_suite_assertions": 135,
+  "live_audio_assertions": 248,
+  "final_dll_sha256": "06b8947cfe344de8dcac258f0419dff367355f6716b0f7cc09ec8e6e01b59b91",
+  "windows_execution": "Wine 10, Linux",
+  "windows_gui_screenshots": 18,
+  "native_gui_screenshots": 18,
+  "language_switching_max_sample_difference_44100": 0,
+  "language_switching_max_sample_difference_48000": 0,
+  "sonar_tested": false,
+  "native_windows_tested": false,
+  "human_listening_verified": false,
+  "ai_service_verified": false,
+  "independent_polyphonic_separation": false,
+  "callback_cpp_allocations": 0
+}
