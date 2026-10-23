@@ -1,37 +1,31 @@
-# PitchMap Pro 3.0.1 — engineering preview
+# Pitchmap Pro 3.1.0
 
-Windows x64 VST3 and standalone, based on the existing JUCE/Signalsmith project. This development build adds **offline adaptive regional pitch translation**: it moves a reliable tuning centre while preserving the original pitch movement. It is an engineering preview, not a commercial audio-quality or Sonar compatibility certification. The original 0.2.0 delivery is retained unchanged.
+Windows x64 VST3 built with JUCE and Signalsmith Stretch. This revision replaces the new-instance interface with a live source/target workspace. Legacy projects retain their previous editor and processing semantics.
 
-## Use it
+Read [the Turkish usage guide](docs/KULLANIM-3.1-TR.md), [implementation and research](docs/SMOOTHER-RESEARCH-3.1.md) and [test report](docs/TEST-REPORT-3.1.md). Builds are delivered on the development branch; no GitHub Release is published.
 
-1. Load a WAV or open host clips through supported ARA Region FX. An ordinary insert cannot retrieve unrelated project clips. For imported WAV, the visible **WAV baslangici** is set from the last cursor position supplied by the DAW; check it against the actual clip start. Without a host position it starts at zero. ARA clips retain their host timeline positions.
-2. Choose the purpose on the main screen: **Hedef / makam notalarina akortla** (absolute tuning) or **Kaynaga cent / nota ekle** (relative shift). Keep **Dogal bolgesel (klip/offline)** enabled. **ANALIZ ET / AYAR BELIRLE** measures source regions and explains the proposal; it does not change the audio. **DINLE / A-B** can audition the whole original clip before applying anything.
-3. In absolute mode, the lower keys and cent fields define the target tuning. The default is 12-tone equal temperament at A440, not a guessed makam. Source A +10 c and target A +5 c propose **−5 c**. To map C to D, choose D in C's destination selector, or select upper C and lower D then **ESLESTIR**. Percentages are unnecessary.
-4. In relative mode, **Kaydin tamamina eklenecek** adds the entered cents to all source notes. Per-source cent and semitone settings add to this amount: source A +10 c, global +5 c and A +2 c produce a requested A +17 c. The lower A key auditions that calculated target from the analysed source. Upper keys always audition the original source segments.
-5. The proposal panel shows the basis, source centre, your target, requested difference, planned amount and reason for any reduction or refusal. Press **ONERIYI UYGULA** to render. The same panel then shows actual output measurements and deviation where measurement is reliable. A blue curve alone is a planned target, not proof of success.
-6. Compare the rendered sound with **DINLE / A-B**, then bounce in Sonar or export WAV. WAV export uses the last applied rendered PCM and the A/B/Wet settings; it does not silently render pending targets through a different engine. Subsequent target changes remain a new proposal until Apply; the previous rendered clip remains audible. This explicit clip workflow differs from live input and sidechain modes, where enabled parameters operate continuously. Restoring an enabled project regenerates its saved clip render offline.
+## Workflow
 
-Advanced exposes precision and minimum intervention. Below the selected precision/estimated uncertainty the engine can retain original PCM. Low-confidence centres and identified conflicting overlapping tails are declined. Short connected transitions can require reduced corrections. These decisions are explicit; a requested correction is not a guarantee on every recording.
+Insert on an audio track and play the DAW. The plugin learns pitch centres and a timeline from audio that actually passes through it. Replaying the same position replaces its observations instead of appending duplicate history. ESITLE copies measured/manual source centres to editable targets. Target changes affect live processing immediately; no Capture or Apply step. Global cents and semitones remain separate from individual targets.
 
-## Implemented in this delivery
+Small source and target Dinle buttons audition their tuned tones: a short click lasts approximately half a second; holding sustains the tone. An unread source has no fabricated measured tone. UI scale is saved independently of graph zoom.
 
-- Multi-window offline YIN analysis, harmonic checks, weighted robust regional centres and heuristic uncertainty.
-- Original `P(t)` and separately planned `C(t)`, constant regional offsets, transitions between stable anchors, bounded corrections when transition time is insufficient.
-- Automatic continuous/discrete behavior hypotheses; dry attack protection with an explicit processed-audio bridge; no automatic flattening of vibrato.
-- Minimum intervention, linked stereo, actual rendered-output verification and bounded stable-centre refinement. Every measurement is from emitted PCM, not just a parameter value.
-- Source/target row order clarified, background cancellation, optional analysis metadata saved with host state, state v4 includes global relative cents; v1/v2 legacy and v3 adaptive semantics retained.
-- Existing custom cents, 12-note Scala import, note-level edits, undo/redo, ARA clip access, WAV import/export, standalone, and live reference sidechain.
+TUM PARCA BURADA freezes the acquired interval and prepares regional audio in the background; restart playback or seek to hear the prepared path. Missing audio intervals are rejected. Customized live transition/centre/slope settings, human drift, centre narrowing and simultaneous host-sidechain following use live processing and Sonar bounce instead of the prepared cache.
 
-## Limits that matter
+Detailed pages separate correction amount/transition behavior, optional human drift, optional dynamic resonance smoothing and an optional final filter. Tone processing defaults off. The activity history describes actual DSP commands; a planned curve is not a measured output.
 
-Persistent **sidechain reference-map learning is unfinished**. Existing sidechain modes follow a simultaneously playing reference; they do not retain a learned map. Only routed audio reaches the plugin. The adaptive planner operates on offline clips, while live input uses the existing lower-cost streaming engine.
+References may be learned from another instance in the same host process or supplied through the host's sidechain bus. Instances cannot retrieve arbitrary DAW clips or cross a process sandbox. No MIDI or external audio interface is required; the DAW owns the audio driver.
 
-This is one common-mode shifter. It cannot separately tune overlapping notes, players or chord tones. Tail detection is heuristic and can miss an overlap. Uncertainty is an engineering estimate, not a calibrated probability. Attacks kept dry are initially unshifted; the following bridge can color the sound. Piano-specific modeling, neural separation, trained instrument inference and the AI assistant are research/design only, with no placeholder buttons. Real-instrument listening and native Windows/current Sonar/HP laptop validation remain outstanding.
+## Limits
 
-44.1/48 kHz mono/stereo are supported by the audio tests. No MIDI or external audio interface is required; the DAW supplies its selected driver. Live FX reports 150 ms latency; use host compensation. ARA cached playback reports zero latency. Source PCM is embedded in project state, capped at 10 minutes / 240 MiB per instance, so projects can become large.
+This is a common-mode pitch shifter, not independent polyphonic note separation. Automatic behavior uses signal heuristics, not a trained instrument classifier or neural performer. It cannot guarantee artifact-free or human-replayed sound. Current stable Sonar, native Windows GUI and the specified HP laptop remain untested. Wine execution is not Sonar certification.
 
-## Build, evidence and licensing
+The AI page implements OpenAI API chat, bounded parameter commands, explicitly requested 12-second output audio capture, and copyable feedback. It requires a separate API key and Internet; no key is saved in project state. No request is made automatically. Service behavior remains unverified without a key. It does not connect directly to the current ChatGPT conversation.
 
-Use Visual Studio 2022 Desktop C++, Windows SDK, CMake 3.24+ and Git, then run `scripts/build-windows.ps1`. The source package includes pinned dependency source for offline builds. See [reproducible build instructions](docs/BUILD-3.0.md), [test plan](docs/TEST-PLAN-3.0.md), [3.0.1 workflow test report](docs/TEST-REPORT-3.0.1.md) and [3.0 baseline report](docs/TEST-REPORT-3.0.md), [research/architecture](docs/ARCHITECTURE-3.0.md) and [Sonar acceptance protocol](docs/SONAR-TEST.md). The corpus is explicitly synthetic, instrument-inspired audio, not real violin/ney/oud recordings.
+44.1/48 kHz mono/stereo are covered by controlled tests. Live processing reports 150 ms latency for host compensation. Source histories/maps/parameters are saved with the project; complete-source PCM can enlarge project files. Acquisition is capped at 600 seconds and approximately 240 MiB of stored PCM per instance; rendering needs additional memory.
 
-AGPL-3.0-or-later; see [commercial licensing implications](docs/LICENSING-3.0.md). No paid dependencies, remote AI calls or private-audio uploads are introduced. This is a development-branch package, not a new published GitHub Release.
+## Build and license
+
+C++20, Visual Studio 2022 Desktop C++, Windows SDK and CMake 3.24+: run scripts/build-windows.ps1. The corresponding source archive includes pinned JUCE, Signalsmith and ARA dependency sources. See [build instructions and dependency pins](docs/BUILD-3.0.md). No additional runtime DSP dependency was introduced.
+
+AGPL-3.0-or-later. See LICENSE and [dependency licensing](docs/LICENSING-3.0.md). Real-recording listening examples carry their own CC BY 4.0 attribution. Existing 0.2/3.0 delivery files are retained.

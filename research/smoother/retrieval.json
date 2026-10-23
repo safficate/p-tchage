@@ -1,0 +1,89 @@
+{
+  "retrieved_on": "2026-10-23",
+  "entries": [
+    {
+      "id": "zl-equalizer",
+      "url": "https://github.com/ZL-Audio/ZLEqualizer/raw/refs/heads/main/README.md",
+      "file": "zl-equalizer.txt",
+      "bytes": 4757,
+      "sha256": "3aad19bbd2834dc7cb33722db7fc8f354daeb824588cb69b75725dee8425d34d",
+      "resolved_url": "https://raw.githubusercontent.com/ZL-Audio/ZLEqualizer/refs/heads/main/README.md"
+    },
+    {
+      "id": "zl-license",
+      "url": "https://github.com/ZL-Audio/ZLEqualizer/raw/refs/heads/main/LICENSE",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "signalsmith",
+      "url": "https://github.com/Signalsmith-Audio/signalsmith-stretch/raw/refs/heads/main/README.md",
+      "file": "signalsmith.txt",
+      "bytes": 8205,
+      "sha256": "d2c43d92312154a09660bffbb06b408f3b470662f89cb4123fa5268a4ced444c",
+      "resolved_url": "https://raw.githubusercontent.com/Signalsmith-Audio/signalsmith-stretch/refs/heads/main/README.md"
+    },
+    {
+      "id": "juce-ballistics",
+      "url": "https://github.com/juce-framework/JUCE/raw/29396c22c93392d6738e021b83196283d6e4d850/modules/juce_dsp/processors/juce_BallisticsFilter.cpp",
+      "file": "juce-ballistics.txt",
+      "bytes": 4411,
+      "sha256": "d25122ac8deccd02fe4e4a20d8e825838f5da5038f46b9c222b1a31c34a24230",
+      "resolved_url": "https://raw.githubusercontent.com/juce-framework/JUCE/29396c22c93392d6738e021b83196283d6e4d850/modules/juce_dsp/processors/juce_BallisticsFilter.cpp"
+    },
+    {
+      "id": "juce-smoothing",
+      "url": "https://github.com/juce-framework/JUCE/raw/29396c22c93392d6738e021b83196283d6e4d850/modules/juce_audio_basics/utilities/juce_SmoothedValue.h",
+      "file": "juce-smoothing.txt",
+      "bytes": 22349,
+      "sha256": "fc996d0c94abac423def3d3742630900ab2b42957e122eb8e6d0f8f4abe435e8",
+      "resolved_url": "https://raw.githubusercontent.com/juce-framework/JUCE/29396c22c93392d6738e021b83196283d6e4d850/modules/juce_audio_basics/utilities/juce_SmoothedValue.h"
+    },
+    {
+      "id": "soothe-official",
+      "url": "https://oeksound.com/plugins/soothe2/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "rubberband-technical",
+      "url": "https://github.com/breakfastquay/rubberband/raw/refs/heads/default/README.md",
+      "file": "rubberband-technical.txt",
+      "bytes": 8288,
+      "sha256": "e7a6fc0fd3177e3a166a67e1cb834f6bfdec74c8d8928c71543367558d104ad6",
+      "resolved_url": "https://raw.githubusercontent.com/breakfastquay/rubberband/refs/heads/default/README.md"
+    },
+    {
+      "id": "rubberband-r3",
+      "url": "https://github.com/breakfastquay/rubberband/raw/refs/heads/default/src/finer/R3LiveShifter.cpp",
+      "file": "rubberband-r3.txt",
+      "bytes": 41795,
+      "sha256": "d6f28fdb9542d6a509cdde9e9859831ece1426cd489e4f788431fa133fe5172f",
+      "resolved_url": "https://raw.githubusercontent.com/breakfastquay/rubberband/refs/heads/default/src/finer/R3LiveShifter.cpp"
+    },
+    {
+      "id": "zl-license-actual",
+      "url": "https://github.com/ZL-Audio/ZLEqualizer/raw/refs/heads/main/LICENSE.md",
+      "file": "zl-license-actual.txt",
+      "bytes": 34259,
+      "sha256": "a96fd9920a72e79720d41bcf32ccd58634194aa01ee82f246a72392015d626e9",
+      "resolved_url": "https://raw.githubusercontent.com/ZL-Audio/ZLEqualizer/refs/heads/main/LICENSE.md"
+    },
+    {
+      "id": "librosa-pyin",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/core/pitch.py",
+      "file": "librosa-pyin.txt",
+      "bytes": 33979,
+      "sha256": "63fbe3b6a45198731a4be7ef4fa5876770fbf7a3c5815853462d340e69caf593",
+      "resolved_url": "https://raw.githubusercontent.com/librosa/librosa/refs/heads/main/librosa/core/pitch.py"
+    },
+    {
+      "id": "sms-materials-license",
+      "url": "https://github.com/MTG/sms-tools-materials/raw/refs/heads/master/LICENSE",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "sms-materials-readme",
+      "url": "https://github.com/MTG/sms-tools-materials/raw/refs/heads/master/README.md",
+      "error": "HTTP Error 404: Not Found"
+    }
+  ]
+}

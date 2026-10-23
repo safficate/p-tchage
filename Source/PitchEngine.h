@@ -9,7 +9,7 @@
 namespace mp {
 constexpr double maxSeconds = 600.0;
 constexpr int64_t maxAudioBytes = 240LL * 1024 * 1024;
-constexpr int stateVersion = 4;
+constexpr int stateVersion = 6;
 struct Frame { double time = 0, midi = 0, confidence = 0, rms = 0; double uncertainty = 0, onset = 0, agreement = 1; };
 struct Note {
     double start = 0, end = 0, centre = 69, confidence = 0;

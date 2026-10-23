@@ -1,0 +1,7 @@
+MEASURABLE flute-A4.wav frames=142
+REAL flute-A4.wav prepared=0 shift=-20 median=-18.924 contour_correlation=0.996529 voiced_frames=142
+MEASURABLE flute-A4.wav frames=142
+REAL flute-A4.wav prepared=0 shift=5 median=5.56897 contour_correlation=0.996876 voiced_frames=142
+MEASURABLE flute-A4.wav frames=142
+REAL flute-A4.wav prepared=0 shift=20 median=21.3032 contour_correlation=0.994012 voiced_frames=142
+33 real-recording assertions passed

@@ -1,0 +1,101 @@
+rate=44100 strength=0 elapsed_ms=97.3759
+rate=44100 strength=0 elapsed_ms=107.24
+rate=44100 strength=0 elapsed_ms=129.066
+rate=44100 strength=0 elapsed_ms=128.131
+LIVE target=-20c measured=10.0516c expected=10c latency=6615
+rate=44100 strength=0.5 elapsed_ms=103.804
+LIVE target=-20c measured=-4.97981c expected=-5c latency=6615
+rate=44100 strength=1 elapsed_ms=94.6953
+LIVE target=-20c measured=-19.8839c expected=-20c latency=6615
+rate=44100 strength=1 elapsed_ms=106.572
+LIVE target=+20c measured=19.9889c
+rate=44100 strength=1 elapsed_ms=108.355
+rate=44100 strength=1 elapsed_ms=83.8643
+rate=44100 strength=1 elapsed_ms=88.2349
+rate=44100 strength=1 elapsed_ms=89.3817
+rate=44100 strength=1 elapsed_ms=53.0877
+rate=44100 strength=1 elapsed_ms=102.555
+rate=44100 strength=1 elapsed_ms=110.075
+rate=44100 strength=1 elapsed_ms=94.4872
+rate=44100 strength=0 elapsed_ms=128.564
+DIRECT fine=-20 measured=-9.94436 expected=-10
+rate=44100 strength=0 elapsed_ms=119.985
+DIRECT fine=-5 measured=5.04284 expected=5
+rate=44100 strength=0 elapsed_ms=325.494
+DIRECT fine=-3 measured=7.09443 expected=7
+rate=44100 strength=0 elapsed_ms=411.95
+DIRECT fine=3 measured=13.0557 expected=13
+rate=44100 strength=0 elapsed_ms=179.344
+DIRECT fine=5 measured=15.052 expected=15
+rate=44100 strength=0 elapsed_ms=215.347
+DIRECT fine=10 measured=20.0411 expected=20
+rate=44100 strength=0 elapsed_ms=194.039
+DIRECT fine=37.5 measured=47.5522 expected=47.5
+rate=44100 strength=0 elapsed_ms=208.747
+DIRECT C note step=1 fine=5 measured=115.017 expected=115
+rate=44100 strength=0 elapsed_ms=118.725
+DIRECT C note step=2 fine=5 measured=215.039 expected=215
+rate=44100 strength=0 elapsed_ms=117.798
+DIRECT C note step=-1 fine=5 measured=-84.9869 expected=-85
+rate=44100 strength=0 elapsed_ms=127.473
+REFERENCE C destination=0 fine=5 measured=5.07952 expected=5
+rate=44100 strength=0 elapsed_ms=137.571
+REFERENCE C destination=1 fine=5 measured=104.991 expected=105
+rate=44100 strength=0 elapsed_ms=108.976
+REFERENCE C destination=2 fine=5 measured=205.009 expected=205
+SIDECHAIN mode=1 measured=-4.98683 expected=-5
+SIDECHAIN mode=1 measured=-5.00811 expected=-5
+SIDECHAIN mode=2 measured=-192.989 expected=-193
+rate=44100 strength=0 elapsed_ms=126.362
+rate=44100 strength=0 elapsed_ms=115.911
+rate=48000 strength=0 elapsed_ms=103.086
+rate=48000 strength=0 elapsed_ms=107.933
+rate=48000 strength=0 elapsed_ms=110.435
+rate=48000 strength=0 elapsed_ms=80.059
+LIVE target=-20c measured=10.0258c expected=10c latency=7200
+rate=48000 strength=0.5 elapsed_ms=98.2363
+LIVE target=-20c measured=-5.04828c expected=-5c latency=7200
+rate=48000 strength=1 elapsed_ms=95.4031
+LIVE target=-20c measured=-20.0102c expected=-20c latency=7200
+rate=48000 strength=1 elapsed_ms=114.861
+LIVE target=+20c measured=19.9695c
+rate=48000 strength=1 elapsed_ms=104.414
+rate=48000 strength=1 elapsed_ms=128.252
+rate=48000 strength=1 elapsed_ms=103.721
+rate=48000 strength=1 elapsed_ms=92.5585
+rate=48000 strength=1 elapsed_ms=58.4812
+rate=48000 strength=1 elapsed_ms=91.6084
+rate=48000 strength=1 elapsed_ms=114.006
+rate=48000 strength=1 elapsed_ms=90.2373
+rate=48000 strength=0 elapsed_ms=115.871
+DIRECT fine=-20 measured=-10.0118 expected=-10
+rate=48000 strength=0 elapsed_ms=113.735
+DIRECT fine=-5 measured=5.02553 expected=5
+rate=48000 strength=0 elapsed_ms=111.561
+DIRECT fine=-3 measured=7.08798 expected=7
+rate=48000 strength=0 elapsed_ms=110.033
+DIRECT fine=3 measured=13.0098 expected=13
+rate=48000 strength=0 elapsed_ms=111.979
+DIRECT fine=5 measured=15.0078 expected=15
+rate=48000 strength=0 elapsed_ms=105.957
+DIRECT fine=10 measured=19.9952 expected=20
+rate=48000 strength=0 elapsed_ms=108.075
+DIRECT fine=37.5 measured=47.5111 expected=47.5
+rate=48000 strength=0 elapsed_ms=116.532
+DIRECT C note step=1 fine=5 measured=114.984 expected=115
+rate=48000 strength=0 elapsed_ms=114.916
+DIRECT C note step=2 fine=5 measured=214.988 expected=215
+rate=48000 strength=0 elapsed_ms=119.909
+DIRECT C note step=-1 fine=5 measured=-85.0295 expected=-85
+rate=48000 strength=0 elapsed_ms=117.465
+REFERENCE C destination=0 fine=5 measured=5.106 expected=5
+rate=48000 strength=0 elapsed_ms=113.314
+REFERENCE C destination=1 fine=5 measured=105.104 expected=105
+rate=48000 strength=0 elapsed_ms=112.939
+REFERENCE C destination=2 fine=5 measured=204.97 expected=205
+SIDECHAIN mode=1 measured=-5.04952 expected=-5
+SIDECHAIN mode=1 measured=-5.06728 expected=-5
+SIDECHAIN mode=2 measured=-192.997 expected=-193
+rate=48000 strength=0 elapsed_ms=192.551
+rate=48000 strength=0 elapsed_ms=201.198
+248 live audio assertions passed; no file, no transport and no message-loop dependency

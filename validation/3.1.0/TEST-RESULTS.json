@@ -1,0 +1,14 @@
+{
+  "version": "3.1.0",
+  "native_linux_groups_passed": 8,
+  "new_suite_assertions": 135,
+  "actual_windows_vst3_cases": 47,
+  "final_dll_sha256": "3739f0a0d2d7ccea6497eda8bcb1032c69b99b951813b10bfe340aee89693ac0",
+  "windows_execution": "Wine 10, Linux",
+  "sonar_tested": false,
+  "native_windows_tested": false,
+  "human_listening_verified": false,
+  "ai_service_verified": false,
+  "real_recordings_measurement": "violin and flute numeric checks; soprano inconclusive, insufficient high-confidence frames",
+  "callback_cpp_allocations": 0
+}

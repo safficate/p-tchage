@@ -124,7 +124,7 @@ int main() {
         for (double rate : {44100.0, 48000.0}) {
             Host host(rate);
             {
-                PitchProcessor p; bind(p, host);
+                PitchProcessor p(true); bind(p, host);
                 check(host.reads > 0 && p.clip() && !p.clip()->notes.empty(), "ARA must import and analyze host clips BEFORE any playback or processBlock");
                 check(!host.badReaderCall, "Host readers must be created/destroyed only inside ARA source management/endEditing");
                 check(p.getLatencySamples() == 0, "Preloaded ARA map rendering must have zero host latency");
@@ -141,7 +141,7 @@ int main() {
                 juce::MemoryBlock state; p.getStateInformation(state);
                 check(host.api->storeObjectsToArchive(host.doc, reinterpret_cast<ARAArchiveWriterHostRef>(&host), nullptr), "ARA document archive must store correction state");
                 {
-                    PitchProcessor restored; restored.setStateInformation(state.getData(), int(state.getSize())); bind(restored, host);
+                    PitchProcessor restored(true); restored.setStateInformation(state.getData(), int(state.getSize())); bind(restored, host);
                     check(restored.clip()->notes[0].detached && restored.clip()->notes[0].target == 212, "Host clip refresh must preserve restored manual note edits when source PCM is unchanged");
                     check(restored.parameters.getRawParameterValue("step9")->load() == 2 && restored.parameters.getRawParameterValue("cent11")->load() == 5, "ARA component parameter state must restore note mapping and cents");
                     restored.releaseResources();
@@ -150,7 +150,7 @@ int main() {
                 check(host.api->restoreObjectsFromArchive(host.doc, reinterpret_cast<ARAArchiveReaderHostRef>(&host), nullptr), "ARA document archive must restore correction state");
                 host.legalReaderManagement = true; host.api->endEditing(host.doc); host.legalReaderManagement = false;
                 {
-                    PitchProcessor fromArchive; bind(fromArchive, host);
+                    PitchProcessor fromArchive(true); bind(fromArchive, host);
                     check(fromArchive.clip()->notes[0].detached && fromArchive.clip()->notes[0].target == 212, "ARA archive alone must restore manual edits without separate component state");
                     check(fromArchive.parameters.getRawParameterValue("cent11")->load() == 5, "ARA archive alone must restore tuned reference cents");
                     fromArchive.releaseResources();

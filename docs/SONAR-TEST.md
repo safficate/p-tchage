@@ -1,32 +1,19 @@
-# Cakewalk Sonar Windows x64 — kabul testi, sürüm 3.0.1 önizleme
+# Cakewalk Sonar — 3.1.0 kabul testi
 
-**Sonar'da ÇALIŞTIRILMADI.** Bu belge prosedürdür. Wine/sentetik host sonuçları Sonar doğrulaması değildir.
+**Bu test henüz gerçek Sonar'da yapılmadı.** Windows DLL'nin Wine altında yüklenmesi ve ses üretmesi Sonar doğrulaması değildir. Buradaki liste prosedürdür; gerçekleşmiş sonuç değildir.
 
-Test tarihinde mevcut en güncel kararlı Windows Sonar sürümünü kullanın. Test tarihi, tam Sonar build'i, Windows 11 build'i, HP EliteBook/i5 11. nesil/16 GB bilgisi, dahili ses sürücüsü adı/modu, buffer boyutu ve örnekleme hızını kaydedin. Harici ses/MIDI donanımı kullanmayın.
+Test tarihindeki en güncel kararlı Sonar'ın tam sürüm/build numarasını, tarihi, Windows build'ini, HP EliteBook / 11. nesil i5 / 16 GB bilgisini, dahili ses sürücüsü modunu ve buffer boyutunu kaydedin. Harici ses kartı veya MIDI gerekmez. Her adımı hem 44,1 hem 48 kHz projede sınayın.
 
-Aşağıdaki adımları hem 44.1 hem 48 kHz projede uygulayın. Her adım için geçer/kalır, ölçüm ve hata ayrıntısını yazın.
+1. ZIP'teki VST3 klasörünün tamamını standart VST3 yoluna kopyalayın; taramayı yenileyin. Mono/stereo kanala ekleyin. Tarama, açılış ve editörü kapatıp açma sonucunu ayrı kaydedin.
+2. Arayüz ölçeğini %100/125/150/175/200 deneyin; görünmeyen alt alanlara kaydırarak ulaşılmalı. Pencereyi ve projeyi yeniden açınca ölçek korunmalı. Zaman/perde zoom ile iki yönde gezinmeyi sınayın.
+3. Kanalı Sonar'dan çalın. WAV/Capture/Apply gerekmeden üst kaynak değerleri ve zaman çizgisi oluşmalı. Aynı aralığı yeniden çalınca toplam gözlem sayısı şişmemeli. Seyrek nota yok sayılmamalı; okunmamış kaynak işaretli ama elle yazılabilir olmalı.
+4. ESITLE ile merkezleri hedeflere alın. Kontrollü A +10 c sinyalinde alt A hedefini +5 c girin; %100 miktarda çıkış +5 c'ye yaklaşmalı. +3/+5/+10 ve negatif hedefleri farklı oktavlarda ölçün. Büyük nota eşlemesini ayrıca C→D olarak sınayın. Gerçek kayıt toleransını kontrollü sinüs toleransından ayrı raporlayın.
+5. Üst Dinle ölçülen/elle tanımlanan kaynak merkezine akortlu tonu, alt Dinle toplam hedefe akortlu tonu çalmalı. Kısa tıklama yaklaşık 0,5 s, basılı tutma daha uzun olmalı. Okunmamış üst tuş önceki tonu sürdürmemeli ve yeni sahte kaynak tonu çalmamalı.
+6. Genel +20 c'nin hedef kutularına eklenmesini ve ikinci kez uygulanmamasını ölçün. %50 düzeltme miktarını Dry/Wet'ten ayrı sınayın. Bypass ve %0 Wet, raporlanan gecikmeden sonra orijinal sesi vermeli. Normal FX gecikmesi 150 ms; host telafisini de kontrol edin.
+7. Tüm aralığı dinletip TUM PARCA BURADA deyin. Hazır mesajından sonra transport başlangıcı/seek ile hazırlanmış ses devreye girmeli. Eksik duyulmuş boşluk tamamlanmış gibi kabul edilmemeli. Sonar hızlı/offline bounce ile gerçek çıkışı alın; yalnız grafiğin değişmesi yeterli değildir.
+8. Doğal düzeltme, geçiş ayarları, vibrato, ayrı Humanize, rezonans smoother ve yerel filtreyi tek tek aç/kapatıp karşılaştırın. İşlemci komutu ile bağımsız çıkış ölçümünü ayırın. Humanize/merkez daraltma/canlı referans için canlı yolun bounce edildiği açık olmalı. Kontrollerin doğallığını gerçek keman, vokal ve farklı ataklı kayıtlarda dinleyerek değerlendirin.
+9. İki kanala eklenti koyun. Birinin öğrendiği haritayı diğerinde referans seçin; önce toplu merkez sonra nota farklarını sınayın. Kaynak tekrarında/analizinde referans haritası silinmemeli. Ayrı süreç sandbox'ı varsa host sidechain yönlendirmesini ayrıca sınayın.
+10. Projeyi kaydedip Sonar'ı tamamen kapatın; yeniden açın. Parametreler, haritalar, manuel bölgeler, öğrenilmiş referanslar ve tam-parça hazır ses geri gelmeli. Aynı durumun var olan örneğe tekrar yüklenmesini ve örnekleme hızı değişimini sınayın. API anahtarı projede bulunmamalı.
+11. Yeni klip/ses değiştirme sonrası BASTAN OKU ile eski çizgilerin ve hazır sesin karışmadığını kontrol edin. Bounce sonucunu giriş/çıkış dosyaları ve tam ayarlarla saklayın. AI sohbetini yalnız ayrı API anahtarıyla ve kullanıcı tarafından başlatılan veri gönderimiyle sınayın; servis hatalarını başarı diye saymayın.
 
-1. **Tarama / açılış:** Windows x64 VST3 bundle'ını kurun, Sonar'da yeniden tarayın, mono ve stereo kanala ekleyin. Editörü açıp kapatın ve boyutlandırın. Uygula'dan önce ses gecikme telafisi sonrasında değişmemeli. Normal FX gecikmesi 150 ms olarak raporlanmalı.
-2. **Gerçek canlı işlem:** WAV/Capture/Analyze kullanmadan A4 +10 cent test sesini kanaldan geçirin. Alt A referansı -20 c, eşleme A→A olsun. ONERIYI UYGULA'dan sonra çıkış A4 -20 c olmalı. +3/+5/+10 ve negatif hedefleri ölçün. Quantize yüzdesi değiştirmeden çalışmalı. A/B ve host bypass orijinali vermeli.
-3. **Oynatmadan klip erişimi:** Transport dururken seçili klibe Region FX/ARA listesinde eklentiyi uygulayın. Listedeki adını ve ARA bağlantısını raporlayın. Capture/Play kullanmadan dalga ve gerçek nota haritası oluşmalı. Listede bulunmama veya aktarım hatasını başarısız/inconclusive olarak kaydedin. Normal FX insert'i bu testi karşılamaz.
-4. **12 + 12 dinleme:** Alt Do'yu +5 c ayarlayıp dinleyin. Üst Do gerçek kaynak kaydını çalmalı; kaynakta olmayan tuş pasif olmalı. Tekrar tıklamalar farklı kaynak örneklerini seçmeli. Dur tuşunu ve oktav seçimini deneyin. Kaynak Do +10 c ise hedef Do +5 c'ye eşleme -5 c düzeltmeli.
-5. **Nota / makam haritası:** Kaynak Do'yu alt Do♯ ve Re'ye ayrı ayrı eşleyip Uygula'ya basın. Sonuç Do♯/Re referansının ayarlı cent'ine ulaşmalı. Üst kaynak eşleme seçicilerini ve Scala 12 sesli bir diziyi deneyin. Ana ekrandaki göreli modda kaynak +10 c'ye +5 c eklemek +15 c vermeli. Varsayılan referans modunda +5 c hedefi +5 c vermeli.
-6. **ARA zaman çizelgesi:** Klibi kırpın/taşıyın, birkaç ayrık klip seçin, loop/seek/stop/start yapın. Ses doğru konumda olmalı; sessiz boşluklar korunmalı. Zaman esnetilmiş klipler için eklenti önce bounce yapılmasını istemeli. ARA klip yolu sıfır host gecikmesi bildirmeli.
-7. **Sidechain:** Ayrı referans kanalı Reference girişine yönlendirin. Cent uyumu modunda kaynak A4 +10 c / referans A3 -5 c → kaynak A4 -5 c. Nota+cent modunda referans G3 +7 c → kaynak G4 +7 c (oktav koruma açık). Referans kanalının PCM'i değişmemeli; yalnız hedef kanal değişmeli. Referansı kapatınca eski referansa düzeltme devam etmemeli. Kaynak/referans çizgileri gerçek sese karşılık gelmeli.
-8. **Kalite / bounce:** İzole vokal, keman ve basla vibrato, geçişler, formantlar, stereo faz ve artefaktları dinleyin. Polifonik kısımları ayrıca raporlayın; ses ayırma beklemeyin. Gerçek zamanlı playback, Sonar offline bounce ve klip WAV export'u karşılaştırın. Canlı sidechain export için Sonar Bounce kullanın. 3/5/10 c ölçümlerini dış frekans ölçümüyle kaydedin.
-9. **Proje yeniden yükleme:** Referans cent'leri, kaynak-hedef eşlemeleri, bağımsız nota düzenlemesi ve ARA klip konumuyla projeyi kaydedin. Sonar'ı tamamen kapatıp açın. Normal FX ve ARA projelerini ayrı deneyin. Parametreler ve elle düzenlenen harita geri gelmeli; yeniden render sonrası aynı ses duyulmalı. ARA arşivinin host tarafından kaydedildiğini kontrol edin.
-10. **Hedef bilgisayar performansı:** Kısa ve uzun (en çok 10 dakika) kliplerde CPU, peak CPU, RAM, bounce süresi ve dropout/xrun kaydedin. Analiz/render sırasında playback'i deneyin; normal playback'te analiz yeniden başlamamalı. Windows kurulum/kaldırmayı da doğrulayın.
-
-Bu adımlar tamamlanmadan “Sonar uyumlu olarak doğrulandı” yazılmamalıdır.
-
-11. **Bölgesel mod:** Dogal bolgesel açıkken WAV/ARA klibini analiz edin. ±3/5/20 c, vibrato, -20/+15 c bağlı geçiş, düzensiz atak ve kuyruk çakışmalarını ölçün. İptal düğmesinin kısmi sonuç yayınlamadığını kontrol edin. Sıfır istek ve güvenilir doğru-akort materyalini PCM karşılaştırmasıyla inceleyin. Minimum müdahale/precision ayarlarının kullanıcı değerini koruduğunu ve eski v2 projesinin legacy modunda açıldığını doğrulayın. Kalıcı sidechain öğrenme bu önizlemede uygulanmadı; eşzamanlı takip testini bununla karıştırmayın.
-
-12. **Önerinin dayanağı / gerçek sonuç:** +10 c kaynak klibinde hedef +5 c seçin.
-    Analizden sonra panel -5 c farkı ve kullanılan hedef haritayı açıklamalı;
-    analiz tek başına sesi değiştirmemeli. Uygula'dan önce DINLE / A-B ile orijinal
-    klip duyulmalı. Uygula'dan sonra çıkan sesi bağımsız ölçün; paneldeki ölçümle
-    karşılaştırın. Sonra hedefi -5 c yapın: yeni öneri görünmeli, Uygula'ya kadar
-    eski render kalmalı. Tekrar Uygula gerçek sesi değiştirmeli. Göreli modda
-    genel +5 c ve notaya +2 c girilince +10 c kaynak +17 c olmalı; alt hedef tuşu
-    da bu hesaplanan tonu çalmalı. WAV'ı 30. saniyeye yükleyip başlangıç alanını,
-    ayrıca yalnız sağ kanalı dolu stereo WAV'da ±5 c sonucunu kontrol edin.
+Her adım için geçti/kaldı/ölçülemedi, hata metni ve dosya adı yazın. Kullanıcı dinleme değerlendirmesi yapılmadan 'gıcırtısız, vızırtısız, yeniden çalınmış gibi' sonucu doğrulanmış sayılmaz. Bağımsız polifonik düzeltme bu sürümün kapsamı değildir.

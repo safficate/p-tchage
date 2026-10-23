@@ -1,5 +1,7 @@
 # First-delivery implementation roadmap
 
+The subsequent long-term product requirements are recorded in [PRODUCT-DIRECTION-TR.md](PRODUCT-DIRECTION-TR.md). That document covers the user's polyphonic/makam editor and assistant vision; those requirements are not completed features of this first delivery.
+
 Target first delivery: 2026-10-21. Work starts from `delivery/windows-v0.2.0`; the development branch is separate, and old release packages must remain unchanged.
 
 ## Priority A

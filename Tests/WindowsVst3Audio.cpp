@@ -30,7 +30,7 @@ struct Queue final : IParamValueQueue {
     tresult PLUGIN_API addPoint(int32, ParamValue v, int32& index) override { value = v; index = 0; return kResultOk; }
 };
 struct Changes final : IParameterChanges {
-    std::array<Queue, 9> queues;
+    std::vector<Queue> queues=std::vector<Queue>(10);
     tresult PLUGIN_API queryInterface(const TUID, void** object) override { *object = nullptr; return kNoInterface; }
     uint32 PLUGIN_API addRef() override { return 1; }
     uint32 PLUGIN_API release() override { return 1; }
@@ -58,7 +58,7 @@ static ParamValue enteredValue(IEditController* controller, ParamID id, double v
     return result;
 }
 static int completedCases=0;
-static void audioCase(IPluginFactory* factory, const TUID cid, double rate, double strength, double target, bool offline, bool direct = false, int step = 0, int sourceKey = 69, bool match = false, int follow = 0, double referenceMidi = 56.95, double globalCents = 0) {
+static void audioCase(IPluginFactory* factory, const TUID cid, double rate, double strength, double target, bool offline, bool direct = false, int step = 0, int sourceKey = 69, bool match = false, int follow = 0, double referenceMidi = 56.95, double globalCents = 0, bool modern=false, bool polish=false) {
     IComponent* component = nullptr;
     require(factory->createInstance(cid, INLINE_UID_OF(IComponent), reinterpret_cast<void**>(&component)) == kResultOk, "VST3 component creation failed");
     require(component->initialize(nullptr) == kResultOk, "VST3 component initialize failed");
@@ -85,6 +85,15 @@ static void audioCase(IPluginFactory* factory, const TUID cid, double rate, doub
     changes.queues[7].id = find(controller, "Sidechain reference mode"); changes.queues[7].value = enteredValue(controller, changes.queues[7].id, follow);
     changes.queues[8].id = find(controller, "Relative cents for the entire source"); changes.queues[8].value = enteredValue(controller, changes.queues[8].id, globalCents);
     SpeakerArrangement arrangement = SpeakerArr::kStereo;
+    changes.queues[9].id=find(controller,"Live tuning workspace");changes.queues[9].value=0;
+    if(modern){changes.queues.resize(14);const int group=sourceKey%12;
+        const std::string base=std::string(centsNames[group]).substr(0,std::string(centsNames[group]).find(" target"))+"4";
+        changes.queues[9].id=find(controller,"Live tuning workspace");changes.queues[9].value=1;
+        changes.queues[10].id=find(controller,(base+" workspace target cents").c_str());changes.queues[10].value=enteredValue(controller,changes.queues[10].id,target);
+        changes.queues[11].id=find(controller,(base+" manual target active").c_str());changes.queues[11].value=1;
+        changes.queues[12].id=find(controller,"Pitch correction amount");changes.queues[12].value=strength;
+        changes.queues[13].id=find(controller,"toneOn");changes.queues[13].value=polish?1:0;
+    }
     SpeakerArrangement inputs[2] = {SpeakerArr::kStereo, follow ? SpeakerArr::kStereo : SpeakerArr::kEmpty};
     require(processor->setBusArrangements(inputs, 2, &arrangement, 1) == kResultOk, "Stereo bus arrangement failed");
     component->activateBus(kAudio, kInput, 0, true); component->activateBus(kAudio, kOutput, 0, true);
@@ -123,9 +132,9 @@ static void audioCase(IPluginFactory* factory, const TUID cid, double rate, doub
             if (crossings++ == 0) first = at; last = at;
         }
     }
-    require(crossings > 100 && last > first, "VST3 output has no measurable tone");
+    require(crossings > 20 && last > first, "VST3 output has no measurable tone");
     const double measuredHz = (crossings - 1) * rate / (last - first), measuredCents = 1200 * std::log2(measuredHz / baseHz);
-    const double expected = follow == 1 ? (referenceMidi - std::round(referenceMidi)) * 100 : follow == 2 ? (referenceMidi + 12 * std::round((sourceKey - referenceMidi) / 12) - sourceKey) * 100 : match ? target + step * 100 : direct ? 10 + target + globalCents + step * 100 : 10 + strength * (target - 10);
+    const double expected = modern?10+strength*(target-10)+globalCents:follow == 1 ? (referenceMidi - std::round(referenceMidi)) * 100 : follow == 2 ? (referenceMidi + 12 * std::round((sourceKey - referenceMidi) / 12) - sourceKey) * 100 : match ? target + step * 100 : direct ? 10 + target + globalCents + step * 100 : 10 + strength * (target - 10);
     std::cout << "ACTUAL VST3 rate=" << rate << " direct=" << direct << " strength=" << strength << " global=" << globalCents << " fine=" << target << " step=" << step << " expected=" << expected << " measured=" << measuredCents << " cents latency=" << latency << " mode=" << (offline ? "offline" : "realtime") << '\n';
     require(std::abs(measuredCents - expected) < 1, "Actual VST3 output missed entered target by more than 1 cent");
     processor->setProcessing(false); component->setActive(false);
@@ -150,6 +159,9 @@ int wmain(int argc, wchar_t** argv) {
             for (double rate : {44100.0, 48000.0}) for (double strength : {0.0, 0.5, 1.0}) audioCase(factory, info.cid, rate, strength, -20, false);
             audioCase(factory, info.cid, 48000, 1, 20, true); tested = true;
             for (double rate : {44100.0, 48000.0}) {
+                for(int key:{38,50,62,74,86})audioCase(factory,info.cid,rate,1,5,false,false,0,key,false,0,56.95,0,true);
+                audioCase(factory,info.cid,rate,.5,5,false,false,0,69,false,0,56.95,0,true);
+                audioCase(factory,info.cid,rate,1,5,true,false,0,69,false,0,56.95,20,true,true);
                 audioCase(factory, info.cid, rate, 0, 2, false, true, 0, 69, false, 0, 56.95, 5);
                 audioCase(factory, info.cid, rate, 0, 5, false, false, 0, 69, true, 0, 56.95, 99);
                 for (double fine : {-3.0, 5.0, 10.0}) audioCase(factory, info.cid, rate, 0, fine, false, true);

@@ -1,0 +1,27 @@
+rate=44100 strength=0 measured=69.1005 stereo error=0
+rate=44100 strength=0.5 measured=68.9483 stereo error=0
+rate=44100 strength=1 measured=68.8023 stereo error=0
+Positive target measured=69.1987
+OFFLINE rate=44100 relative=0 entered=-5 measured=-5.19492 expected=-5 cents
+OFFLINE rate=44100 relative=0 entered=3 measured=3.26897 expected=3 cents
+OFFLINE rate=44100 relative=0 entered=5 measured=5.09665 expected=5 cents
+OFFLINE rate=44100 relative=0 entered=10 measured=10.0394 expected=10 cents
+OFFLINE rate=44100 relative=1 entered=-5 measured=5.15608 expected=5 cents
+OFFLINE rate=44100 relative=1 entered=3 measured=12.8444 expected=13 cents
+OFFLINE rate=44100 relative=1 entered=5 measured=15.0862 expected=15 cents
+OFFLINE rate=44100 relative=1 entered=10 measured=20.2989 expected=20 cents
+Sample rate 44100: all checks passed; 2s offline render 160.352 ms
+rate=48000 strength=0 measured=69.1003 stereo error=0
+rate=48000 strength=0.5 measured=68.9456 stereo error=0
+rate=48000 strength=1 measured=68.7989 stereo error=0
+Positive target measured=69.1982
+OFFLINE rate=48000 relative=0 entered=-5 measured=-5.45226 expected=-5 cents
+OFFLINE rate=48000 relative=0 entered=3 measured=2.94554 expected=3 cents
+OFFLINE rate=48000 relative=0 entered=5 measured=5.23071 expected=5 cents
+OFFLINE rate=48000 relative=0 entered=10 measured=10.0209 expected=10 cents
+OFFLINE rate=48000 relative=1 entered=-5 measured=5.26302 expected=5 cents
+OFFLINE rate=48000 relative=1 entered=3 measured=12.878 expected=13 cents
+OFFLINE rate=48000 relative=1 entered=5 measured=15.1288 expected=15 cents
+OFFLINE rate=48000 relative=1 entered=10 measured=19.8948 expected=20 cents
+Sample rate 48000: all checks passed; 2s offline render 46.4695 ms
+82 assertions passed

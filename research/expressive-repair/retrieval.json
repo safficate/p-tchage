@@ -1,0 +1,61 @@
+{
+  "retrieved_on": "2026-10-21",
+  "entries": [
+    {
+      "id": "ddsp",
+      "url": "https://github.com/magenta/ddsp/raw/refs/heads/main/README.md",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/ddsp/refs/heads/main/README.md",
+      "bytes": 13253,
+      "sha256": "52d1b9309c7f61d53d6b57ec62b5f469749418efbd2e8b1f67ac980195d2f8d9"
+    },
+    {
+      "id": "midi-ddsp",
+      "url": "https://github.com/magenta/midi-ddsp/raw/refs/heads/main/README.md",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/midi-ddsp/refs/heads/main/README.md",
+      "bytes": 9742,
+      "sha256": "639435b6b4880c61e4e1d524550307c1d3c0cce9ec9ae3dabefd88322fd8baf6"
+    },
+    {
+      "id": "basic-pitch",
+      "url": "https://github.com/spotify/basic-pitch/raw/refs/heads/main/README.md",
+      "resolved_url": "https://raw.githubusercontent.com/spotify/basic-pitch/refs/heads/main/README.md",
+      "bytes": 10297,
+      "sha256": "308eca019d334104487822197d8fdc81574e9f07a80436d860e044248f26f520"
+    },
+    {
+      "id": "mt3",
+      "url": "https://github.com/magenta/mt3/raw/refs/heads/main/README.md",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/mt3/refs/heads/main/README.md",
+      "bytes": 998,
+      "sha256": "d1fb927d6887cacc927b137593c4617a7f68c794df0d9a434c119e9cd1675c4d"
+    },
+    {
+      "id": "ddsp-license",
+      "url": "https://github.com/magenta/ddsp/raw/refs/heads/main/LICENSE",
+      "bytes": 11384,
+      "sha256": "e841bcaa1b323bed2869e23f9832dc64c761d48987c4532ccbe0528d17186757",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/ddsp/refs/heads/main/LICENSE"
+    },
+    {
+      "id": "midi-ddsp-license",
+      "url": "https://github.com/magenta/midi-ddsp/raw/refs/heads/main/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/midi-ddsp/refs/heads/main/LICENSE"
+    },
+    {
+      "id": "basic-pitch-license",
+      "url": "https://github.com/spotify/basic-pitch/raw/refs/heads/main/LICENSE",
+      "bytes": 11384,
+      "sha256": "929c910bae2152fa87199a5d0660e09263419b7eee6d4b301d05ee2aaf211c37",
+      "resolved_url": "https://raw.githubusercontent.com/spotify/basic-pitch/refs/heads/main/LICENSE"
+    },
+    {
+      "id": "mt3-license",
+      "url": "https://github.com/magenta/mt3/raw/refs/heads/main/LICENSE",
+      "bytes": 11357,
+      "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+      "resolved_url": "https://raw.githubusercontent.com/magenta/mt3/refs/heads/main/LICENSE"
+    }
+  ]
+}

@@ -63,7 +63,7 @@ static void checkDry(const juce::AudioBuffer<float>& result, double rate, int la
     check(exact, "Dry/zero/bypass path must match the original bit-exactly after reported latency");
 }
 static void sidechainTest(double rate, int follow, double referenceMidi, double expectedCents) {
-    PitchProcessor p; auto layout = p.getBusesLayout(); layout.inputBuses.set(1, juce::AudioChannelSet::stereo());
+    PitchProcessor p(true); auto layout = p.getBusesLayout(); layout.inputBuses.set(1, juce::AudioChannelSet::stereo());
     check(p.setBusesLayout(layout), "Optional stereo sidechain must be supported");
     p.prepareToPlay(rate, 256); p.setParameter("follow", float(follow)); p.setParameter("enabled", 1);
     const int length = int(rate * 2.2); juce::AudioBuffer<float> result(2, length), block(4, 256); juce::MidiBuffer midi;
@@ -91,7 +91,7 @@ static void sidechainTest(double rate, int follow, double referenceMidi, double 
     check(!p.takeTrace().empty(), "Measured source/reference pitch traces must be available to the editor");
 }
 static void auditionTest(double rate) {
-    PitchProcessor p; p.prepareToPlay(rate, 257); p.setParameter("cent0", 75);
+    PitchProcessor p(true); p.prepareToPlay(rate, 257); p.setParameter("cent0", 75);
     p.auditionTone(0, 4);
     check(std::abs(measure(run(p, rate, 0), rate, 60) - 75) < 1, "Upper reference key must sound its actual tuned frequency");
     p.stopAudition();
@@ -109,7 +109,7 @@ static void auditionTest(double rate) {
     p.stopAudition();
 }
 static void stereoTailTest(double rate) {
-    PitchProcessor p; p.prepareToPlay(rate, 256); p.setParameter("enabled", 1); p.setParameter("cent9", -20);
+    PitchProcessor p(true); p.prepareToPlay(rate, 256); p.setParameter("enabled", 1); p.setParameter("cent9", -20);
     const int length = int(rate * 1.3), silenceAt = int(rate); juce::AudioBuffer<float> output(2, length), block(2, 256); juce::MidiBuffer midi;
     for (int offset = 0; offset < length; offset += 256) {
         const int count = std::min(256, length - offset); block.setSize(2, count, false, false, true);
@@ -131,18 +131,18 @@ int main(int argc, char** argv) {
     juce::ScopedJuceInitialiser_GUI gui;
     try {
         for (double rate : {44100.0, 48000.0}) {
-            PitchProcessor relative; relative.prepareToPlay(rate, 257);
+            PitchProcessor relative(true); relative.prepareToPlay(rate, 257);
             relative.setParameter("direct",1); relative.setParameter("referenceMatch",0);
             relative.setParameter("globalCents",5); relative.setParameter("cent9",2);
             relative.setParameter("formants",0);
             check(std::abs(measure(run(relative,rate,0),rate)-17)<1,
                   "Live relative mode must add global +5 and note +2 to source +10 cents");
-            PitchProcessor fresh; fresh.prepareToPlay(rate, 257); fresh.setParameter("cent9", -20);
+            PitchProcessor fresh(true); fresh.prepareToPlay(rate, 257); fresh.setParameter("cent9", -20);
             checkDry(run(fresh, rate, 0, 1, false, false, 69.1, false), rate, fresh.getLatencySamples());
             fresh.applyCorrection();
             check(std::abs(measure(run(fresh, rate, 0, 1, false, false, 69.1, false), rate) + 20) < 1, "Apply must enable full reference matching without a percentage");
             for (float strength : {0.0f, 0.5f, 1.0f}) {
-                PitchProcessor p; p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.prepareToPlay(rate, 257);
+                PitchProcessor p(true); p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.prepareToPlay(rate, 257);
                 auto* quantize = p.parameters.getParameter("quantize");
                 check(quantize->getText(0.5f, 0) == "50.0%", "Correction amount must be displayed as a percentage");
                 check(quantize->getValueForText("50%") == 0.5f, "Typing 50% must set half correction, not clamp to full strength");
@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
                 for (int i = int(rate * 0.5); i < result.getNumSamples(); ++i) error = std::max(error, std::abs(result.getSample(0, i) - result.getSample(1, i)));
                 check(error < 1e-5f, "Equal stereo channels must remain equal");
             }
-            PitchProcessor p; p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.prepareToPlay(rate, 257); p.setParameter("cent9", 20); p.setParameter("formants", 1);
+            PitchProcessor p(true); p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.prepareToPlay(rate, 257); p.setParameter("cent9", 20); p.setParameter("formants", 1);
             auto positive = run(p, rate, 1, 1, false, true);
             const double up = measure(positive, rate); std::cout << "LIVE target=+20c measured=" << up << "c\n";
             check(std::abs(up - 20) < 1, "Positive target/formant path must reach +20 cents");
@@ -179,24 +179,24 @@ int main(int argc, char** argv) {
             p.reset(); p.setParameter("gq9", 0); check(std::abs(measure(run(p, rate, 1), rate) - 10) < 1, "Group strength 0 must leave that note unchanged"); p.setParameter("gq9", 1);
             p.reset(); p.setParameter("octave", 1); p.setParameter("oct69", -35);
             check(std::abs(measure(run(p, rate, 1), rate) + 35) < 1, "Octave-specific target must override pitch-class target");
-            juce::MemoryBlock state; p.getStateInformation(state); PitchProcessor restored; restored.setStateInformation(state.getData(), int(state.getSize())); restored.prepareToPlay(rate, 257);
+            juce::MemoryBlock state; p.getStateInformation(state); PitchProcessor restored(true); restored.setStateInformation(state.getData(), int(state.getSize())); restored.prepareToPlay(rate, 257);
             check(std::abs(measure(run(restored, rate, 1), rate) + 35) < 1, "Live target and mode must survive host state restore");
             restored.setParameter("useRender", 1); restored.reset();
             check(std::abs(measure(run(restored, rate, 1), rate) + 35) < 1, "Missing cache or host transport must not silently disable live processing");
             for (float fine : {-20.0f, -5.0f, -3.0f, 3.0f, 5.0f, 10.0f, 37.5f}) {
-                PitchProcessor direct; direct.setParameter("referenceMatch", 0); direct.setParameter("direct", 1); direct.prepareToPlay(rate, 257); direct.setParameter("cent9", fine);
+                PitchProcessor direct(true); direct.setParameter("referenceMatch", 0); direct.setParameter("direct", 1); direct.prepareToPlay(rate, 257); direct.setParameter("cent9", fine);
                 const double measured = measure(run(direct, rate, 0), rate);
                 std::cout << "DIRECT fine=" << fine << " measured=" << measured << " expected=" << 10 + fine << '\n';
                 check(std::abs(measured - (10 + fine)) < 1, "Entered cent amount must be added exactly, without Quantize");
             }
             for (int step : {1, 2, -1}) {
-                PitchProcessor direct; direct.setParameter("referenceMatch", 0); direct.setParameter("direct", 1); direct.prepareToPlay(rate, 257); direct.setParameter("step0", float(step)); direct.setParameter("cent0", 5);
+                PitchProcessor direct(true); direct.setParameter("referenceMatch", 0); direct.setParameter("direct", 1); direct.prepareToPlay(rate, 257); direct.setParameter("step0", float(step)); direct.setParameter("cent0", 5);
                 const double measured = measure(run(direct, rate, 0, 1, false, false, 60.1), rate, 60);
                 std::cout << "DIRECT C note step=" << step << " fine=5 measured=" << measured << " expected=" << 15 + step * 100 << '\n';
                 check(std::abs(measured - (15 + step * 100)) < 1, "C to destination note plus fine cents must be exact without a percentage");
             }
             for (int step : {0, 1, 2}) {
-                PitchProcessor tuned; tuned.prepareToPlay(rate, 257); tuned.setParameter("step0", float(step)); tuned.setParameter("cent" + juce::String(step), 5);
+                PitchProcessor tuned(true); tuned.prepareToPlay(rate, 257); tuned.setParameter("step0", float(step)); tuned.setParameter("cent" + juce::String(step), 5);
                 const double measured = measure(run(tuned, rate, 0, 1, false, false, 60.1), rate, 60);
                 std::cout << "REFERENCE C destination=" << step << " fine=5 measured=" << measured << " expected=" << 5 + step * 100 << '\n';
                 check(std::abs(measured - (5 + step * 100)) < 1, "Source must match the destination reference tone exactly, independent of Quantize");

@@ -1,3 +1,7 @@
+Pitchmap Pro 3.1.0: Güncel kullanım ve kurulum docs/KULLANIM-3.1-TR.md içindedir.
+
+Aşağıdaki metin 3.0.1 eski klip iş akışının tarihsel kılavuzudur; 3.1 ana ekranını anlatmaz.
+
 PITCHMAP PRO 3.0.1 — WINDOWS x64 MÜHENDİSLİK ÖNİZLEMESİ
 
 1. ZIP'i tamamen çıkarın. MicrotonalPitchMapPro-Setup-x64.exe dosyasını çalıştırın.

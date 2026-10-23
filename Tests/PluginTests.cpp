@@ -12,12 +12,12 @@ int main(int argc, char** argv) {
     juce::ScopedJuceInitialiser_GUI gui;
     try {
         std::cout << "Stage: processor and safe defaults\n";
-        PitchProcessor p; p.setParameter("adaptive", 0); p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.setParameter("enabled", 1); p.prepareToPlay(48000, 256);
+        PitchProcessor p(true); p.setParameter("adaptive", 0); p.setParameter("direct", 0); p.setParameter("referenceMatch", 0); p.setParameter("enabled", 1); p.prepareToPlay(48000, 256);
         check(p.parameters.getRawParameterValue("quantize")->load() == 0, "Safe default strength");
         p.setParameter("cent0", -20); p.setParameter("quantize", 0.5f); p.setParameter("reference", 442);
         juce::MemoryBlock state; p.getStateInformation(state);
         std::cout << "Stage: parameter state restore\n";
-        PitchProcessor restored; restored.setStateInformation(state.getData(), int(state.getSize())); restored.prepareToPlay(48000, 256);
+        PitchProcessor restored(true); restored.setStateInformation(state.getData(), int(state.getSize())); restored.prepareToPlay(48000, 256);
         check(restored.parameters.getRawParameterValue("cent0")->load() == -20, "Host target parameter state");
         check(restored.parameters.getRawParameterValue("quantize")->load() == 0.5f, "Host quantize parameter state");
         check(restored.parameters.getRawParameterValue("reference")->load() == 442, "Host reference parameter state");
@@ -53,11 +53,11 @@ int main(int argc, char** argv) {
         restored.setParameter("bypass", 1);
         for (int i = 0; i < 4; ++i) { playback.clear(); restored.processBlock(playback, midi); }
         check(playback.getMagnitude(0, 4096) == 0, "Bypass returns silent host input after draining reported latency");
-        restored.getStateInformation(state); PitchProcessor roundTrip; roundTrip.setStateInformation(state.getData(), int(state.getSize()));
+        restored.getStateInformation(state); PitchProcessor roundTrip(true); roundTrip.setStateInformation(state.getData(), int(state.getSize()));
         check(roundTrip.clip() && roundTrip.clip()->notes.size() == 1 && roundTrip.clip()->audio.getNumSamples() == 96000, "Full plugin state restores PCM and note map");
         restored.setPlayHead(nullptr);
         std::cout << "Stage: adaptive defaults, legacy migration and analysis metadata\n";
-        PitchProcessor adaptiveState;
+        PitchProcessor adaptiveState(true);
         check(adaptiveState.parameters.getRawParameterValue("adaptive")->load() == 1, "New instances default to adaptive offline processing");
         juce::ValueTree legacy("MicrotonalPitchMapPro"); legacy.setProperty("version", 2, nullptr);
         legacy.addChild(adaptiveState.parameters.copyState(), -1, nullptr);
@@ -109,18 +109,18 @@ int main(int argc, char** argv) {
         restored.setParameter("referenceMatch", 1); restored.setParameter("direct", 0);
         auto editor = std::unique_ptr<juce::AudioProcessorEditor>(restored.createEditor());
         check(editor && editor->getWidth() >= 1060, "Real editor constructs");
-        bool switched=false;
-        for(auto* child:editor->getChildren()) if(auto* toggle=dynamic_cast<juce::ToggleButton*>(child); toggle && toggle->getButtonText().startsWith("Dogal bolgesel")) {
-            toggle->setToggleState(true,juce::sendNotificationSync); if(toggle->onClick)toggle->onClick(); switched=true;
-        }
-        check(switched && restored.parameters.getRawParameterValue("octave")->load()==0 && restored.parameters.getRawParameterValue("referenceMatch")->load()==1,"Choosing adaptive UI clears hidden legacy octave and percentage steering");
-        int percentages = 0;
-        for (auto* child : editor->getChildren()) if (auto* slider = dynamic_cast<juce::Slider*>(child); slider && slider->getMaximum() == 1) {
-            check(slider->getTextFromValue(0.5).contains("50.0%"), "Actual attached slider must display 50 percent correctly");
-            check(slider->getValueFromText("50%") == 0.5, "Actual attached slider must accept percentage entry"); ++percentages;
-            check(!slider->isVisible(), "Percentages must be hidden on the basic cent/note interface");
-        }
-        check(percentages >= 12, "Editor percentage controls were exercised");
+        check(restored.liveWorkspaceEnabled()&&restored.parameters.getRawParameterValue("octave")->load()==0,"New editor enables the all-octave workspace");
+        int percentages=0;bool scaleFound=false;
+        std::function<void(juce::Component&)> inspect=[&](juce::Component& component){
+            if(auto* slider=dynamic_cast<juce::Slider*>(&component);slider&&slider->getMaximum()==1){
+                check(slider->getTextFromValue(.5).contains("50.0%"),"Attached percentage control displays 50 percent");
+                check(slider->getValueFromText("50%")==.5,"Attached percentage control accepts text entry");++percentages;
+            }
+            if(auto* combo=dynamic_cast<juce::ComboBox*>(&component);combo&&combo->getNumItems()==5&&combo->getItemText(0)=="100%")scaleFound=true;
+            for(auto* child:component.getChildren())inspect(*child);
+        };inspect(*editor);
+        check(percentages>=6,"Pitch, humanize, finishing and mix percentages are bound to actual parameters");
+        check(scaleFound,"Editor exposes 100 to 200 percent scaling");
         std::cout << "Stage: editor paint\n";
         juce::Image image(juce::Image::ARGB, editor->getWidth(), editor->getHeight(), true, juce::SoftwareImageType());
         { juce::Graphics graphics(image); editor->paintEntireComponent(graphics, true); }

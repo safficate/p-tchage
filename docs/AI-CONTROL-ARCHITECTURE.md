@@ -1,5 +1,7 @@
 # AI control architecture — design only
 
+See [PRODUCT-DIRECTION-TR.md](PRODUCT-DIRECTION-TR.md) for the latest user requirements. Ordinary user-requested tuning edits should take effect directly through validated controls with undo; a proposal/review step must not become a mandatory Apply button for routine audio edits. Model access, feedback transfer and software updating are distinct integrations, not capabilities implied by a chat mockup.
+
 Priority C is not implemented as a pretend assistant. There is no model, network service, API key, chat button or automated instrument diagnosis in this first engine milestone. Offline controls and DSP work without internet.
 
 The future boundary is: optional language interpretation → validated typed proposal → immutable analysis/plan → explicit review where required → DSP execution → independent verification. The model receives only permitted analysis summaries and user-selected context. Uploading audio or enabling a remote service requires a specific privacy/authentication decision; this task does neither. Authentication belongs in a secure credential provider, never project/source/parameter state.

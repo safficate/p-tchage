@@ -1,0 +1,7 @@
+MEASURABLE violin-b3.wav frames=142
+REAL violin-b3.wav prepared=1 shift=-20 median=-22.9965 contour_correlation=0.997625 voiced_frames=142
+MEASURABLE violin-b3.wav frames=142
+REAL violin-b3.wav prepared=1 shift=5 median=5.27081 contour_correlation=0.993799 voiced_frames=142
+MEASURABLE violin-b3.wav frames=142
+REAL violin-b3.wav prepared=1 shift=20 median=20.121 contour_correlation=0.99009 voiced_frames=142
+39 real-recording assertions passed

@@ -31,7 +31,7 @@ int main(int argc,char** argv){
             for(int ch=0;ch<2;++ch)source.audio.setSample(ch,i,float(.15*(std::sin(phase)+.3*std::sin(2*phase)+.15*std::sin(3*phase))));}
         const auto file=juce::File::getSpecialLocation(juce::File::tempDirectory).getNonexistentChildFile("pitchmap-workflow",".wav");
         check(mp::writeWav(file,source.audio,source.sampleRate),"Create unanalysed WAV fixture");
-        PitchProcessor p;p.prepareToPlay(48000,256);p.setParameter("formants",0);p.setParameter("cent9",5);
+        PitchProcessor p(true);p.prepareToPlay(48000,256);p.setParameter("formants",0);p.setParameter("cent9",5);
         Cursor cursor;p.setPlayHead(&cursor);juce::AudioBuffer<float> block(2,256);juce::MidiBuffer midi;block.clear();p.processBlock(block,midi);
         p.load(file);finish(p);file.deleteFile();
         std::cout<<"IMPORT offset="<<juce::String(p.parameters.getRawParameterValue("offset")->load(),9)<<" status="<<p.status()<<'\n';
@@ -75,13 +75,13 @@ int main(int argc,char** argv){
         check(std::abs(shifted-17)<1,"Relative amount must reach actual output PCM");
         p.setParameter("bypass",1);p.preview(true);const double bypassed=pitch(p,true);p.preview(false);p.setParameter("bypass",0);
         check(std::abs(bypassed-10)<.4,"Bypass during local clip audition plays the original instead of silence");
-        juce::MemoryBlock saved;p.getStateInformation(saved);PitchProcessor restored;restored.setStateInformation(saved.getData(),int(saved.getSize()));
+        juce::MemoryBlock saved;p.getStateInformation(saved);PitchProcessor restored(true);restored.setStateInformation(saved.getData(),int(saved.getSize()));
         check(restored.parameters.getRawParameterValue("globalCents")->load()==5&&restored.settings().directShift&&std::abs(restored.parameters.getRawParameterValue("offset")->load()-30)<.001,"Host state restores relative mode, global cents and clip position");
         auto v3=juce::ValueTree::readFromData(saved.getData(),saved.getSize());v3.setProperty("version",3,nullptr);
         auto params=v3.getChildWithName("Parameters");for(int i=params.getNumChildren()-1;i>=0;--i)if(params.getChild(i)["id"].toString()=="globalCents")params.removeChild(i,nullptr);
         juce::MemoryOutputStream stream;v3.writeToStream(stream);restored.setParameter("globalCents",99);restored.setStateInformation(stream.getData(),int(stream.getDataSize()));
         check(restored.parameters.getRawParameterValue("globalCents")->load()==0&&restored.settings().adaptive,"Version 3 migration clears new relative offset while preserving adaptive mode");
-        PitchProcessor quick;quick.prepareToPlay(48000,256);quick.setParameter("cent9",5);quick.setParameter("formants",0);
+        PitchProcessor quick(true);quick.prepareToPlay(48000,256);quick.setParameter("cent9",5);quick.setParameter("formants",0);
         juce::ValueTree raw("MicrotonalPitchMapPro");raw.setProperty("version",mp::stateVersion,nullptr);raw.addChild(mp::clipToTree(source),-1,nullptr);
         juce::MemoryOutputStream rawStream;raw.writeToStream(rawStream);quick.setStateInformation(rawStream.getData(),int(rawStream.getDataSize()));
         quick.applyCorrection();finish(quick);pump();finish(quick);

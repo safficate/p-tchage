@@ -1,0 +1,33 @@
+Testing: smoother_and_workspace
+7/8 Test: smoother_and_workspace
+Command: "/workspace/p-tchage/build-linux/SmootherTests_artefacts/Release/SmootherTests"
+Directory: /workspace/p-tchage/build-linux
+"smoother_and_workspace" start time: Oct 23 15:34 UTC
+Output:
+----------------------------------------------------------
+TARGET 44100 key=38 source=12 target=5 measured=5.01863
+TARGET 44100 key=38 source=-7 target=5 measured=5.03767
+TARGET 44100 key=50 source=12 target=5 measured=5.00574
+TARGET 44100 key=50 source=-7 target=5 measured=5.00731
+TARGET 44100 key=62 source=12 target=5 measured=4.92936
+TARGET 44100 key=62 source=-7 target=5 measured=5.00896
+TARGET 44100 key=74 source=12 target=5 measured=4.92343
+TARGET 44100 key=74 source=-7 target=5 measured=5.07408
+TARGET 44100 key=86 source=12 target=5 measured=5.0316
+TARGET 44100 key=86 source=-7 target=5 measured=4.9995
+TONE 44100 resonance=2940.38 amplitude=0.065551 cut=3.66875
+PREPARED 44100 status=Bolgesel ses hazir. Bastan oynatin veya Sonar Bounce kullanin. busy=0 render=1
+TARGET 48000 key=38 source=12 target=5 measured=5.88652
+TARGET 48000 key=38 source=-7 target=5 measured=5.02797
+TARGET 48000 key=50 source=12 target=5 measured=5.00291
+TARGET 48000 key=50 source=-7 target=5 measured=4.9821
+TARGET 48000 key=62 source=12 target=5 measured=4.8952
+TARGET 48000 key=62 source=-7 target=5 measured=5.15076
+TARGET 48000 key=74 source=12 target=5 measured=5.26193
+TARGET 48000 key=74 source=-7 target=5 measured=5.51718
+TARGET 48000 key=86 source=12 target=5 measured=5.18287
+TARGET 48000 key=86 source=-7 target=5 measured=4.99402
+TONE 48000 resonance=2940.38 amplitude=0.0656533 cut=3.65438
+PREPARED 48000 status=Bolgesel ses hazir. Bastan oynatin veya Sonar Bounce kullanin. busy=0 render=1
+135 smoother/workspace assertions passed; callback allocations=0
+<end of output>

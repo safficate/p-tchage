@@ -2,6 +2,7 @@
 #include "signalsmith-stretch.h"
 #include <algorithm>
 #include <cmath>
+#include <bit>
 
 namespace mp {
 struct RealtimePitch::Impl {
@@ -24,6 +25,10 @@ struct RealtimePitch::Impl {
     int outputWrite = 0, expectedWrite = 0;
     int64_t received = 0;
     bool suspended = false;
+    struct CachedPitch {uint64_t hash=0,generation=0;double pitch=0;float confidence=0;};
+    std::array<CachedPitch,8192> sourceCache{};
+    uint64_t generation=1;bool cacheUsed=false;
+    float quality=0; double previousTarget=0, previousEnergy=0, attack=0; uint64_t analysisCount=0;
 
     Impl(double sr, int ch) : rate(sr), channels(ch) {
         stretch.presetDefault(channels, float(rate), true);
@@ -36,10 +41,11 @@ struct RealtimePitch::Impl {
         for (auto& h : renderedHistory) h.fill(0);
         expected.fill({}); outputWrite = expectedWrite = 0; received = 0; trim = 0;
         writePosition = filled = hopPosition = unvoiced = 0;
-        key = -1; centre = slowPitch = pitch = shift = 0; noteCounter = 0;
+        key = -1; centre = slowPitch = pitch = shift = previousTarget = previousEnergy = attack = 0; quality=0;analysisCount=0; noteCounter = 0;
     }
     void reset() { resetStreaming(); delay.clear(); delayPosition = 0; }
-    double detect(const std::array<std::array<float, window>, 2>& samples, int cursor) {
+    double detect(const std::array<std::array<float, window>, 2>& samples, int cursor, float* confidence=nullptr) {
+        if(confidence)*confidence=0;
         double e[2]{};
         for (int ch = 0; ch < channels; ++ch)
             for (float v : samples[size_t(ch)]) e[ch] += double(v) * v;
@@ -56,7 +62,7 @@ struct RealtimePitch::Impl {
         fft.fft(time.data(), spectrum.data());
         for (auto& v : spectrum) v = {std::norm(v), 0};
         fft.ifft(spectrum.data(), time.data());
-        const int lo = std::max(2, int(rate / 1600)), hi = std::min(window / 2, int(rate / 30));
+        const int lo = std::max(2, int(rate / 4000)), hi = std::min(window / 2, int(rate / 30));
         double sum = 0; cmnd.fill(1);
         for (int t = 1; t <= hi + 1; ++t) {
             const double difference = std::max(0.0, energy[size_t(window - t)] + energy.back() - energy[size_t(t)] - 2.0 * time[size_t(t)].real() / fftSize);
@@ -73,22 +79,34 @@ struct RealtimePitch::Impl {
         if (cmnd[size_t(best)] > 0.15) return 0;
         const double a = cmnd[size_t(best - 1)], b = cmnd[size_t(best)], c = cmnd[size_t(best + 1)], denominator = a - 2 * b + c;
         const double delta = std::abs(denominator) > 1e-12 ? juce::jlimit(-0.5, 0.5, 0.5 * (a - c) / denominator) : 0;
-        return 69 + 12 * std::log2(rate / (best + delta) / 440);
+        if(confidence)*confidence=float(1-cmnd[size_t(best)]);
+        double period=best+delta;
+        if(best<50){const int multiple=std::min(8,hi/(best+1));if(multiple>=2){const int predicted=int(std::lround(period*multiple));int peak=juce::jlimit(2,hi-1,predicted);for(int t=std::max(2,predicted-3);t<=std::min(hi-1,predicted+3);++t)if(cmnd[size_t(t)]<cmnd[size_t(peak)])peak=t;
+            const double aa=cmnd[size_t(peak-1)],bb=cmnd[size_t(peak)],cc=cmnd[size_t(peak+1)],dd=aa-2*bb+cc;period=(peak+(std::abs(dd)>1e-12?juce::jlimit(-.5,.5,.5*(aa-cc)/dd):0))/multiple;}}
+        return 69 + 12 * std::log2(rate / period / 440);
     }
-    void analyse() {
-        pitch = detect(history, writePosition);
+    void analyse(const Controls& controls) {
+        uint64_t hash=1469598103934665603ULL;
+        for(int ch=0;ch<channels;++ch)for(int i=0;i<window;++i){hash^=std::bit_cast<uint32_t>(history[size_t(ch)][size_t((writePosition+i)%window)]);hash*=1099511628211ULL;}
+        auto& cached=sourceCache[size_t(hash%sourceCache.size())];
+        cacheUsed=cached.hash==hash&&cached.generation==generation;
+        if(cacheUsed){pitch=cached.pitch;quality=cached.confidence;}
+        else{pitch=detect(history,writePosition,&quality);cached={hash,generation,pitch,quality};}
+        ++analysisCount;
+        double e=0;for(int ch=0;ch<channels;++ch){double v=0;for(float x:history[size_t(ch)])v+=double(x)*x;e=std::max(e,v/window);}
+        attack=previousEnergy>1e-6?juce::jlimit(0.0,1.0,(e/previousEnergy-1)/4):0;previousEnergy=e;
         if (pitch == 0) { losePitch(); return; }
         // Hysteresis avoids switching pitch classes at a vibrato extremum.
         if (key < 0 || std::abs(pitch - key) > 0.7) {
             key = juce::jlimit(0, 127, int(std::lround(pitch)));
             centre = slowPitch = pitch; trim = 0; ++noteCounter;
         } else {
-            centre += (1 - std::exp(-hop / (rate * 0.25))) * (pitch - centre);
+            centre += (1 - std::exp(-hop / (rate * (controls.modernTargets?std::max(20.0,double(controls.centreMs))*.001:0.25)))) * (pitch - centre);
             slowPitch += (1 - std::exp(-hop / (rate * 0.06))) * (pitch - slowPitch);
         }
         unvoiced = 0;
     }
-    void calibrate(double requestedShift) {
+    void calibrate(double requestedShift,bool modern) {
         expected[size_t(expectedWrite)] = {received, pitch > 0 ? pitch + requestedShift : 0, key};
         expectedWrite = (expectedWrite + 1) % int(expected.size());
         if (std::abs(requestedShift) < 1e-6) { trim = 0; return; }
@@ -97,17 +115,17 @@ struct RealtimePitch::Impl {
         for (const auto& point : expected) if (point.end >= 0 && point.end <= sourceEnd && (!nearest || point.end > nearest->end)) nearest = &point;
         if (!nearest || nearest->midi == 0 || nearest->key != key) return;
         int stable = 0;
-        for (const auto& point : expected) if (point.end >= nearest->end - 3 * hop && point.end <= nearest->end) {
-            if (point.key != key || point.midi == 0 || std::abs(point.midi - nearest->midi) > 0.015) return;
+        for (const auto& point : expected) if (point.end >= nearest->end - (modern?9:3) * hop && point.end <= nearest->end) {
+            if (point.key != key || point.midi == 0 || std::abs(point.midi - nearest->midi) > (modern?.0025:.015)) return;
             ++stable;
         }
-        if (stable < 4) return;
+        if (stable < (modern?10:4)) return;
         const double outputMidi = detect(renderedHistory, outputWrite);
         if (outputMidi == 0) return;
         const double error = nearest->midi - outputMidi;
         // Bounded centre refinement only on stable voiced passages. Transitions,
         // vibrato and ambiguous/noisy audio do not drive the feedback controller.
-        if (std::abs(error) < 0.25) trim = juce::jlimit(-0.15, 0.15, trim + error * 0.08);
+        if (std::abs(error) < 0.25) trim = juce::jlimit(-0.15, 0.15, trim + error * (modern ? 0.15 : 0.08));
     }
     void losePitch() {
         // Do not transpose breath/noise/silence using an old sustained note.
@@ -115,8 +133,16 @@ struct RealtimePitch::Impl {
         if (++unvoiced >= 2) key = -1;
     }
     double correction(const Controls& c) const {
-        if (pitch == 0 || key < 0) return 0;
+        if (pitch == 0 || key < 0) return c.adaptiveTransitions&&unvoiced<4?previousTarget:0;
         const int group = key % 12;
+        if(c.modernTargets) {
+            const double source=c.fixedSourceCentres&&c.sourceKnown[size_t(group)]?key+c.learnedSource[size_t(group)]/100:centre;
+            double offset=c.globalCents+c.regionCents+c.relativeCents[size_t(group)]+100*c.semitones[size_t(group)];
+            const double amount=c.amount*(c.amountAuto?juce::jlimit(0.0,1.0,(double(quality)-.8)/.18):1.0);
+            if(c.targetActive[size_t(group)])offset+=amount*100*(key+c.targets[size_t(group)]/100-source);
+            if(c.natural&&c.centreTightness>0)offset-=100*c.centreTightness*((slowPitch-centre)+(1-c.vibratoKeep)*(pitch-slowPitch));
+            return juce::jlimit(-24.0,24.0,offset/100);
+        }
         if (c.followReference > 0) {
             if (c.referenceMidi <= 0) return 0;
             double target = c.referenceMidi;
@@ -141,9 +167,9 @@ RealtimePitch::RealtimePitch() = default;
 RealtimePitch::~RealtimePitch() = default;
 void RealtimePitch::prepare(double sr, int channels) {
     impl = std::make_unique<Impl>(sr, juce::jlimit(1, 2, channels));
-    midi = cents = level = 0;
+    midi = cents = level = centre = quality = 0;serial=0;
 }
-void RealtimePitch::reset() { if (impl) impl->reset(); midi = cents = level = 0; }
+void RealtimePitch::reset() { if (impl) impl->reset(); midi = cents = level = centre = quality = 0;serial=0; }
 int RealtimePitch::latency() const { return impl ? impl->latency : 0; }
 void RealtimePitch::processDelay(juce::AudioBuffer<float>& b) {
     if (!impl || b.getNumChannels() == 0) return;
@@ -156,12 +182,13 @@ void RealtimePitch::processDelay(juce::AudioBuffer<float>& b) {
         }
         p.delayPosition = (p.delayPosition + 1) % p.latency;
     }
-    p.suspended = true; midi = cents = 0;
+    p.suspended = true; midi = cents = centre = quality = 0;
     level = b.getNumSamples() > 0 ? float(std::sqrt(energy / b.getNumSamples())) : 0;
 }
 void RealtimePitch::process(juce::AudioBuffer<float>& b, const Controls& controls) {
     if (!impl || b.getNumChannels() == 0) return;
     auto& p = *impl;
+    if(clearCache.exchange(false))++p.generation;
     if (p.suspended) p.resetStreaming();
     const int channels = std::min(p.channels, b.getNumChannels());
     double blockEnergy = 0;
@@ -184,11 +211,34 @@ void RealtimePitch::process(juce::AudioBuffer<float>& b, const Controls& control
         p.received += count;
         if (p.hopPosition == Impl::hop) {
             p.hopPosition = 0;
-            if (p.filled == Impl::window) p.analyse();
+            if (p.filled == Impl::window) p.analyse(controls);
         }
-        const double target = p.correction(controls);
-        const double smoothing = std::max(5.0, double(controls.smoothingMs)) / 1000;
-        p.shift += (1 - std::exp(-count / (p.rate * smoothing))) * (target + p.trim - p.shift);
+        double target = p.correction(controls);
+        if(controls.modernTargets&&controls.humanOn&&p.pitch>0){
+            const double clock=controls.timelineSeconds+offset/p.rate,phase=clock/std::max(.1,double(controls.humanTime)*.001);
+            const auto index=int64_t(std::floor(phase));const double u=phase-std::floor(phase),blend=u*u*(3-2*u);
+            const auto noise=[&](int64_t n){uint64_t h=uint64_t(n)+uint64_t(controls.seed)*0x9e3779b97f4a7c15ULL;h^=h>>30;h*=0xbf58476d1ce4e5b9ULL;h^=h>>27;h*=0x94d049bb133111ebULL;h^=h>>31;return double(h&0xffff)/32767.5-1;};
+            const double amount=controls.humanAuto?juce::jlimit(.15,1.0,1-std::abs(p.pitch-p.slowPitch)*3):1;
+            target+=controls.humanDepth/100*amount*(noise(index)+(noise(index+1)-noise(index))*blend);
+        }
+        double smoothing = std::max(5.0, double(controls.smoothingMs)) / 1000;
+        if(controls.adaptiveTransitions && controls.pitchAuto){
+            const double motion=std::abs(p.pitch-p.slowPitch);
+            const bool connected=controls.expression==1||(controls.expression==0&&motion>.10);
+            smoothing=connected?juce::jlimit(.04,.20,.04+motion*.15):.025;
+            if(controls.expression==2||(controls.expression==0&&p.attack>.5))smoothing=std::max(smoothing,.06);
+        }
+        if(controls.modernTargets){
+            if(!controls.pitchSmooth)smoothing=.005;
+            else if(!controls.pitchAuto)smoothing=std::max(.005,double(controls.glideMs)*.001);
+            else smoothing*=std::max(.1,double(controls.glideMs)/80);
+            smoothingTime=float(smoothing*1000);
+            amountApplied=controls.amount*(controls.amountAuto?float(juce::jlimit(0.0,1.0,(double(p.quality)-.8)/.18)):1.0f);
+        }
+        if(p.pitch>0)p.previousTarget=target;
+        double change=(1 - std::exp(-count / (p.rate * smoothing))) * (target + p.trim - p.shift);
+        if(controls.modernTargets&&controls.pitchSmooth&&controls.maxRate>0){const double limit=controls.maxRate/100*count/p.rate;change=juce::jlimit(-limit,limit,change);}
+        p.shift+=change;
         p.stretch.setTransposeSemitones(float(p.shift));
         p.stretch.setFormantFactor(1, controls.formants);
         p.stretch.setFormantBase(p.pitch > 0 ? float(440 * std::exp2((p.pitch - 69) / 12) / p.rate) : 0);
@@ -207,13 +257,13 @@ void RealtimePitch::process(juce::AudioBuffer<float>& b, const Controls& control
             if (identical || inverted) for (int i = 0; i < count; ++i)
                 p.output[1][size_t(i)] = identical ? p.output[0][size_t(i)] : -p.output[0][size_t(i)];
         }
-        const bool unchanged = controls.dry || (controls.directShift || controls.matchReference || controls.followReference > 0 ? std::abs(p.shift) < 1e-7 : controls.strength == 0 && controls.tightness == 0 && controls.humanize == 0);
+        const bool unchanged = controls.dry || (controls.modernTargets || controls.directShift || controls.matchReference || controls.followReference > 0 ? std::abs(p.shift) < 1e-7 : controls.strength == 0 && controls.tightness == 0 && controls.humanize == 0);
         if (controls.analysisOnly) { offset += count; continue; }
         for (int i = 0; i < count; ++i) {
             for (int ch = 0; ch < p.channels; ++ch) p.renderedHistory[size_t(ch)][size_t(p.outputWrite)] = p.output[size_t(ch)][size_t(i)];
             p.outputWrite = (p.outputWrite + 1) % Impl::window;
         }
-        if (p.hopPosition == 0 && p.filled == Impl::window) p.calibrate(target);
+        if (p.hopPosition == 0 && p.filled == Impl::window) p.calibrate(target,controls.modernTargets);
         for (int ch = 0; ch < channels; ++ch) for (int i = 0; i < count; ++i) {
             const float dry = p.dry[size_t(ch)][size_t(i)];
             float wet = p.output[size_t(ch)][size_t(i)];
@@ -223,6 +273,7 @@ void RealtimePitch::process(juce::AudioBuffer<float>& b, const Controls& control
         offset += count;
     }
     midi.store(float(p.pitch), std::memory_order_relaxed);
+    centre.store(float(p.centre),std::memory_order_relaxed);quality.store(p.quality,std::memory_order_relaxed);serial.store(p.analysisCount,std::memory_order_relaxed);cacheHit=p.cacheUsed;
     cents.store(controls.dry ? 0 : float(p.shift * 100), std::memory_order_relaxed);
     level.store(b.getNumSamples() > 0 ? float(std::sqrt(blockEnergy / b.getNumSamples())) : 0, std::memory_order_relaxed);
 }

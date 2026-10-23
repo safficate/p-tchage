@@ -1,0 +1,137 @@
+{
+  "retrieved_on": "2026-10-23",
+  "entries": [
+    {
+      "id": "librosa-onset",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/onset.py",
+      "file": "librosa-onset.py",
+      "bytes": 21320,
+      "sha256": "375621605804840863e61652c1a3640e033042b0fd37bf6762376e1b6c2ed4eb",
+      "resolved_url": "https://raw.githubusercontent.com/librosa/librosa/refs/heads/main/librosa/onset.py"
+    },
+    {
+      "id": "librosa-sequence",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/sequence.py",
+      "file": "librosa-sequence.py",
+      "bytes": 75761,
+      "sha256": "902866c3c80e08a30489ebc06b006a90988c802d486974e8b9b318b35251809a",
+      "resolved_url": "https://raw.githubusercontent.com/librosa/librosa/refs/heads/main/librosa/sequence.py"
+    },
+    {
+      "id": "librosa-decompose",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/librosa/decompose.py",
+      "file": "librosa-decompose.py",
+      "bytes": 20313,
+      "sha256": "cc76ab59837fb2a6288394a3fdccbe9699f7442502ac619a59256e4ebb246941",
+      "resolved_url": "https://raw.githubusercontent.com/librosa/librosa/refs/heads/main/librosa/decompose.py"
+    },
+    {
+      "id": "librosa-license",
+      "url": "https://github.com/librosa/librosa/raw/refs/heads/main/LICENSE.md",
+      "file": "librosa-license.txt",
+      "bytes": 766,
+      "sha256": "79aa4a8086d51ac89f9a7322f546670cdef73e758c67f04587b7af8afafd6df8",
+      "resolved_url": "https://raw.githubusercontent.com/librosa/librosa/refs/heads/main/LICENSE.md"
+    },
+    {
+      "id": "sms-tools",
+      "url": "https://github.com/MTG/sms-tools/raw/refs/heads/master/README.md",
+      "file": "sms-tools.md",
+      "bytes": 3365,
+      "sha256": "20b5a6fac9bb6764dd49cdf68406f4ece452c753105f4f592af5ba97a931e9f4",
+      "resolved_url": "https://raw.githubusercontent.com/MTG/sms-tools/refs/heads/master/README.md"
+    },
+    {
+      "id": "sms-tools-license",
+      "url": "https://github.com/MTG/sms-tools/raw/refs/heads/master/LICENSE",
+      "file": "sms-tools-license.txt",
+      "bytes": 34500,
+      "sha256": "60c66d170d6d9ef655c1f072f5cd681c9d8f5cecbca1257bd145f95c97409565",
+      "resolved_url": "https://raw.githubusercontent.com/MTG/sms-tools/refs/heads/master/LICENSE"
+    },
+    {
+      "id": "visqol",
+      "url": "https://github.com/google/visqol/raw/refs/heads/master/README.md",
+      "file": "visqol.md",
+      "bytes": 17159,
+      "sha256": "547b6dd351c76512cb680a7de84c2bbc06a0591538ebffc8392ca5bd236ce6de",
+      "resolved_url": "https://raw.githubusercontent.com/google/visqol/refs/heads/master/README.md"
+    },
+    {
+      "id": "visqol-license",
+      "url": "https://github.com/google/visqol/raw/refs/heads/master/LICENSE",
+      "file": "visqol-license.txt",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "resolved_url": "https://raw.githubusercontent.com/google/visqol/refs/heads/master/LICENSE"
+    },
+    {
+      "id": "panns",
+      "url": "https://github.com/qiuqiangkong/audioset_tagging_cnn/raw/refs/heads/master/README.md",
+      "file": "panns.md",
+      "bytes": 12248,
+      "sha256": "409cef0d9fd9d425bb0daea49332e5a7cdae3fce401ff5bd54d531025221cd7e",
+      "resolved_url": "https://raw.githubusercontent.com/qiuqiangkong/audioset_tagging_cnn/refs/heads/master/README.md"
+    },
+    {
+      "id": "panns-license",
+      "url": "https://github.com/qiuqiangkong/audioset_tagging_cnn/raw/refs/heads/master/LICENSE",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "tomato",
+      "url": "https://github.com/sertansenturk/tomato/raw/refs/heads/master/README.md",
+      "file": "tomato.md",
+      "bytes": 16911,
+      "sha256": "aaf633fbb01b29cc6cf608b2c74f1a97c51555d7ce0ffe479d40337784a67a5e",
+      "resolved_url": "https://raw.githubusercontent.com/sertansenturk/tomato/refs/heads/master/README.md"
+    },
+    {
+      "id": "itur-bs1534",
+      "url": "https://www.itu.int/rec/R-REC-BS.1534/en",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "id": "sms-hps-model",
+      "url": "https://github.com/MTG/sms-tools/raw/refs/heads/master/smstools/models/hpsModel.py",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "id": "sms-harmonic-transform",
+      "url": "https://github.com/MTG/sms-tools/raw/refs/heads/master/smstools/transformations/harmonicTransformations.py",
+      "file": "sms-harmonic-transform.py",
+      "bytes": 2441,
+      "sha256": "0963ce97906224244a169262833b8636ff4cc3fb3361da7827e47b7b40e16602",
+      "resolved_url": "https://raw.githubusercontent.com/MTG/sms-tools/refs/heads/master/smstools/transformations/harmonicTransformations.py"
+    },
+    {
+      "id": "stk-bowed",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/Bowed.cpp",
+      "file": "stk-bowed.cpp",
+      "bytes": 5373,
+      "sha256": "aafe68ec8d24478d209c63da82ece0bd496e2a71a5e9f6bf55c0d81b7b14e143",
+      "resolved_url": "https://raw.githubusercontent.com/thestk/stk/refs/heads/master/src/Bowed.cpp"
+    },
+    {
+      "id": "stk-stiff-string",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/src/StifKarp.cpp",
+      "file": "stk-stiff-string.cpp",
+      "bytes": 5117,
+      "sha256": "8bbd23f954592e79cfeaadd54151e303a00c27a9c67dc8520172b38325ccd2e0",
+      "resolved_url": "https://raw.githubusercontent.com/thestk/stk/refs/heads/master/src/StifKarp.cpp"
+    },
+    {
+      "id": "stk-license",
+      "url": "https://github.com/thestk/stk/raw/refs/heads/master/LICENSE",
+      "file": "stk-license.txt",
+      "bytes": 1364,
+      "sha256": "342901da98ec7c044426f3d1c2e1b8dd2ac79001e0916b49c2cf71b158b13aa5",
+      "resolved_url": "https://raw.githubusercontent.com/thestk/stk/refs/heads/master/LICENSE"
+    },
+    {
+      "id": "panns-license-alt",
+      "url": "https://github.com/qiuqiangkong/audioset_tagging_cnn/raw/refs/heads/master/LICENSE.txt",
+      "error": "HTTP Error 404: Not Found"
+    }
+  ]
+}
