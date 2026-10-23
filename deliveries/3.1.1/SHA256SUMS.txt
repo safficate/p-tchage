@@ -1,0 +1,2 @@
+dd76502c9b8231c957591aedb5d427fcad73bd0a26df62f07b4b8fba3a24b9c4  Pitchmap-Pro-3.1.1-Source.zip
+41f0d2ccb41f7eb802ded67b5883023b61aeac7e101802d918a433ddc605537e  Pitchmap-Pro-3.1.1-Windows-x64.zip
